@@ -313,8 +313,6 @@ td.divs .tag{white-space:normal}
   #printArea .tt.pendente{color:#8a5a00}#printArea .tt.corrigido,#printArea .tt.retificado{color:#1f7a4d}#printArea .tt.justificado{color:#2f5fa7}
   #printArea .okt td{padding:2.5px 5px}
   #printArea tr{break-inside:avoid}
-  #printArea .psign{display:grid;grid-template-columns:2fr 1fr 2fr;gap:30px;margin-top:26px;break-inside:avoid}
-  #printArea .psign div{border-top:1px solid #444;padding-top:4px;font-size:8.5px;color:#555}
   #printArea .pfoot{margin-top:12px;font-size:7.5px;color:#888}
 }
 </style>
@@ -500,7 +498,7 @@ td.divs .tag{white-space:normal}
           <p><b>Ao terminar as tratativas</b>, salve o registro da conferência:</p>
           <ul>
             <li><b>Exportar Excel</b>: planilha completa, com resumo, conferência, pendências, tratamento e dados lidos.</li>
-            <li><b>Relatório PDF</b>: documento para arquivo ou assinatura. Na janela de impressão, escolha <b>Salvar como PDF</b>.</li>
+            <li><b>Relatório PDF</b>: documento para arquivo. Na janela de impressão, escolha <b>Salvar como PDF</b>.</li>
           </ul>
         </div>
 
@@ -1282,7 +1280,6 @@ function renderPrint(){
   <h3 class="sec">Contratos conferidos (${ok.length})</h3>
   ${ok.length?`<table class="okt"><thead><tr><th>Colaborador</th><th>CPF</th><th>Contrato</th><th>Instituição</th><th class="r">Valor</th></tr></thead><tbody>
     ${ok.map(r=>`<tr><td>${esc(r.nome)}</td><td>${esc(fmtCPF(r.cpf))}</td><td>${esc(r.contrato)}</td><td>${esc((r.x?.codInst?r.x.codInst+" – ":"")+(r.x?.inst||r.inst))}</td><td class="r">${fmtV(r.x?.valor)}</td></tr>`).join("")}</tbody></table>`:`<p class="mut">Nenhum contrato conferido sem pendência.</p>`}
-  <div class="psign"><div>Conferido por</div><div>Data</div><div>Aprovado por</div></div>
   <p class="pfoot">Relatório gerado pela ferramenta de Conciliação do Consignado a partir dos arquivos indicados acima. Os dados foram processados apenas no navegador de quem emitiu o relatório.</p>`;
 }
 
