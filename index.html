@@ -14,7 +14,7 @@
 <script src="lib/exceljs-4.4.0.min.js"></script>
 <script src="lib/pdf-3.11.174.min.js"></script>
 <script src="lib/pdf.worker-3.11.174.min.js"></script>
-<script>try{var t=localStorage.getItem("consignado.tema");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>(function(){var t="light";try{t=localStorage.getItem("consignado.tema")||"light";}catch(e){}document.documentElement.setAttribute("data-theme",t);})();</script>
 <style>
 /* Layout: aplicativo — menu lateral fixo (marca, passos, tema) + área principal com barra superior, importação, indicadores e painel com abas */
 :root{
@@ -1552,7 +1552,6 @@ function selTab(t){
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>selTab(b.dataset.tab));
 $("#stX").onclick=()=>{S.lidos="x";renderLidos();}; $("#stE").onclick=()=>{S.lidos="e";renderLidos();};
 $("#thLight").onclick=()=>aplicaTema("light"); $("#thDark").onclick=()=>aplicaTema("dark");
-try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>aplicaTema()); }catch(e){}
 $("#navHelp").onclick=()=>{ selTab("ajuda"); window.scrollTo(0,0); };
 $("#step1").onclick=()=>{ if(S.tab==="ajuda"){ selTab("conf"); if(S.passo==="1") return; } if(S.passo==="1") return; S.passo="1"; aplicaPasso(); conciliar(); };
 $("#step2").onclick=()=>{ if(S.tab==="ajuda"){ selTab("conf"); if(S.passo==="2") return; } if(S.passo==="2") return; S.passo="2"; aplicaPasso(); conciliar(); }; $("#stP").onclick=()=>{S.lidos="p";renderLidos();}; $("#stR").onclick=()=>{S.lidos="r";renderLidos();};
