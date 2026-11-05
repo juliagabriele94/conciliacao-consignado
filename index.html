@@ -1,0 +1,1582 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conciliação do Consignado · Crédito do Trabalhador</title>
+<meta name="description" content="Conciliação mensal do consignado (Crédito do Trabalhador): confere a folha com a planilha do Emprega Brasil e com a guia do FGTS Digital. Os arquivos são processados no navegador.">
+<meta name="author" content="Julia Gabriele P. Luis">
+<meta name="theme-color" content="#1c1f25">
+<meta property="og:title" content="Conciliação do Consignado">
+<meta property="og:description" content="Emprega Brasil × Folha × Guia FGTS Digital, contrato a contrato.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23b88550'/%3E%3Cstop offset='1' stop-color='%238a5c2e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='42' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3ECT%3C/text%3E%3C/svg%3E">
+<script src="lib/xlsx-0.18.5.full.min.js"></script>
+<script src="lib/exceljs-4.4.0.min.js"></script>
+<script src="lib/pdf-3.11.174.min.js"></script>
+<script src="lib/pdf.worker-3.11.174.min.js"></script>
+<script>try{var t=localStorage.getItem("consignado.tema");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>
+/* Layout: aplicativo — menu lateral fixo (marca, passos, tema) + área principal com barra superior, importação, indicadores e painel com abas */
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --surface-2:#f6f7f9; --surface-3:#eceef2; --line:#e1e4e9; --line-strong:#c9cdd5;
+  --ink:#1b1f26; --ink-2:#4a505c; --ink-3:#7b818d;
+  --bronze:#9a6a38; --bronze-ink:#7c5129; --bronze-soft:#f5ece1; --bronze-line:#e3cdb3;
+  --side:#1c1f25; --side-2:#262a32; --side-ink:#e9e4dc; --side-ink-2:#9b958c; --side-line:#30343c;
+  --ok:#1f7a4d; --ok-soft:#e2f2e9; --warn:#9a6400; --warn-soft:#fbf0d6; --bad:#b4322c; --bad-soft:#fbe4e2; --info:#2f5fa7; --info-soft:#e3ebf8;
+  --shadow:0 1px 2px rgba(20,24,32,.05),0 2px 8px rgba(20,24,32,.04);
+  --f-display:"Segoe UI Semibold","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; --f-body:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; --f-mono:Consolas,"SF Mono",Menlo,"Liberation Mono","Courier New",monospace;
+  --r:10px; --side-w:248px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121418; --surface:#1a1d23; --surface-2:#20242b; --surface-3:#272b33; --line:#2c3139; --line-strong:#3c424d;
+  --ink:#eceef2; --ink-2:#b4b9c3; --ink-3:#868c97;
+  --bronze:#d39b62; --bronze-ink:#e6b582; --bronze-soft:#2e241a; --bronze-line:#5a4429;
+  --side:#0d0f12; --side-2:#181b20; --side-ink:#ebe6de; --side-ink-2:#8d877e; --side-line:#23272e;
+  --ok:#5cc591; --ok-soft:#15302a; --warn:#e3ad48; --warn-soft:#33290f; --bad:#f07b72; --bad-soft:#3a1c1a; --info:#82aaea; --info-soft:#1a2840;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121418; --surface:#1a1d23; --surface-2:#20242b; --surface-3:#272b33; --line:#2c3139; --line-strong:#3c424d;
+  --ink:#eceef2; --ink-2:#b4b9c3; --ink-3:#868c97;
+  --bronze:#d39b62; --bronze-ink:#e6b582; --bronze-soft:#2e241a; --bronze-line:#5a4429;
+  --side:#0d0f12; --side-2:#181b20; --side-ink:#ebe6de; --side-ink-2:#8d877e; --side-line:#23272e;
+  --ok:#5cc591; --ok-soft:#15302a; --warn:#e3ad48; --warn-soft:#33290f; --bad:#f07b72; --bad-soft:#3a1c1a; --info:#82aaea; --info-soft:#1a2840;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:13px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:.94em}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- estrutura ---------- */
+.app{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);min-height:100%}
+.side{background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:18px 14px;gap:22px;border-right:1px solid var(--side-line)}
+.brand{display:flex;gap:11px;align-items:center;padding:4px 6px}
+.brand .mk{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#b88550,#8a5c2e);display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.02em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.brand b{display:block;font-family:var(--f-display);font-size:15px;font-weight:700;letter-spacing:-.005em;line-height:1.15}
+.brand span{font-size:11.5px;color:var(--side-ink-2)}
+.tagline{margin:-10px 0 0;padding:0 6px;font-size:11.5px;line-height:1.45;color:var(--side-ink-2)}
+.navsec{display:grid;gap:4px}
+.navsec .lb{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--side-ink-2);padding:0 10px 4px;font-weight:600}
+.nav{display:flex;gap:11px;align-items:center;width:100%;border:0;background:none;color:var(--side-ink);padding:9px 10px;border-radius:8px;cursor:pointer;text-align:left;position:relative}
+.nav:hover{background:var(--side-2)}
+.nav .n{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:var(--side-2);border:1px solid var(--side-line);font-family:var(--f-mono);font-size:12px;font-weight:500;flex:none}
+.nav .tx{min-width:0}
+.nav .tx b{display:block;font-weight:500;font-size:13.5px}
+.nav .tx small{display:block;font-size:11.5px;color:var(--side-ink-2)}
+.nav[aria-pressed="true"],.nav[aria-current="page"]{background:var(--side-2)}
+.nav[aria-pressed="true"]::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--bronze)}
+.nav[aria-pressed="true"] .n{background:var(--bronze);border-color:var(--bronze);color:#fff}
+.side .grow{flex:1}
+.theme{display:grid;grid-template-columns:1fr 1fr;background:var(--side-2);border:1px solid var(--side-line);border-radius:9px;padding:3px;gap:3px}
+.theme button{border:0;background:none;color:var(--side-ink-2);border-radius:6px;padding:7px 6px;cursor:pointer;display:flex;gap:6px;align-items:center;justify-content:center;font-size:12.5px}
+.theme button[aria-pressed="true"]{background:var(--side);color:var(--side-ink);box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.credit{font-size:11px;color:var(--side-ink-2);padding:0 6px;line-height:1.5;display:grid;gap:4px}
+.credit .priv{display:flex;gap:6px;align-items:center;color:var(--side-ink);opacity:.8}
+.credit .ver{opacity:.7}
+
+.mainc{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding-block:12px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.crumb{font-size:11.5px;color:var(--ink-3);display:flex;gap:6px;align-items:center}
+.crumb b{color:var(--bronze-ink);font-weight:600}
+.topbar h1{font-family:var(--f-display);font-weight:700;font-size:18px;margin:2px 0 0;letter-spacing:-.01em;text-wrap:balance}
+.topbar .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.compbox{display:flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--surface-2);border-radius:8px;padding:5px 10px}
+.compbox label{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:600}
+.compbox input{width:84px;background:transparent;border:0;font-family:var(--f-mono);font-size:15px;padding:2px 0;text-align:center;font-weight:500}
+.compbox input:focus{outline:none}
+.compbox:focus-within{border-color:var(--bronze)}
+.content{padding-block:20px 28px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));display:grid;gap:16px;max-width:1440px;width:100%}
+.hint{display:flex;gap:7px;align-items:flex-start;margin:-6px 0 0;font-size:11.5px;color:var(--ink-3)}
+.hint svg{width:14px;height:14px;margin-top:1px}
+.lead{color:var(--ink-2);font-size:12.5px;margin:0;max-width:80ch}
+.mainfoot{margin-top:auto;padding:14px 24px 22px;color:var(--ink-3);font-size:12px;text-align:center}
+
+/* ---------- botões ---------- */
+.btn{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:7px 13px;cursor:pointer;font-weight:500;white-space:nowrap;display:inline-flex;gap:7px;align-items:center;box-shadow:var(--shadow)}
+.btn:hover{border-color:var(--bronze);color:var(--bronze-ink)}
+.btn.primary{background:var(--bronze);border-color:var(--bronze);color:#fff}
+.btn.primary:hover{background:var(--bronze-ink);border-color:var(--bronze-ink);color:#fff}
+.btn.ghost{box-shadow:none;background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+
+/* ---------- importação ---------- */
+.imports{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.drop{position:relative;background:var(--surface);border:1.5px dashed var(--line-strong);border-radius:var(--r);padding:15px 16px;display:flex;gap:14px;align-items:center;cursor:pointer;transition:border-color .15s,background .15s;min-width:0}
+.drop:hover,.drop.over{border-color:var(--bronze);background:var(--bronze-soft)}
+.drop.loaded{border-style:solid;border-color:var(--line);box-shadow:var(--shadow)}
+.drop.loaded::after{content:"✓";position:absolute;top:10px;right:12px;width:20px;height:20px;border-radius:50%;background:var(--ok-soft);color:var(--ok);font-size:12px;font-weight:700;display:grid;place-items:center}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop .ic{flex:none;width:42px;height:50px;border-radius:6px;display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;font-weight:600;color:#fff;position:relative}
+.drop .ic.x{background:#1f7a4d}.drop .ic.p{background:#b4322c}.drop .ic.e{background:#2f5fa7}
+.drop .ic::after{content:"";position:absolute;top:0;right:0;border-width:0 10px 10px 0;border-style:solid;border-color:var(--surface) var(--surface) rgba(255,255,255,.35) rgba(255,255,255,.35)}
+.drop .t{font-weight:600}
+.drop .s{color:var(--ink-3);font-size:11.5px;overflow-wrap:anywhere;padding-right:18px}
+.drop .req{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);font-size:11px;color:var(--ink-3);line-height:1.5;position:relative;z-index:1;pointer-events:none}
+.drop .req b{color:var(--ink-2);font-weight:600}
+.drop .dl{position:relative;z-index:2;margin-top:8px}
+.drop .meta{margin-top:4px;font-size:11.5px;color:var(--ink-2)}
+.drop .meta b{font-family:var(--f-mono);font-weight:500}
+
+.notice{border-radius:var(--r);padding:9px 14px;font-size:12px;display:flex;gap:10px;align-items:flex-start;border:1px solid transparent}
+.notice.warn{background:var(--warn-soft);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 25%,transparent)}
+.notice.bad{background:var(--bad-soft);color:var(--bad)}
+.notice.info{background:var(--info-soft);color:var(--info);border-color:color-mix(in srgb,var(--info) 22%,transparent)}
+.notice ul{margin:4px 0 0;padding-left:18px}
+
+/* ---------- indicadores ---------- */
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1.1fr)) repeat(5,minmax(0,.9fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.kpi{padding:8px 6px;border-right:1px solid var(--line);min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:1px}
+.kpi:last-child{border-right:0}
+.kpi .l{font-size:11px;color:var(--ink-2);font-weight:600}
+.kpi .v{font-family:var(--f-mono);font-size:16px;font-weight:600;margin-top:2px;white-space:nowrap}
+.kpi .h{font-size:11px;color:var(--ink-3)}
+.kpi.st{cursor:pointer;position:relative}
+.kpi.st::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--c)}
+.kpi.st:hover{background:var(--surface-2)}
+.kpi.st.active{background:var(--surface-2);box-shadow:inset 0 -2px 0 var(--c)}
+.kpi.st .v{color:var(--c)}
+.kpi .l{white-space:normal;line-height:1.2;min-height:2.4em;display:flex;align-items:center;justify-content:center}
+.kpi.st .l{text-transform:none;letter-spacing:0;font-size:11px;color:var(--ink-2)}
+.diffpos{color:var(--bad)}.diffzero{color:var(--ok)}
+
+/* ---------- painel e abas ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0;box-shadow:var(--shadow);overflow:hidden}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 10px;overflow-x:auto;background:var(--surface)}
+.tab{background:none;border:0;padding:10px 12px;cursor:pointer;color:var(--ink-2);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--bronze)}
+.tab .c{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);margin-left:5px;background:var(--surface-3);padding:1px 6px;border-radius:9px}
+.tab .c:empty{display:none}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.toolbar .grow{flex:1 1 220px;min-width:0}
+.search{width:100%;border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:7px 10px 7px 32px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23888' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px 50%}
+.search:focus{outline:none;border-color:var(--bronze)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line-strong);background:var(--surface);border-radius:20px;padding:3px 10px;font-size:11.5px;cursor:pointer}
+.chip:hover{border-color:var(--bronze)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.progress{display:flex;gap:10px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--ink-2)}
+.progress .bar{flex:1;max-width:320px;height:6px;border-radius:4px;background:var(--surface-3);overflow:hidden}
+.progress .bar i{display:block;height:100%;background:var(--ok);border-radius:4px;transition:width .3s}
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right}
+td.num{white-space:nowrap}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--surface-2)}
+tr.row.open td{background:var(--bronze-soft)}
+.nm{font-weight:500}
+td.who{min-width:170px}
+td.divs{min-width:170px}
+#tConf td:nth-child(5){min-width:140px}
+td.divs{max-width:210px}
+td.divs .tag{white-space:normal}
+.detail .dgrid{max-width:calc(100vw - var(--side-w) - 84px);position:sticky;left:16px}
+.sub{font-size:11px;color:var(--ink-3)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:12px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--ok-soft);color:var(--ok)}
+.p-att{background:var(--warn-soft);color:var(--warn)}
+.p-div{background:var(--bad-soft);color:var(--bad)}
+.p-pdf{background:var(--info-soft);color:var(--info)}
+.p-xls{background:var(--bad-soft);color:var(--bad)}
+.tag{display:inline-block;font-size:10px;border:1px solid currentColor;border-radius:4px;padding:0 5px;margin:0 4px 3px 0;white-space:nowrap}
+.tag.bad{color:var(--bad)}.tag.warn{color:var(--warn)}
+.tr{display:inline-flex;gap:5px;align-items:center;font-size:10.5px;font-weight:500;white-space:nowrap;padding:2px 8px;border-radius:5px;background:var(--surface-3);color:var(--ink-2)}
+.tr.done{background:var(--ok-soft);color:var(--ok)}
+.tr.just{background:var(--info-soft);color:var(--info)}
+.detail td{background:var(--surface-2);padding:16px}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:16px;align-items:start}
+.cmp{display:grid;grid-template-columns:minmax(110px,160px) 1fr 1fr 34px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.cmp>div{padding:5px 9px;font-size:12px;border-bottom:1px solid var(--line);min-width:0;overflow-wrap:anywhere}
+.cmp .hd{background:var(--surface-3);font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600}
+.cmp .k{color:var(--ink-2);font-size:11.5px}
+.cmp .mk{text-align:center;font-weight:700}
+.cmp .mk.ok{color:var(--ok)}.cmp .mk.bad{color:var(--bad)}.cmp .mk.warn{color:var(--warn)}
+.cmp .bad-cell{background:var(--bad-soft)}
+.cmp .warn-cell{background:var(--warn-soft)}
+.guide{margin-top:12px;font-size:12px;color:var(--ink-2)}
+.guide b{color:var(--ink)}
+.guide ul{margin:4px 0 0;padding-left:18px}
+.extra{margin-top:10px;font-size:11px;color:var(--ink-3)}
+.tbox{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:10px}
+.tbox h4{margin:0;font-family:var(--f-display);font-size:13.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tbox label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;display:block;margin-bottom:4px}
+.tbox select,.tbox textarea{width:100%;border:1px solid var(--line-strong);background:var(--surface-2);border-radius:7px;padding:7px 9px}
+.tbox textarea{min-height:76px;resize:vertical}
+.tbox select:focus,.tbox textarea:focus{outline:none;border-color:var(--bronze)}
+.tbox .when{font-size:11.5px;color:var(--ink-3)}
+.empty{padding:40px 20px;text-align:center;color:var(--ink-3)}
+.raw{font-family:var(--f-mono);font-size:11.5px;white-space:pre;max-height:420px;overflow:auto;background:var(--surface-2);padding:12px;border-top:1px solid var(--line);margin:0}
+.subtabs{display:flex;gap:6px;padding:12px 14px 0;flex-wrap:wrap}
+.howto{padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+.howto .full{grid-column:1/-1}
+.howto p{margin:6px 0}
+.howto .sub{font-size:12px}
+.howto li{margin-bottom:4px}
+.passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0}
+.pc{display:flex;gap:12px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:var(--surface-2)}
+.pc .n{width:26px;height:26px;border-radius:7px;background:var(--bronze);color:#fff;display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;flex:none}
+.pc b{display:block;font-size:13.5px}
+.pc small{display:block;color:var(--ink-3);font-size:11.5px}
+.pc p{margin:6px 0 0}
+.legend{list-style:none;padding:0}
+.faq{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 24px}
+.faq h3{grid-column:1/-1}
+.legend li{display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:start;margin-bottom:8px}
+.legend .pill{justify-self:start}
+.steps-list li{margin-bottom:6px}
+.howto h3{font-family:var(--f-display);font-size:15px;margin:0 0 6px}
+.howto p,.howto li{color:var(--ink-2);font-size:13px}
+.howto ol,.howto ul{padding-left:18px;margin:6px 0}
+.howto code{font-family:var(--f-mono);font-size:12px;background:var(--surface-3);padding:1px 4px;border-radius:3px}
+.seal{display:inline-flex;gap:6px;align-items:center;border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);background:var(--ok-soft);color:var(--ok);border-radius:20px;padding:5px 11px;font-size:11.5px;font-weight:600;cursor:pointer}
+.seal svg{width:14px;height:14px}
+.modal{position:fixed;inset:0;z-index:30;background:rgba(10,12,16,.55);display:grid;place-items:center;padding:20px}
+.mbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;max-width:520px;width:100%;padding:26px 26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.mbox .mic{width:44px;height:44px;border-radius:11px;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;margin-bottom:12px}
+.mbox .mic svg{width:24px;height:24px}
+.mbox h2{font-family:var(--f-display);font-size:18px;margin:0 0 8px}
+.mbox p,.mbox li{font-size:13px;color:var(--ink-2)}
+.mbox ul{padding-left:18px;margin:10px 0 18px}
+.mbox li{margin-bottom:6px}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:8px;font-size:13px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.loading{display:inline-block;width:12px;height:12px;border:2px solid var(--line-strong);border-top-color:var(--bronze);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.loading{animation:none}*{transition:none!important}}
+
+@media (max-width:1180px){.dgrid{grid-template-columns:1fr}}
+@media (max-width:860px){.summary{grid-template-columns:repeat(3,minmax(0,1fr))}.kpi{border-bottom:1px solid var(--line)}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px 16px;gap:12px}
+  .side .grow,.navsec .lb,.credit,.tagline{display:none}
+  .navsec{grid-auto-flow:column}
+  .nav[aria-pressed="true"]::before{display:none}
+  .imports{grid-template-columns:1fr}
+  .detail .dgrid{max-width:calc(100vw - 84px)}
+}
+@media (max-width:560px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar h1{font-size:17px}.cmp{grid-template-columns:90px 1fr 1fr 26px;font-size:12px}.brand span{display:none}}
+
+/* impressão (relatório PDF) */
+#printArea{display:none}
+@media print{
+  @page{size:A4 landscape;margin:11mm 10mm 13mm;@bottom-right{content:"Página " counter(page) " de " counter(pages);font:8px Arial,sans-serif;color:#777}@bottom-left{content:"Conciliação do Consignado · Crédito do Trabalhador";font:8px Arial,sans-serif;color:#777}}
+  html,body{background:#fff!important;color:#1b1f26;font-size:9.5px;height:auto}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block;font-family:Arial,"Segoe UI",sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea .ph{display:flex;justify-content:space-between;align-items:center;border-bottom:2.5px solid #9a6a38;padding-bottom:8px}
+  #printArea .pbrand{display:flex;gap:10px;align-items:center}
+  #printArea .pmk{width:30px;height:30px;border-radius:7px;background:#9a6a38;color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+  #printArea .pk{font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;color:#7a5129;font-weight:700}
+  #printArea h2{font-size:16px;margin:2px 0 0;font-family:Arial,sans-serif}
+  #printArea .pcomp{text-align:right}
+  #printArea .pcomp span{display:block;font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;color:#777}
+  #printArea .pcomp b{font-size:20px;font-family:"Courier New",monospace}
+  #printArea .pmeta{display:flex;gap:26px;margin:8px 0;font-size:9px}
+  #printArea .pmeta span{display:block;font-size:7.5px;text-transform:uppercase;letter-spacing:.08em;color:#888}
+  #printArea .pstat{padding:6px 10px;border-radius:5px;font-weight:700;margin:6px 0 10px;font-size:10px}
+  #printArea .pstat.ok{background:#e2f2e9;color:#1f7a4d}
+  #printArea .pstat.warn{background:#fbf0d6;color:#8a5a00}
+  #printArea .pkpi{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #d9dce1;border-radius:6px;margin-bottom:12px}
+  #printArea .pkpi div{padding:7px 10px;border-right:1px solid #d9dce1}
+  #printArea .pkpi div:last-child{border-right:0}
+  #printArea .pkpi span{display:block;font-size:7.5px;text-transform:uppercase;letter-spacing:.08em;color:#777}
+  #printArea .pkpi b{display:block;font-size:13px;font-family:"Courier New",monospace;margin:2px 0}
+  #printArea .pkpi small{color:#888;font-size:8px}
+  #printArea .pcols{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin-bottom:6px;break-inside:avoid}
+  #printArea h3{font-size:10.5px;margin:10px 0 5px;color:#7a5129;text-transform:uppercase;letter-spacing:.06em}
+  #printArea h3.sec{border-bottom:1.5px solid #9a6a38;padding-bottom:3px;margin-top:14px}
+  #printArea table{width:100%;border-collapse:collapse;font-size:8.5px}
+  #printArea thead{display:table-header-group}
+  #printArea th{position:static;background:#9a6a38;color:#fff;text-transform:none;letter-spacing:0;font-size:8px;padding:4px 5px;text-align:left;border:0}
+  #printArea td{padding:4px 5px;border-bottom:1px solid #e3e5e9;vertical-align:top}
+  #printArea tbody tr:nth-child(even) td{background:#f7f7f8}
+  #printArea .r{text-align:right;white-space:nowrap}
+  #printArea .rd{color:#b4322c;font-weight:700}
+  #printArea .g{color:#1f7a4d}
+  #printArea .mut{color:#777}
+  #printArea .pp{display:inline-block;padding:1px 6px;border-radius:8px;font-weight:700;font-size:7.5px;white-space:nowrap}
+  #printArea .pp.p-ok{background:#e2f2e9;color:#1f7a4d}#printArea .pp.p-att{background:#fbf0d6;color:#8a5a00}#printArea .pp.p-div,#printArea .pp.p-xls{background:#fbe4e2;color:#b4322c}#printArea .pp.p-pdf{background:#e3ebf8;color:#2f5fa7}
+  #printArea .tt{font-weight:700;white-space:nowrap}
+  #printArea .tt.pendente{color:#8a5a00}#printArea .tt.corrigido,#printArea .tt.retificado{color:#1f7a4d}#printArea .tt.justificado{color:#2f5fa7}
+  #printArea .okt td{padding:2.5px 5px}
+  #printArea tr{break-inside:avoid}
+  #printArea .psign{display:grid;grid-template-columns:2fr 1fr 2fr;gap:30px;margin-top:26px;break-inside:avoid}
+  #printArea .psign div{border-top:1px solid #444;padding-top:4px;font-size:8.5px;color:#555}
+  #printArea .pfoot{margin-top:12px;font-size:7.5px;color:#888}
+}
+</style>
+
+</head>
+<body>
+<noscript><p style="padding:24px;font-family:sans-serif">Esta ferramenta precisa do JavaScript ativado no navegador.</p></noscript>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="mk">CT</div>
+      <div><b>Consignado</b><span>Crédito do Trabalhador</span></div>
+    </div>
+    <p class="tagline">Conciliação mensal do consignado: Emprega Brasil, folha e guia FGTS.</p>
+    <nav class="navsec" aria-label="Passos da conciliação">
+      <div class="lb">Conciliação</div>
+      <button class="nav" id="step1" aria-pressed="true"><span class="n">1</span><span class="tx"><b>Emprega Brasil × Folha</b><small>Antes de fechar a folha</small></span></button>
+      <button class="nav" id="step2" aria-pressed="false"><span class="n">2</span><span class="tx"><b>Folha × Guia FGTS</b><small>Depois do eSocial</small></span></button>
+    </nav>
+    <nav class="navsec" aria-label="Ajuda">
+      <div class="lb">Ajuda</div>
+      <button class="nav" id="navHelp" aria-pressed="false"><span class="n"><svg class="i" viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></svg></span><span class="tx"><b>Como usar</b><small>Passo a passo e regras</small></span></button>
+    </nav>
+    <div class="grow"></div>
+    <div class="navsec">
+      <div class="lb">Aparência</div>
+      <div class="theme" role="group" aria-label="Tema">
+        <button id="thLight" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Claro</button>
+        <button id="thDark" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Escuro</button>
+      </div>
+    </div>
+    <div class="credit"><span class="priv"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Arquivos processados só no seu navegador</span>Desenvolvido por: Julia Gabriele P. Luis<span class="ver">Versão 1.0</span></div>
+  </aside>
+
+  <div class="mainc">
+    <header class="topbar">
+      <div style="min-width:0">
+        <div class="crumb">Conciliação do consignado <span>›</span> <b id="crumbStep">Passo 1</b></div>
+        <h1 id="h1">Emprega Brasil × Folha</h1>
+      </div>
+      <div class="tools">
+        <button class="seal" id="btnPriv" title="Ver aviso de privacidade"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Processamento local</button>
+        <div class="compbox">
+          <label for="comp">Competência</label>
+          <input id="comp" placeholder="MM/AAAA" maxlength="7" inputmode="numeric" autocomplete="off">
+        </div>
+        <button class="btn ghost" id="btnClear">Limpar</button>
+        <button class="btn" id="btnPrint" disabled><svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>Relatório PDF</button>
+        <button class="btn primary" id="btnExport" disabled><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Exportar Excel</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <p class="lead" id="h1sub"></p>
+      <section class="imports">
+        <div class="drop" id="dropX">
+          <input type="file" id="fileX" accept=".xlsx,.xls,.xlsm,.csv" aria-label="Importar planilha da folha">
+          <div class="ic x">XLS</div>
+          <div style="min-width:0">
+            <div class="t">Planilha da folha</div>
+            <div class="s" id="metaX">Clique ou arraste o Excel com os descontos de consignado</div>
+            <div class="req"><b>Obrigatórias:</b> Colaborador, CPF, Cod. Inst. Fin, Nro. Contrato, Valor Descontado<br><b>Opcionais:</b> RE, Matrícula esocial, Evento, Inst. Financeira</div>
+          </div>
+        </div>
+        <div class="drop" id="dropE">
+          <input type="file" id="fileE" accept=".xlsx,.xls,.csv" aria-label="Importar planilha do Emprega Brasil">
+          <div class="ic e">EB</div>
+          <div style="min-width:0">
+            <div class="t">Planilha do Emprega Brasil</div>
+            <div class="s" id="metaE">Clique ou arraste a planilha de contratos baixada do portal Emprega Brasil</div>
+            <div class="req">Use o arquivo exatamente como foi baixado do portal, sem alterar os nomes das colunas.</div>
+          </div>
+        </div>
+        <div class="drop" id="dropP" hidden>
+          <input type="file" id="fileP" accept=".pdf" aria-label="Importar PDF do FGTS Digital">
+          <div class="ic p">PDF</div>
+          <div style="min-width:0">
+            <div class="t">PDF do FGTS Digital</div>
+            <div class="s" id="metaP">Clique ou arraste a Relação de Trabalhadores (consignado na guia)</div>
+            <div class="req">PDF baixado do FGTS Digital. Não funciona com PDF escaneado ou foto.</div>
+            <button class="btn sm dl" id="btnPdfXls" hidden title="Baixar os dados do PDF em uma planilha Excel, sem precisar fazer a conferência"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Baixar dados do PDF em Excel</button>
+          </div>
+        </div>
+      </section>
+
+      <p class="hint"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg><span>Os arquivos importados não ficam salvos: ao fechar ou recarregar a página, é preciso importá-los de novo. Os tratamentos registrados continuam salvos neste navegador.</span></p>
+      <div id="notices" style="display:grid;gap:8px"></div>
+
+      <section class="summary" id="summary" aria-label="Resumo da conciliação"></section>
+
+  <section class="panel">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="conf" aria-selected="true">Conferência <span class="c" id="cConf"></span></button>
+      <button class="tab" role="tab" data-tab="inst" aria-selected="false">Por instituição <span class="c" id="cInst"></span></button>
+      <button class="tab" role="tab" data-tab="lidos" aria-selected="false">Dados lidos</button>
+    </div>
+
+    <div data-pane="conf">
+      <div class="toolbar">
+        <div class="grow"><input class="search" id="q" type="search" placeholder="Buscar por nome, CPF, contrato, matrícula ou banco"></div>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="progress" id="prog" hidden></div>
+      <div class="tablebox"><table id="tConf"></table></div>
+    </div>
+
+    <div data-pane="inst" hidden>
+      <div class="tablebox"><table id="tInst"></table></div>
+    </div>
+
+    <div data-pane="lidos" hidden>
+      <div class="subtabs">
+        <button class="chip" id="stX" aria-pressed="true">Folha</button>
+        <button class="chip" id="stE" aria-pressed="false">Emprega Brasil</button>
+        <button class="chip" id="stP" aria-pressed="false">Guia (PDF)</button>
+        <button class="chip" id="stR" aria-pressed="false">Texto bruto do PDF</button>
+      </div>
+      <div class="tablebox" id="lidosBox" style="margin-top:12px"></div>
+    </div>
+
+    <div data-pane="ajuda" hidden>
+      <div class="howto">
+        <div class="full">
+          <h3>Para que serve</h3>
+          <p>A ferramenta confere, todo mês, os descontos de empréstimo consignado (Crédito do Trabalhador) em dois momentos. Ela compara o valor e também os dados de cada empréstimo, e aponta o que está diferente.</p>
+          <div class="passos">
+            <div class="pc"><span class="n">1</span><div><b>Emprega Brasil × Folha</b><small>Antes de fechar a folha</small><p>Confere se os descontos lançados no sistema de folha são exatamente os contratos da planilha baixada do Emprega Brasil.</p></div></div>
+            <div class="pc"><span class="n">2</span><div><b>Folha × Guia FGTS</b><small>Depois do fechamento do eSocial</small><p>Confere se a guia do FGTS Digital trouxe exatamente o que foi descontado na folha.</p></div></div>
+          </div>
+          <p>Nos dois passos são conferidos: <b>contrato</b>, <b>CPF</b>, <b>nome</b>, <b>matrícula eSocial</b>, <b>competência</b>, <b>instituição financeira</b> e <b>valor</b>.</p>
+        </div>
+
+        <div class="full">
+          <h3>Passo a passo</h3>
+          <ol class="steps-list">
+            <li>No menu lateral, escolha o <b>Passo 1</b> ou o <b>Passo 2</b>.</li>
+            <li>Confira a <b>competência</b> no topo da tela (mês/ano). Ela é preenchida sozinha a partir dos arquivos, mas pode ser alterada.</li>
+            <li>Clique no quadro <b>Planilha da folha</b> e escolha o Excel exportado do sistema de folha. Você também pode arrastar o arquivo até o quadro.</li>
+            <li>No quadro ao lado, importe o segundo arquivo: a <b>planilha do Emprega Brasil</b> (Passo 1) ou o <b>PDF do FGTS Digital</b> (Passo 2).</li>
+            <li>O resultado aparece na hora. Os quadros coloridos mostram quantos contratos estão em cada situação; clique em um deles para ver só aqueles contratos.</li>
+            <li>Clique em uma linha da tabela para ver a comparação campo a campo, o que verificar e para registrar o tratamento.</li>
+            <li>Ao terminar, clique em <b>Exportar Excel</b> para guardar a conferência, ou em <b>Relatório PDF</b> para imprimir.</li>
+          </ol>
+          <p class="sub">A planilha da folha é importada uma vez e vale para os dois passos.</p>
+        </div>
+
+        <div class="full">
+          <h3>O que significa cada situação</h3>
+          <ul class="legend">
+            <li><span class="pill p-ok">Conferido</span><span>Todos os dados batem. Nada a fazer.</span></li>
+            <li><span class="pill p-att">Atenção</span><span>Os dados principais batem, mas há algo para olhar: nome ou nome do banco escrito de forma diferente (ex.: "ITAU SA" e "ITAÚ UNIBANCO S.A."), campo em branco ou aviso sobre o período do contrato.</span></li>
+            <li><span class="pill p-div">Divergente</span><span>Algum dado é diferente: valor, CPF, contrato, matrícula, código da instituição ou competência. Precisa ser corrigido.</span></li>
+            <li><span class="pill p-pdf">Só no Emprega Brasil</span><span><b>Passo 1.</b> O contrato está na planilha do Emprega Brasil, mas não foi descontado na folha. Precisa ser incluído.</span></li>
+            <li><span class="pill p-pdf">Só na guia</span><span><b>Passo 2.</b> O valor está na guia, mas não foi descontado na folha. A empresa pagaria um valor que não descontou.</span></li>
+            <li><span class="pill p-xls">Só na folha</span><span>Foi descontado do trabalhador, mas o contrato não está no Emprega Brasil (Passo 1) ou não está na guia (Passo 2).</span></li>
+          </ul>
+          <p class="sub">Ao abrir a linha, o quadro <b>O que verificar</b> explica as causas mais comuns e o que fazer em cada caso.</p>
+        </div>
+
+        <div>
+          <h3>Arquivos que a ferramenta aceita</h3>
+          <p><b>Planilha da folha</b> (Excel exportado do sistema). Precisa ter as colunas <code>Colaborador</code>, <code>CPF</code>, <code>Cod. Inst. Fin</code>, <code>Nro. Contrato</code> e <code>Valor Descontado</code>. Também são usadas, se existirem: <code>RE</code>, <code>Matrícula esocial</code>, <code>Evento</code> e <code>Inst. Financeira</code>. A ordem das colunas não importa, e as linhas de total são ignoradas.</p>
+          <p><b>Planilha do Emprega Brasil</b>: use o arquivo exatamente como foi baixado do portal, sem mudar o nome das colunas.</p>
+          <p><b>PDF do FGTS Digital</b>: o PDF da <b>Relação de Trabalhadores</b> do Crédito do Trabalhador, baixado do portal. Não funciona com PDF escaneado ou foto do documento. Depois de importar, o botão <b>Baixar dados do PDF em Excel</b> gera uma planilha com todas as linhas do PDF, mesmo sem fazer a conferência.</p>
+          <p class="sub">Dica: deixe as colunas de CPF e de contrato no formato <b>Texto</b> no Excel. Números de contrato muito longos gravados como número perdem os últimos dígitos.</p>
+        </div>
+
+        <div>
+          <h3>Como registrar o tratamento</h3>
+          <ol>
+            <li>Clique na linha que tem pendência.</li>
+            <li>No quadro <b>Tratamento da pendência</b>, escolha a situação: <b>Corrigido na folha</b>, <b>Justificado</b> ou <b>Retificado no eSocial</b>.</li>
+            <li>Escreva uma observação. Ex.: "desconto parcial por falta de margem" ou "portabilidade, contrato novo 123…". Tudo é salvo automaticamente.</li>
+          </ol>
+          <p>A barra acima da tabela mostra quantas pendências já foram tratadas. O botão <b>Sem tratamento</b> mostra só o que ainda falta.</p>
+          <p class="sub">O tratamento fica salvo <b>só neste navegador</b>, neste computador. Ele não aparece em outro computador, em outro navegador nem para outra pessoa da equipe.</p>
+        </div>
+
+        <div class="full">
+          <h3>Uma competência por vez</h3>
+          <p>A ferramenta confere <b>uma competência de cada vez</b>. O objetivo é garantir que os descontos e os dados dos empréstimos daquele mês estejam corretos, sem misturar informações de meses diferentes. Ela não guarda o histórico dos meses anteriores.</p>
+          <p>Ao registrar o primeiro tratamento de uma nova competência, os tratamentos da competência anterior são apagados deste navegador.</p>
+          <p><b>Ao terminar as tratativas</b>, salve o registro da conferência:</p>
+          <ul>
+            <li><b>Exportar Excel</b>: planilha completa, com resumo, conferência, pendências, tratamento e dados lidos.</li>
+            <li><b>Relatório PDF</b>: documento para arquivo ou assinatura. Na janela de impressão, escolha <b>Salvar como PDF</b>.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Como a ferramenta encontra cada contrato</h3>
+          <ol>
+            <li>Procura o mesmo <b>número de contrato</b> nos dois arquivos. Pontos, traços e zeros à esquerda não fazem diferença.</li>
+            <li>Encontrado o contrato, compara os demais dados: CPF, nome, matrícula, instituição, competência e valor da parcela.</li>
+            <li>Se o contrato não existir no outro arquivo, a linha aparece como <b>Só na folha</b>, <b>Só no Emprega Brasil</b> ou <b>Só na guia</b>.</li>
+          </ol>
+          <p>Por isso, colaborador com mais de um empréstimo é conferido contrato a contrato, sem misturar um empréstimo com outro.</p>
+        </div>
+
+        <div class="full">
+          <h3>Privacidade e responsabilidade</h3>
+          <p><b>Nenhum dado sai do seu computador.</b> As planilhas e o PDF são lidos apenas no seu navegador. Nenhuma informação é enviada, armazenada ou utilizada por este site, e a página é configurada para bloquear qualquer envio de dados pela internet.</p>
+          <p><b>Ao fechar ou recarregar a página, os arquivos importados são apagados</b> e precisam ser importados de novo. Os tratamentos ficam salvos só neste navegador, até você clicar em <b>Limpar</b>. O Excel e o PDF exportados contêm dados pessoais e devem ser guardados conforme as regras da sua empresa.</p>
+          <p>Esta é uma ferramenta de apoio: a conferência final é de responsabilidade do usuário.</p>
+        </div>
+
+        <div class="full faq">
+          <h3>Dúvidas comuns</h3>
+          <p><b>Os dados dos trabalhadores vão para a internet?</b><br>Não. Os arquivos são lidos só no seu computador. A internet é usada apenas para abrir a página.</p>
+          <p><b>A ferramenta leu algo errado. Como confiro?</b><br>Abra a aba <b>Dados lidos</b>: ela mostra exatamente o que foi lido de cada arquivo, linha por linha.</p>
+          <p><b>Apareceu um aviso amarelo no topo.</b><br>São pontos de atenção na leitura, por exemplo: a soma das linhas não fecha com o total do arquivo, ou falta uma coluna na planilha. Leia antes de seguir.</p>
+          <p><b>Fechei o navegador. Perdi a conferência?</b><br>Os arquivos importados são apagados ao fechar a página, por segurança. Basta importar de novo os mesmos arquivos: os tratamentos já registrados voltam automaticamente.</p>
+          <p><b>O tratamento que registrei sumiu.</b><br>Confira se a competência e o passo são os mesmos de quando você registrou. Os tratamentos ficam só no navegador onde foram feitos e só da competência em conferência. O registro definitivo é o Excel ou o PDF salvo ao final.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+    </main>
+  </div>
+</div>
+
+<div class="modal" id="privModal" hidden role="dialog" aria-modal="true" aria-labelledby="privTit">
+  <div class="mbox">
+    <div class="mic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+    <h2 id="privTit">Seus dados não saem do seu computador</h2>
+    <p>As planilhas e o PDF são lidos <b>apenas no seu navegador</b>. Nenhuma informação é enviada, armazenada ou utilizada por este site, e a página é configurada para bloquear qualquer envio de dados pela internet.</p>
+    <ul>
+      <li><b>Ao fechar ou recarregar a página, os arquivos importados são apagados</b> e precisam ser importados de novo.</li>
+      <li>Os tratamentos das pendências ficam salvos <b>só neste navegador</b>, até você clicar em <b>Limpar</b>.</li>
+      <li>O Excel e o PDF exportados contêm dados pessoais: guarde-os conforme as regras da sua empresa.</li>
+      <li>Esta é uma <b>ferramenta de apoio</b>. A conferência final é de responsabilidade do usuário.</li>
+    </ul>
+    <button class="btn primary" id="privOk">Entendi</button>
+  </div>
+</div>
+<div id="printArea"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+/* ============ utilidades ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const BRL = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const fmtV = v => (v==null||isNaN(v)) ? "—" : BRL.format(v);
+const digits = s => String(s ?? "").replace(/\D/g,"");
+const stripAcc = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g,"");
+const normTxt = s => stripAcc(s).toUpperCase().replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const normKey = s => stripAcc(s).toUpperCase().replace(/[^A-Z0-9]/g,"").replace(/^0+(?=.)/,"");
+const fmtCPF = s => { const d = digits(s); return d.length===11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,"$1.$2.$3-$4") : (s||""); };
+const r2 = v => Math.round(v*100)/100;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("on"),2600); }
+
+function cpfValido(c){
+  const d = digits(c); if(d.length!==11 || /^(\d)\1{10}$/.test(d)) return false;
+  let s=0; for(let i=0;i<9;i++) s+= +d[i]*(10-i); let k=(s*10)%11; if(k===10) k=0; if(k!==+d[9]) return false;
+  s=0; for(let i=0;i<10;i++) s+= +d[i]*(11-i); k=(s*10)%11; if(k===10) k=0; return k===+d[10];
+}
+function parseMoney(v){
+  if(v==null||v==="") return null;
+  if(typeof v==="number") return r2(v);
+  let s=String(v).replace(/R\$|\s/g,"");
+  const neg = /^\(.*\)$/.test(s) || s.startsWith("-"); s=s.replace(/[()\-]/g,"");
+  if(s.includes(",")) s=s.replace(/\./g,"").replace(",",".");
+  const n=parseFloat(s); return isNaN(n)?null:r2(neg?-n:n);
+}
+function normComp(s){
+  s=String(s??"").trim(); if(!s) return "";
+  let m=s.match(/^(\d{1,2})[\/\-._](\d{4})$/); if(m) return m[1].padStart(2,"0")+"/"+m[2];
+  m=s.match(/^(\d{4})[\/\-._](\d{1,2})$/); if(m) return m[2].padStart(2,"0")+"/"+m[1];
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(m) return m[2].padStart(2,"0")+"/"+m[3];
+  m=s.match(/^(\d{4})-(\d{2})-\d{2}/); if(m) return m[2]+"/"+m[1];
+  m=s.match(/^(20\d{2})(0[1-9]|1[0-2])$/); if(m) return m[2]+"/"+m[1];
+  return s;
+}
+function compFromName(n){ const m=String(n).match(/(?:^|\D)(0[1-9]|1[0-2])[\s._\-\/]*(20\d{2})(?:\D|$)/); return m? m[1]+"/"+m[2] : ""; }
+function lev(a,b){
+  if(a===b) return 0; const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+  let p=Array.from({length:n+1},(_,i)=>i);
+  for(let i=1;i<=m;i++){ const c=[i]; for(let j=1;j<=n;j++) c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1)); p=c; }
+  return p[n];
+}
+const sim = (a,b) => { if(!a&&!b) return 1; return 1 - lev(a,b)/Math.max(a.length,b.length); };
+
+/* ============ estado ============ */
+const S = { xls:null, pdf:null, eb:null, passo:"1", results:[], filter:"todos", q:"", open:new Set(), lidos:"x", tab:"conf" };
+const FONTES={
+  "1":{curto:"Emprega Brasil",longo:"Emprega Brasil",arq:"planilha do Emprega Brasil",min:"Emprega Brasil",em:"no Emprega Brasil",so:"Só no Emprega Brasil",valor:"Valor da parcela",col:"Parcela EB",
+       titulo:"Passo 1 · Emprega Brasil × Folha",sub:"Confere se os descontos lançados na folha batem com os contratos da planilha baixada do portal Emprega Brasil. Além do valor da parcela, são conferidos os dados do empréstimo: contrato, CPF, nome, matrícula eSocial, competência e código e nome da instituição financeira."},
+  "2":{curto:"Guia",longo:"Guia FGTS Digital",arq:"PDF do FGTS Digital",min:"guia",em:"na guia",so:"Só na guia",valor:"Valor consignado na guia",col:"Guia",
+       titulo:"Passo 2 · Folha × Guia FGTS Digital",sub:"Confere se a guia do FGTS Digital trouxe exatamente o que foi descontado na folha. Além do valor, são conferidos os dados do empréstimo: contrato, CPF, nome, matrícula eSocial, competência e código da instituição financeira."}
+};
+const FT=()=>FONTES[S.passo];
+const YM=c=>{ const m=String(c||"").match(/^(\d{2})\/(\d{4})$/); return m? +(m[2]+m[1]) : null; };
+function OUT(){
+  if(S.passo==="2") return S.pdf;
+  if(!S.eb) return null;
+  const cr=normComp($("#comp").value);
+  if(cr && S.eb.rows.some(r=>r.comp===cr)) return {...S.eb, rows:S.eb.rows.filter(r=>!r.comp||r.comp===cr), fora:S.eb.rows.filter(r=>r.comp&&r.comp!==cr).length};
+  return {...S.eb, fora:0};
+}
+
+/* ============ leitura da planilha ============ */
+const COLS = [
+  ["comp",     h=>/COMPET/.test(h)],
+  ["re",       h=>/^RE$|^R E$|REGISTRO|CHAPA/.test(h)],
+  ["mat",      h=>/MATRIC/.test(h)],
+  ["nome",     h=>/COLABORADOR|NOME|TRABALHADOR|FUNCIONARIO|EMPREGADO/.test(h)],
+  ["cpf",      h=>/^CPF/.test(h) || / CPF/.test(h)],
+  ["evento",   h=>/EVENTO|VERBA|RUBRICA/.test(h)],
+  ["codInst",  h=>/COD.*(INST|BANC)/.test(h)],
+  ["inst",     h=>/INST|BANCO|CREDOR/.test(h) && !/COD/.test(h)],
+  ["contrato", h=>/CONTRATO/.test(h)],
+  ["valor",    h=>/VALOR|DESCONT/.test(h)],
+];
+function cellText(c){
+  if(!c) return "";
+  if(c.t==="n"){
+    if(c.w && !/E\+/i.test(c.w)) return c.w.trim();
+    return Number.isInteger(c.v) ? BigInt(Math.round(c.v)).toString() : String(c.v);
+  }
+  return String(c.w ?? c.v ?? "").trim();
+}
+function lerPlanilha(wb, fileName){
+  const warnings=[]; let best=null;
+  for(const sn of wb.SheetNames){
+    const ws=wb.Sheets[sn]; if(!ws["!ref"]) continue;
+    const rg=XLSX.utils.decode_range(ws["!ref"]);
+    for(let r=rg.s.r; r<=Math.min(rg.e.r, rg.s.r+25); r++){
+      const map={};
+      for(let c=rg.s.c;c<=rg.e.c;c++){
+        const h=normTxt(cellText(ws[XLSX.utils.encode_cell({r,c})])); if(!h) continue;
+        for(const [k,f] of COLS){ if(map[k]==null && f(h)){ map[k]=c; break; } }
+      }
+      const score=["nome","cpf","contrato","valor"].filter(k=>map[k]!=null).length;
+      if(score>=3 && (!best||score>best.score)){ best={ws,sn,r,map,rg,score}; }
+    }
+    if(best && best.score===4) break;
+  }
+  if(!best) throw new Error("Não encontrei o cabeçalho na planilha. Ela precisa ter as colunas obrigatórias: Colaborador, CPF, Cod. Inst. Fin, Nro. Contrato e Valor Descontado.");
+  { const nomes={nome:"Colaborador",cpf:"CPF",codInst:"Cod. Inst. Fin",contrato:"Nro. Contrato",valor:"Valor Descontado"};
+    const falta=Object.keys(nomes).filter(k=>best.map[k]==null).map(k=>nomes[k]);
+    if(falta.length) throw new Error("Coluna obrigatória não encontrada na planilha da folha: "+falta.join(", ")+". Inclua a coluna e importe de novo."); }
+  const {ws,map,rg}=best; const rows=[]; const totaisPlan=[]; let cabRep=0; let precisao=0, semComp=map.comp==null;
+  for(let r=best.r+1;r<=rg.e.r;r++){
+    const g=k=> map[k]==null ? null : ws[XLSX.utils.encode_cell({r,c:map[k]})];
+    const nome=cellText(g("nome")), cpfRaw=cellText(g("cpf")), contrato=cellText(g("contrato"));
+    const vc=g("valor");
+    const linhaTxt=[]; for(let c=rg.s.c;c<=rg.e.c;c++) linhaTxt.push(cellText(ws[XLSX.utils.encode_cell({r,c})]));
+    const temCPF=digits(cpfRaw).length>=9;
+    // linhas de total/subtotal: não são contratos; guardo o valor para conferir a soma
+    if(!temCPF && /TOTAL|SOMA|SUBTOTAL/i.test(stripAcc(linhaTxt.join(" ")))){ const v=vc?parseMoney(vc.t==="n"?vc.v:cellText(vc)):null; if(v!=null) totaisPlan.push({txt:linhaTxt.filter(Boolean).join(" ").slice(0,60),v}); continue; }
+    if(!temCPF && !nome) continue;
+    { const hd=[normTxt(cellText(g("nome"))),normTxt(cpfRaw),normTxt(contrato),normTxt(cellText(g("valor")))].filter(Boolean);
+      if(!temCPF && hd.some(h=>/^(COLABORADOR|NOME|CPF|NRO CONTRATO|CONTRATO|VALOR DESCONTADO|INST FINANCEIRA)$/.test(h))) { cabRep++; continue; } }
+    const cc=g("contrato"); if(cc && cc.t==="n" && Math.abs(cc.v)>9007199254740991) precisao++;
+    let cpf=digits(cpfRaw); if(cpf && cpf.length<11) cpf=cpf.padStart(11,"0");
+    rows.push({
+      id:"x"+r, linha:r+1, re:cellText(g("re")), nome, mat:cellText(g("mat")), cpf,
+      evento:cellText(g("evento")), codInst:(c=>c&&c.t==="n"?String(Math.round(c.v)):cellText(c))(g("codInst")), inst:cellText(g("inst")), contrato,
+      valor: vc ? parseMoney(vc.t==="n"?vc.v:cellText(vc)) : null,
+      comp: map.comp!=null ? normComp(cellText(g("comp"))) : ""
+    });
+  }
+  if(precisao) warnings.push(`${precisao} número(s) de contrato estão gravados como número no Excel e podem ter perdido dígitos. Formate a coluna de contrato como texto e exporte de novo.`);
+  const faltam=["mat","inst"].filter(k=>map[k]==null).map(k=>({mat:"Matrícula eSocial",inst:"Instituição Financeira"}[k]));
+  if(faltam.length) warnings.push("Coluna opcional não encontrada na planilha: "+faltam.join(", ")+". Só esse campo deixa de ser comparado; o contrato, o CPF, o nome, o código da instituição, a competência e o valor continuam sendo conferidos.");
+  const soma=r2(rows.reduce((t,r)=>t+(r.valor||0),0));
+  const tot=totaisPlan.length?totaisPlan[totaisPlan.length-1]:null;
+  if(totaisPlan.length && !totaisPlan.some(t=>Math.abs(t.v-soma)<0.01)) warnings.push(`A soma das linhas (${fmtV(soma)}) não fecha com o total escrito na planilha (${fmtV(tot.v)}). Confira se há linhas sem CPF ou valores duplicados.`);
+  const semCPF=rows.filter(r=>!r.cpf).length; if(semCPF) warnings.push(`${semCPF} linha(s) da planilha sem CPF.`);
+  return {fileName, sheet:best.sn, rows, warnings, semComp, semMat:map.mat==null, totalPlanilha:tot?tot.v:null};
+}
+
+/* ============ leitura da planilha do Emprega Brasil ============ */
+const EBH={cod:"ifconcessora.codigo",desc:"ifconcessora.descricao",contrato:"contrato",cpf:"cpf",mat:"matricula",nome:"nometrabalhador",valor:"valorparcela",comp:"competencia",
+  ci:"competenciainiciodesconto",cf:"competenciafimdesconto",di:"datainiciocontrato",df:"datafimcontrato",tp:"totalparcelas",qp:"qtdpagamentos",vemp:"valoremprestimo",cat:"categoriatrabalhador.descricao",adm:"dataadmissao"};
+const ebKey=h=>stripAcc(h).toLowerCase().replace(/\s+/g,"");
+function ehEmpregaBrasil(wb){
+  for(const sn of wb.SheetNames){ const ws=wb.Sheets[sn]; if(!ws["!ref"]) continue; const rg=XLSX.utils.decode_range(ws["!ref"]);
+    for(let r=rg.s.r;r<=Math.min(rg.e.r,rg.s.r+10);r++){ for(let c=rg.s.c;c<=rg.e.c;c++){ if(ebKey(cellText(ws[XLSX.utils.encode_cell({r,c})]))==="ifconcessora.codigo") return true; } } }
+  return false;
+}
+function dataBR(v){
+  const s=String(v||"").trim(); if(!s) return "";
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m) return `${m[3]}/${m[2]}/${m[1]}`;
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/); if(m){ const y=m[3].length===2?"20"+m[3]:m[3]; return `${m[1].padStart(2,"0")}/${m[2].padStart(2,"0")}/${y}`; }
+  return s;
+}
+function ebCell(c){
+  if(!c) return "";
+  // datas gravadas como data no Excel: converte para dd/mm/aaaa, independente do formato do computador
+  if(c.t==="n" && c.z && XLSX.SSF.is_date(c.z)){ const d=XLSX.SSF.parse_date_code(c.v); if(d) return `${String(d.d).padStart(2,"0")}/${String(d.m).padStart(2,"0")}/${d.y}`; }
+  if(c.t==="d" && c.v instanceof Date) return `${String(c.v.getDate()).padStart(2,"0")}/${String(c.v.getMonth()+1).padStart(2,"0")}/${c.v.getFullYear()}`;
+  return cellText(c);
+}
+function lerEB(wb,fileName){
+  let ws=null,hr=-1,map={},rg=null;
+  for(const sn of wb.SheetNames){ const w=wb.Sheets[sn]; if(!w["!ref"]) continue; const g=XLSX.utils.decode_range(w["!ref"]);
+    for(let r=g.s.r;r<=Math.min(g.e.r,g.s.r+10);r++){ const m={};
+      for(let c=g.s.c;c<=g.e.c;c++){ const k=ebKey(cellText(w[XLSX.utils.encode_cell({r,c})])); for(const [f,h] of Object.entries(EBH)) if(k===h && m[f]==null) m[f]=c; }
+      if(m.contrato!=null && m.cpf!=null){ ws=w; hr=r; map=m; rg=g; break; } }
+    if(ws) break; }
+  if(!ws) throw new Error("Não encontrei o cabeçalho do Emprega Brasil (colunas ifConcessora.codigo, contrato, cpf, valorParcela…).");
+  const rows=[], warnings=[]; let precisao=0;
+  for(let r=hr+1;r<=rg.e.r;r++){
+    const g=k=> map[k]==null ? null : ws[XLSX.utils.encode_cell({r,c:map[k]})];
+    const t=k=>ebCell(g(k));
+    const contrato=t("contrato"); let cpf=digits(t("cpf"));
+    if(!contrato && !cpf) continue;
+    if(cpf && cpf.length<11) cpf=cpf.padStart(11,"0");
+    const cc=g("contrato"); if(cc && cc.t==="n" && Math.abs(cc.v)>9007199254740991) precisao++;
+    const vc=g("valor"); const cc0=g("cod"); const cod=cc0&&cc0.t==="n"?String(Math.round(cc0.v)):zeroStrip(t("cod"))||t("cod"), desc=t("desc");
+    rows.push({id:"e"+r, linha:r+1, nome:t("nome"), mat:t("mat"), cpf, contrato, codInst:cod, instDesc:desc, inst:(cod?cod+" – ":"")+desc,
+      valor: vc ? parseMoney(vc.t==="n"?vc.v:cellText(vc)) : null, comp:normComp(t("comp")), venc:"",
+      compIni:normComp(t("ci")), compFim:normComp(t("cf")), dataIni:dataBR(t("di")), dataFim:dataBR(t("df")),
+      totalParcelas:t("tp"), qtdPagamentos:t("qp"), valorEmprestimo:g("vemp")?parseMoney(g("vemp").t==="n"?g("vemp").v:cellText(g("vemp"))):null, categoria:t("cat")});
+  }
+  if(precisao) warnings.push(`${precisao} contrato(s) gravados como número podem ter perdido dígitos. Baixe a planilha novamente sem abrir e salvar no Excel, ou formate a coluna contrato como texto.`);
+  if(map.valor==null) warnings.push("Coluna valorParcela não encontrada.");
+  const comps=[...new Set(rows.map(r=>r.comp).filter(Boolean))];
+  return {fileName, rows, warnings, comps};
+}
+
+/* ============ leitura do PDF ============ */
+const RX_CPF=/^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/, RX_COMP=/^(0[1-9]|1[0-2])\/\d{4}$/, RX_VENC=/^\d{2}\/\d{2}\/\d{4}$/,
+      RX_MONEY=/^-?(R\$\s?)?-?\d{1,3}(\.\d{3})*,\d{2}$|^-?(R\$\s?)?\d+,\d{2}$/,
+      RX_RODAPE=/P[ÁA]GINA|^TOTAL|TOTAL GERAL|EMITID|GERAD[OA] EM|RELA[ÇC][ÃA]O DE TRABALHADORES|FGTS DIGITAL|MINIST[ÉE]RIO|CNPJ|CPF DO EMPREGADOR|RAZ[ÃA]O SOCIAL|^\d+\s*\/\s*\d+$/i;
+
+
+async function lerPDF(buf, fileName){
+  if(window.pdfjsWorker===undefined && pdfjsLib.GlobalWorkerOptions) pdfjsLib.GlobalWorkerOptions.workerSrc="lib/pdf.worker-3.11.174.min.js";
+  const doc = await pdfjsLib.getDocument({data:buf}).promise;
+  const rows=[], raw=[], warnings=[]; let cols=null, total=null, n=0, modo="colunas";
+  const KEYS=[["comp",/COMP/],["venc",/VENC/],["nome",/NOME/],["mat",/MATRIC/],["cpf",/CPF/],["contrato",/NUMERO|CONTRATO/],["inst",/INSTITUI/],["valor",/VALOR/]];
+  const RX_LINHA=/(\d{2}\/\d{4})\s+(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(\S+)\s+(\d{3}\.?\d{3}\.?\d{3}-?\d{2})\s+(\S+)\s+(.+?)\s+(?:R\$\s?)?(-?[\d.]+,\d{2})\s*$/;
+  for(let p=1;p<=doc.numPages;p++){
+    const page=await doc.getPage(p); const vp=page.getViewport({scale:1}); const tc=await page.getTextContent();
+    // coordenadas já na orientação em que a página é exibida (trata PDF girado)
+    const items=[];
+    for(const i of tc.items){
+      if(!i.str || !i.str.trim()) continue;
+      const t=pdfjsLib.Util.transform(vp.transform,i.transform);
+      if(Math.abs(t[1])>Math.abs(t[0])*1.5) continue; // texto vertical
+      const h=Math.hypot(t[2],t[3])||7;
+      items.push({s:i.str, x:t[4], y:vp.height-t[5], w:(i.width>0?i.width:i.str.length*h*0.5), h});
+    }
+    items.sort((a,b)=> b.y-a.y || a.x-b.x);
+    const lines=[];
+    for(const it of items){
+      let L=lines.find(l=>Math.abs(l.y-it.y)<=Math.max(1.5,it.h*0.4));
+      if(!L){ L={y:it.y,h:it.h,items:[]}; lines.push(L); }
+      L.items.push(it);
+    }
+    lines.sort((a,b)=>b.y-a.y);
+    for(const L of lines) L.items.sort((a,b)=>a.x-b.x);
+    // cabeçalho: localizado nos trechos originais, sem juntar nada (títulos podem vir colados)
+    let headY=null;
+    const itemWords=L=>L.items.flatMap(it=>{ const cw=it.w/Math.max(it.s.length,1); const out=[]; const re=/\S+/g; let m; while((m=re.exec(it.s))) out.push({s:m[0],x:it.x+m.index*cw,w:m[0].length*cw}); return out; });
+    const isHead=L=>{ const U=stripAcc(L.items.map(i=>i.s).join(" ")).toUpperCase(); return /CPF/.test(U) && /NOME/.test(U) && !/\d{3}\.?\d{3}\.?\d{3}-?\d{2}/.test(U); };
+    const hi=lines.findIndex(isHead);
+    if(hi>=0){
+      const H0=lines[hi], hh=H0.h;
+      const hl=lines.filter(L=>Math.abs(L.y-H0.y)<=hh*1.6 && !/\d{2}\/\d{4}|\d{3}\.\d{3}\.\d{3}/.test(L.items.map(i=>i.s).join(" ")));
+      const near=hl.flatMap(itemWords);
+      const c=[];
+      for(const [k,re] of KEYS){
+        const xs=[];
+        for(const w of near){ const U=stripAcc(w.s).toUpperCase(); const i=U.search(re); if(i>=0) xs.push(w.x+i*(w.w/Math.max(w.s.length,1))); }
+        if(xs.length) c.push({k,x:Math.min(...xs)});
+      }
+      if(c.some(o=>o.k==="cpf") && c.length>=5){ c.sort((a,b)=>a.x-b.x); cols=c; }
+      headY=Math.min(...hl.map(L=>L.y));
+    }
+    // monta as palavras de cada linha sem atravessar a divisa entre colunas
+    const bounds=cols?cols.map(o=>o.x):[];
+    const cruza=(x0,x1)=>bounds.some(b=>x0<b-2 && x1>=b-2);
+    for(const L of lines){
+      const runs=[];
+      for(const it of L.items){
+        const prev=runs[runs.length-1]; const gap=prev? it.x-(prev.x+prev.w) : 1e9;
+        const bloqueia = prev && cruza(prev.x,it.x);
+        if(prev && !bloqueia && gap>-it.h && gap<it.h*0.2){ prev.s+=it.s; prev.w=it.x+it.w-prev.x; }
+        else if(prev && !bloqueia && gap>-it.h && gap<it.h*0.6){ prev.s+=" "+it.s; prev.w=it.x+it.w-prev.x; }
+        else runs.push({...it});
+      }
+      L.words=[];
+      for(const r of runs){
+        const cw=r.w/Math.max(r.s.length,1); const re=/\S+/g; let m;
+        while((m=re.exec(r.s))){
+          const w={s:m[0],x:r.x+m.index*cw,w:m[0].length*cw,h:r.h};
+          L.words.push(w);
+        }
+      }
+      L.text=runs.map(r=>r.s.replace(/\s+/g," ").trim()).join("  ");
+      raw.push(`p${p}  y=${L.y.toFixed(0).padStart(4)}  `+L.items.map(r=>`[${r.x.toFixed(0)}] ${r.s.trim()}`).join("  "));
+    }
+    for(const L of lines){ if(/TOTAL/i.test(L.text)){ const m=L.words.filter(w=>RX_MONEY.test(w.s)).pop(); if(m) total=parseMoney(m.s); } }
+
+    if(!cols){ // sem cabeçalho reconhecido: lê pela sequência do texto
+      modo="texto";
+      for(const L of lines){
+        const m=L.words.map(w=>w.s).join(" ").match(RX_LINHA); if(!m) continue;
+        n++; rows.push({id:"p"+n,pagina:p,comp:m[1],venc:m[2],nome:m[3],mat:m[4],cpf:digits(m[5]),contrato:m[6],inst:m[7],valor:parseMoney(m[8])});
+      }
+      continue;
+    }
+    const colOf=w=>{ const c=w.x+w.w/2; let k=cols[0].k; for(const o of cols){ if(o.x-2<=c) k=o.k; } return k; };
+    const parsed=lines.filter(L=>headY==null || L.y<headY-L.h*0.5).map(L=>{
+      const f={}; for(const w of L.words){ const k=colOf(w); (f[k]=f[k]||[]).push(w.s); }
+      const g=k=>(f[k]||[]).join(" ").trim();
+      const anchor = RX_COMP.test(g("comp").split(" ")[0]||"") || digits(g("cpf")).length===11;
+      return {L,f,g,anchor};
+    });
+    const anchors=parsed.filter(o=>o.anchor);
+    if(!anchors.length) continue;
+    const gaps=[]; for(let i=1;i<anchors.length;i++) gaps.push(anchors[i-1].L.y-anchors[i].L.y);
+    gaps.sort((a,b)=>a-b); const med=gaps.length?gaps[Math.floor(gaps.length/2)]:anchors[0].L.h*2.2;
+    const pageRows=anchors.map(o=>{
+      n++; const g=o.g;
+      const vw=(o.f.valor||[]).filter(s=>RX_MONEY.test(s)).pop() || (o.f.valor||[]).join("");
+      return {id:"p"+n,pagina:p,_y:o.L.y,comp:(g("comp").match(/(0[1-9]|1[0-2])\/\d{4}/)||[""])[0],venc:(g("venc").match(/\d{2}\/\d{2}\/\d{4}/)||[""])[0],
+        nome:[g("nome")],mat:[g("mat")],cpf:digits(g("cpf")),contrato:[g("contrato")],inst:[g("inst")],valor:parseMoney(vw)};
+    });
+    const firstY=anchors[0].L.y, lastY=anchors[anchors.length-1].L.y;
+    for(const o of parsed){
+      if(o.anchor) continue;
+      if(o.L.y>firstY+med*0.9 || o.L.y<lastY-med*1.6) continue;
+      if(RX_RODAPE.test(stripAcc(o.L.text))) continue;
+      let near=null,d=1e9; for(const r of pageRows){ const dd=Math.abs(r._y-o.L.y); if(dd<d){ d=dd; near=r; } }
+      if(!near || d>med*1.6) continue;
+      const above=o.L.y>near._y;
+      for(const k of ["nome","mat","contrato","inst"]){ const t=o.g(k); if(t) above? near[k].unshift(t) : near[k].push(t); }
+    }
+    for(const r of pageRows){
+      r.nome=r.nome.join(" ").replace(/\s+/g," ").trim(); r.mat=r.mat.join("").replace(/\s/g,"");
+      r.contrato=r.contrato.join("").replace(/\s/g,""); r.inst=r.inst.join(" ").replace(/\s+/g," ").trim(); delete r._y;
+      rows.push(r);
+    }
+  }
+  if(!rows.length){
+    warnings.push(raw.length ? "Não encontrei linhas de trabalhadores no PDF. Abra a aba Dados lidos > Texto bruto do PDF e envie algumas linhas (pode mascarar os CPFs) para ajustarmos a leitura." : "O PDF não tem texto selecionável (parece digitalizado). Baixe o PDF original do FGTS Digital.");
+  } else if(modo==="texto" && !cols) warnings.push("O cabeçalho das colunas não foi reconhecido; o PDF foi lido pela sequência do texto. Confira a aba Dados lidos.");
+  if(rows.some(r=>r.valor==null)) warnings.push(`${rows.filter(r=>r.valor==null).length} linha(s) do PDF sem valor identificado.`);
+  if(rows.some(r=>r.cpf && r.cpf.length!==11)) warnings.push("Há CPFs do PDF com quantidade de dígitos diferente de 11. Confira a aba Dados lidos.");
+  return {fileName, paginas:doc.numPages, rows, raw, warnings, total};
+}
+
+/* ============ cruzamento ============ */
+function cmpInstRow(x,p){
+  const m=String(p.inst||"").match(/^\s*(\d[\d.,\/\-]*?)(?:\s+(?:[-–]\s*)?|\s*[-–]\s*|$)(.*)$/);
+  if(m){
+    const cp=zeroStrip(m[1]), cx=zeroStrip(x.codInst);
+    if(!cx) return "falta";            // planilha sem Cod. Inst. Fin: não dá para conferir
+    if(cp!==cx) return "bad";          // conferência rígida do código da instituição
+    if(m[2] && x.inst){ const d=cmpInst(x.inst,m[2]); return d==="ok"?"ok":"warn"; } // descrição: diferença de grafia
+    return "ok";
+  }
+  return cmpInst(x.inst,p.inst);
+}
+function cmpInst(a,b){
+  const STOP=new Set(["BANCO","BCO","S","A","SA","LTDA","DE","DO","DA","DOS","DAS","E","CREDITO","FINANCIAMENTO","INVESTIMENTO","INVESTIMENTOS","SOCIEDADE","MULTIPLO","FINANCEIRA","CFI","SCFI","INSTITUICAO","PAGAMENTO","COOPERATIVA","BRASILEIRO"]);
+  const tk=s=>normTxt(String(s).replace(/^\s*\d+\s*[-–]\s*/,"")).split(" ").filter(w=>w && !STOP.has(w));
+  const A=tk(a), B=tk(b);
+  if(!A.length && !B.length) return normTxt(a)===normTxt(b) ? "ok" : (!normTxt(a)||!normTxt(b) ? "falta" : "warn");
+  if(!A.length || !B.length) return "falta";
+  if(A.join(" ")===B.join(" ")) return normTxt(a)===normTxt(b) ? "ok" : "ok";
+  const sa=new Set(A), sb=new Set(B); const inter=[...sa].filter(w=>sb.has(w)).length;
+  const j=inter/Math.min(sa.size,sb.size);
+  if(j>=0.99) return "warn"; if(j>=0.5) return "warn";
+  if(sim(A.join(""),B.join(""))>=0.8) return "warn";
+  return "bad";
+}
+function cmpNome(a,b){
+  const A=normTxt(a), B=normTxt(b);
+  if(!A||!B) return "falta"; if(A===B) return "ok";
+  if(A.startsWith(B)||B.startsWith(A)) return "warn";
+  const s=sim(A,B); if(s>=0.85) return "warn";
+  const ta=A.split(" "), tb=B.split(" ");
+  if(ta[0]===tb[0] && ta[ta.length-1]===tb[tb.length-1]) return "warn";
+  return "bad";
+}
+function conciliar(){
+  const X=S.xls?.rows||[], P=OUT()?.rows||[]; const compRef=normComp($("#comp").value);
+  const usedP=new Set(), pairs=[];
+  const byK=new Map(); P.forEach(p=>{ const k=normKey(p.contrato); if(!k) return; if(!byK.has(k)) byK.set(k,[]); byK.get(k).push(p); });
+  // vínculo SOMENTE pelo número do contrato; depois do vínculo, os demais dados são comparados
+  for(const x of X){
+    const k=normKey(x.contrato); const cand=(byK.get(k)||[]).filter(p=>!usedP.has(p.id));
+    if(k && cand.length){
+      const p=cand.find(p=>p.cpf===x.cpf && p.valor!=null && x.valor!=null && Math.abs(p.valor-x.valor)<0.005) || cand.find(p=>p.cpf===x.cpf) || cand[0];
+      usedP.add(p.id); pairs.push({x,p,via:"Contrato"});
+    } else pairs.push({x,p:null,via:"—"});
+  }
+  for(const p of P) if(!usedP.has(p.id)) pairs.push({x:null,p,via:"—"});
+
+  // duplicidades
+  const dupX=new Map(), dupP=new Map();
+  X.forEach(x=>{ const k=normKey(x.contrato); if(k) dupX.set(k,(dupX.get(k)||0)+1); });
+  P.forEach(p=>{ const k=normKey(p.contrato); if(k) dupP.set(k,(dupP.get(k)||0)+1); });
+
+  S.results=pairs.map((pr,i)=>{
+    const {x,p}=pr; const f={}; const alerts=[];
+    if(x&&p){
+      const cx=x.comp||compRef, cp=normComp(p.comp);
+      f.comp = !cx||!cp ? "falta" : (cx===cp?"ok":"bad");
+      f.nome = cmpNome(x.nome,p.nome);
+      if(!S.xls?.semMat) f.mat = !x.mat||!p.mat ? "falta" : (normKey(x.mat)===normKey(p.mat)?"ok":"bad");
+      f.cpf  = x.cpf===p.cpf ? "ok" : "bad";
+      f.contrato = normKey(x.contrato)===normKey(p.contrato) ? "ok" : "bad";
+      f.inst = cmpInstRow(x,p);
+      f.valor = x.valor==null||p.valor==null ? "bad" : (Math.abs(x.valor-p.valor)<0.005?"ok":"bad");
+    }
+    const rowAny=x||p;
+    if(x && x.cpf && !cpfValido(x.cpf)) alerts.push("CPF inválido na planilha");
+    if(p && p.cpf && !cpfValido(p.cpf)) alerts.push("CPF inválido "+FT().em);
+    if(x && dupX.get(normKey(x.contrato))>1) alerts.push("Contrato repetido na planilha");
+    if(p && dupP.get(normKey(p.contrato))>1) alerts.push("Contrato repetido "+FT().em);
+    if(p && S.passo==="1" && compRef){
+      const c=YM(compRef);
+      if(p.compIni && YM(p.compIni) && c<YM(p.compIni)) alerts.push("Desconto só começa em "+p.compIni);
+      if(p.compFim && YM(p.compFim) && c>YM(p.compFim)) alerts.push("Período de desconto terminou em "+p.compFim);
+      const df=String(p.dataFim||"").match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if(df && +(df[3]+df[2]) < c) alerts.push("Contrato encerrado em "+p.dataFim);
+      const tp=parseInt(p.totalParcelas), qp=parseInt(p.qtdPagamentos); if(tp>0 && qp>=tp) alerts.push(`Parcelas já pagas (${qp} de ${tp})`);
+    }
+    if(x && !x.contrato) alerts.push("Planilha sem número de contrato");
+    if(p && compRef && p.comp && normComp(p.comp)!==compRef && !x) alerts.push("Competência "+FT().em+" diferente da conferida");
+    let status;
+    if(!p) status="xls"; else if(!x) status="pdf";
+    else if(Object.values(f).includes("bad")) status="div";
+    else if(Object.values(f).includes("warn") || Object.values(f).includes("falta") || alerts.length) status="att";
+    else status="ok";
+    const vx=x?.valor??0, vp=p?.valor??0;
+    return {i, x, p, via:pr.via, f, alerts, status, diff:r2((vx||0)-(vp||0)),
+      nome:(x?.nome||p?.nome||""), cpf:(x?.cpf||p?.cpf||""), contrato:(x?.contrato||p?.contrato||""), inst:(x?.inst||p?.inst||"")};
+  });
+  const ord={xls:0,div:1,pdf:2,att:3,ok:4};
+  S.results.sort((a,b)=>ord[a.status]-ord[b.status] || a.nome.localeCompare(b.nome,"pt-BR"));
+  render();
+}
+
+/* ============ renderização ============ */
+const ST = {
+  ok:{t:"Conferido",c:"p-ok",v:"--ok"}, att:{t:"Atenção",c:"p-att",v:"--warn"}, div:{t:"Divergente",c:"p-div",v:"--bad"},
+  pdf:{t:"Só na guia",c:"p-pdf",v:"--info"}, xls:{t:"Só na folha",c:"p-xls",v:"--bad"}
+};
+Object.defineProperty(ST.pdf,"t",{get:()=>FT().so});
+const FIELDS=[["comp","Competência"],["nome","Nome do trabalhador"],["mat","Matrícula eSocial"],["cpf","CPF"],["contrato","Número do contrato"],["inst","Instituição financeira"],["valor","Valor descontado / consignado"]];
+const FLAB={comp:"Competência",nome:"Nome",mat:"Matrícula",cpf:"CPF",contrato:"Contrato",inst:"Instituição",valor:"Valor"};
+/* ============ tratamento das pendências ============ */
+const TRAT_OPC=[["pendente","Pendente"],["corrigido","Corrigido na folha"],["justificado","Justificado"],["retificado","Retificado no eSocial"]];
+const TRAT_KEY="consignado.tratamentos.v1"; let TRAT={};
+try{ TRAT=JSON.parse(localStorage.getItem(TRAT_KEY)||"{}")||{}; }catch(e){ TRAT={}; }
+const tratStore=()=>TRAT;
+function tratKey(r){ const comp=normComp($("#comp").value)||"sem-comp"; const o=r.x||r.p; const c=normKey(r.x?.contrato||r.p?.contrato)||("CPF"+(o?.cpf||"")); return `${S.passo}|${comp}|${c}`; }
+function tratGet(r){ return tratStore()[tratKey(r)]||{st:"pendente",obs:"",em:""}; }
+function tratSet(r,obj){
+  const k=tratKey(r); const comp=k.split("|")[1];
+  for(const kk of Object.keys(TRAT)){ if(kk.split("|")[1]!==comp) delete TRAT[kk]; } // uma competência por vez
+  tratStore()[k]={...tratGet(r),...obj,em:new Date().toLocaleString("pt-BR")};
+  try{ localStorage.setItem(TRAT_KEY,JSON.stringify(TRAT)); }catch(e){}
+}
+const tratado=r=>r.status!=="ok" && tratGet(r).st!=="pendente";
+const tratLabel=st=>(TRAT_OPC.find(o=>o[0]===st)||TRAT_OPC[0])[1];
+function tratBadge(r){
+  if(r.status==="ok") return '<span class="sub">—</span>';
+  const t=tratGet(r); const cls=t.st==="pendente"?"":(t.st==="justificado"?"just":"done");
+  return `<span class="tr ${cls}" title="${esc(t.obs||"")}">${t.st==="pendente"?"○":"✓"} ${tratLabel(t.st)}</span>`;
+}
+
+/* ============ tema claro / escuro ============ */
+function temaAtual(){ const a=document.documentElement.getAttribute("data-theme"); if(a) return a; return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"; }
+function aplicaTema(t){
+  if(t){ document.documentElement.setAttribute("data-theme",t); try{ localStorage.setItem("consignado.tema",t); }catch(e){} }
+  $("#thLight").setAttribute("aria-pressed",temaAtual()==="light"); $("#thDark").setAttribute("aria-pressed",temaAtual()==="dark");
+}
+
+function aplicaPasso(){
+  $("#step1").setAttribute("aria-pressed",S.passo==="1"); $("#step2").setAttribute("aria-pressed",S.passo==="2");
+  $("#h1").textContent=S.passo==="1"?"Emprega Brasil × Folha":"Folha × Guia FGTS Digital";
+  $("#crumbStep").textContent="Passo "+S.passo;
+  $("#h1sub").textContent=FT().sub;
+  $("#dropE").hidden=S.passo!=="1"; $("#dropP").hidden=S.passo!=="2";
+  S.open=new Set(); S.filter="todos";
+}
+
+function totais(){
+  const R=S.results; const c={ok:0,att:0,div:0,pdf:0,xls:0}; R.forEach(r=>c[r.status]++);
+  const tx=r2((S.xls?.rows||[]).reduce((s,r)=>s+(r.valor||0),0)), tp=r2((OUT()?.rows||[]).reduce((s,r)=>s+(r.valor||0),0));
+  return {c,tx,tp,dif:r2(tx-tp)};
+}
+function render(){
+  renderNotices(); renderSummary(); renderConf(); renderInst(); renderLidos(); renderPrint();
+  const has=S.results.length>0; $("#btnExport").disabled=!has; $("#btnPrint").disabled=!has;
+}
+function renderNotices(){
+  if(typeof XLSX==="undefined"||typeof pdfjsLib==="undefined"||typeof ExcelJS==="undefined"){
+    $("#notices").innerHTML=`<div class="notice bad"><div><b>Não foi possível carregar os componentes da ferramenta.</b> Verifique a conexão com a internet e recarregue a página.</div></div>`; return; }
+  const out=[];
+  const O=OUT();
+  const w=[...(S.xls?.warnings||[]).map(t=>"Folha: "+t), ...(O?.warnings||[]).map(t=>FT().curto+": "+t)];
+  if(S.passo==="1" && O && O.fora) w.push(`Emprega Brasil: ${O.fora} linha(s) de outra competência foram desconsideradas (a planilha traz ${S.eb.comps.join(", ")}).`);
+  if(S.passo==="1" && O && S.eb.comps.length && !S.eb.comps.includes(normComp($("#comp").value))) w.push(`Emprega Brasil: a planilha é da competência ${S.eb.comps.join(", ")}, diferente da competência conferida (${normComp($("#comp").value)||"não informada"}).`);
+  if(S.passo==="2" && S.pdf?.total!=null){
+    const tp=r2(S.pdf.rows.reduce((s,r)=>s+(r.valor||0),0));
+    if(Math.abs(tp-S.pdf.total)>=0.01) w.push(`PDF: a soma das linhas lidas (${fmtV(tp)}) não fecha com o total impresso no PDF (${fmtV(S.pdf.total)}). Alguma linha pode não ter sido lida; confira a aba Dados lidos.`);
+  }
+  const compRef=normComp($("#comp").value);
+  if(S.xls && S.xls.semComp && !compRef) w.push("Informe a competência no topo: a planilha não tem coluna de competência e o nome do arquivo não indica o mês.");
+  if(w.length) out.push(`<div class="notice warn"><div><b>Pontos de atenção na leitura</b><ul>${w.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div></div>`);
+  if(!S.xls && !O) out.push(`<div class="notice info"><div>Para começar, confira a competência no topo e importe a <b>planilha da folha</b> e a <b>${FT().arq}</b>.</div></div>`);
+  else if(!S.xls || !O) out.push(`<div class="notice info"><div>Falta importar ${!S.xls?"a <b>planilha da folha</b>":"a <b>"+FT().arq+"</b>"}. Enquanto isso, todas as linhas aparecem como sem correspondência.</div></div>`);
+  $("#notices").innerHTML=out.join("");
+}
+function renderSummary(){
+  const {c,tx,tp,dif}=totais(); const n=S.results.length; const O=OUT();
+  const st=(k)=>`<div class="kpi st ${S.filter===k?"active":""}" style="--c:var(${ST[k].v})" data-f="${k}" role="button" tabindex="0" title="Mostrar só: ${ST[k].t}"><div class="l">${ST[k].t}</div><div class="v">${c[k]}</div><div class="h">${n?Math.round(c[k]/n*100):0}%</div></div>`;
+  const ok2=S.xls&&O;
+  $("#summary").innerHTML=`
+    <div class="kpi"><div class="l">Total folha</div><div class="v num">${S.xls?fmtV(tx):"—"}</div><div class="h">${S.xls?S.xls.rows.length+" contrato(s)":"não importada"}</div></div>
+    <div class="kpi"><div class="l">Total ${S.passo==="1"?"Emprega Brasil":"guia"}</div><div class="v num">${O?fmtV(tp):"—"}</div><div class="h">${O?O.rows.length+" contrato(s)":"não importado"}</div></div>
+    <div class="kpi"><div class="l">Diferença</div><div class="v num ${ok2?(Math.abs(dif)<0.005?"diffzero":"diffpos"):""}">${ok2?fmtV(dif):"—"}</div><div class="h">${ok2?(Math.abs(dif)<0.005?"totais fecham":"totais não fecham"):"aguardando arquivos"}</div></div>
+    ${["ok","att","div","pdf","xls"].map(st).join("")}`;
+  $("#summary").querySelectorAll(".kpi.st").forEach(el=>{
+    const go=()=>{ S.filter = S.filter===el.dataset.f ? "todos" : el.dataset.f; selTab("conf"); renderSummary(); renderConf(); };
+    el.onclick=go; el.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); } };
+  });
+}
+function filtered(){
+  const q=normTxt(S.q), qd=digits(S.q);
+  return S.results.filter(r=>{
+    if(S.filter==="semtrat"){ if(r.status==="ok"||tratado(r)) return false; }
+    else if(S.filter!=="todos" && r.status!==S.filter) return false;
+    if(!q) return true;
+    const hay=normTxt([r.nome,r.x?.nome,r.p?.nome,r.inst,r.p?.inst,r.contrato,r.p?.contrato,r.x?.mat,r.p?.mat,r.x?.re].join(" "));
+    return hay.includes(q) || (qd.length>=3 && (r.cpf.includes(qd) || digits(r.contrato).includes(qd)));
+  });
+}
+function renderConf(){
+  const {c}=totais();
+  const pend=S.results.filter(r=>r.status!=="ok"), feitas=pend.filter(tratado).length;
+  const chips=[["todos","Todos",S.results.length],...Object.keys(ST).map(k=>[k,ST[k].t,c[k]]),["semtrat","Sem tratamento",pend.length-feitas]];
+  const pg=$("#prog"); pg.hidden=!pend.length;
+  if(pend.length) pg.innerHTML=`<b>${feitas}</b> de <b>${pend.length}</b> pendência(s) tratada(s)<span class="bar"><i style="width:${Math.round(feitas/pend.length*100)}%"></i></span>${feitas===pend.length?'<span class="tr done">✓ Conferência concluída</span><span class="sub">Salve o Excel ou o Relatório PDF como registro desta competência.</span>':""}`;
+  $("#chips").innerHTML=chips.map(([k,t,n])=>`<button class="chip" data-f="${k}" aria-pressed="${S.filter===k}">${t} <span class="num">${n}</span></button>`).join("");
+  $("#chips").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ S.filter=b.dataset.f; renderSummary(); renderConf(); });
+  $("#cConf").textContent=S.results.length||"";
+  const R=filtered();
+  if(!S.results.length){ $("#tConf").innerHTML=`<tbody><tr><td class="empty">Importe os dois arquivos para ver a conferência contrato a contrato.</td></tr></tbody>`; return; }
+  if(!R.length){ $("#tConf").innerHTML=`<tbody><tr><td class="empty">Nenhuma linha com esse filtro.</td></tr></tbody>`; return; }
+  const head=`<thead><tr><th>Situação</th><th>Tratamento</th><th>Trabalhador</th><th>Contrato</th><th>Instituição</th><th class="r">Folha</th><th class="r">${FT().col}</th><th class="r">Diferença</th><th>Divergências</th></tr></thead>`;
+  const body=R.map(r=>{
+    const tags=[...Object.entries(r.f).filter(([,v])=>v==="bad").map(([k])=>`<span class="tag bad">${FLAB[k]}</span>`),
+                ...Object.entries(r.f).filter(([,v])=>v==="warn").map(([k])=>`<span class="tag warn">${FLAB[k]} (escrita diferente)</span>`),
+                ...Object.entries(r.f).filter(([,v])=>v==="falta").map(([k])=>`<span class="tag warn">${FLAB[k]} em branco</span>`),
+                ...r.alerts.map(a=>`<span class="tag warn">${esc(a)}</span>`)].join("");
+    const open=S.open.has(r.i);
+    return `<tr class="row ${open?"open":""}" data-i="${r.i}" tabindex="0" aria-expanded="${open}">
+      <td><span class="pill ${ST[r.status].c}">${ST[r.status].t}</span></td>
+      <td>${tratBadge(r)}</td>
+      <td class="who"><div class="nm">${esc(r.nome)}</div><div class="sub"><span class="num">${esc(fmtCPF(r.cpf))}</span>${r.x?.re?" · RE "+esc(r.x.re):""}${(r.x?.mat||r.p?.mat)?" · "+esc(r.x?.mat||r.p?.mat):""}</div></td>
+      <td class="num">${esc(r.contrato)}</td>
+      <td>${esc(r.inst)}</td>
+      <td class="r num">${r.x?fmtV(r.x.valor):"—"}</td>
+      <td class="r num">${r.p?fmtV(r.p.valor):"—"}</td>
+      <td class="r num ${Math.abs(r.diff)<0.005?"":"diffpos"}">${Math.abs(r.diff)<0.005?"—":fmtV(r.diff)}</td>
+      <td class="divs">${tags||'<span class="sub">—</span>'}</td></tr>
+      ${open?`<tr class="detail"><td colspan="9">${detail(r)}</td></tr>`:""}`;
+  }).join("");
+  $("#tConf").innerHTML=head+"<tbody>"+body+"</tbody>";
+  $("#tConf").querySelectorAll("tr.row").forEach(tr=>{
+    const tg=()=>{ const i=+tr.dataset.i; S.open.has(i)?S.open.delete(i):S.open.add(i); renderConf(); };
+    tr.onclick=tg; tr.onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); tg(); } };
+  });
+  $("#tConf").querySelectorAll(".tbox").forEach(bx=>{
+    const r=S.results.find(x=>x.i===+bx.dataset.i); if(!r) return;
+    const sel=bx.querySelector("select"), ta=bx.querySelector("textarea");
+    sel.onchange=()=>{ tratSet(r,{st:sel.value}); renderConf(); renderPrint(); toast("Tratamento registrado"); };
+    let tm; ta.oninput=()=>{ clearTimeout(tm); tm=setTimeout(()=>{ tratSet(r,{obs:ta.value}); bx.querySelector(".when").textContent="Salvo em "+tratGet(r).em; },500); };
+    ta.onblur=()=>{ clearTimeout(tm); if(ta.value!==tratGet(r).obs){ tratSet(r,{obs:ta.value}); } renderPrint(); };
+  });
+}
+function val(k,o,isX){
+  if(!o) return "—";
+  if(k==="valor") return fmtV(o.valor);
+  if(k==="cpf") return fmtCPF(o.cpf);
+  if(k==="comp") return isX ? (o.comp||normComp($("#comp").value)||"—") : (o.comp||"—");
+  if(k==="inst") return (isX && o.codInst ? o.codInst+" – " : "")+(o.inst||"—");
+  return o[k]||"—";
+}
+function detail(r){
+  const mk={ok:["✓","ok"],warn:["~","warn"],bad:["✗","bad"],falta:["?","warn"]};
+  let h=`<div class="dgrid"><div style="min-width:0"><div class="cmp"><div class="hd">Campo</div><div class="hd">Planilha da folha</div><div class="hd">${FT().longo}</div><div class="hd"></div>`;
+  for(const [k,lab] of FIELDS){
+    const s=r.f[k]; const cls= s==="bad"?"bad-cell":(s==="warn"||s==="falta")?"warn-cell":"";
+    h+=`<div class="k">${lab}</div><div class="${r.x?cls:""} ${k==="valor"||k==="cpf"?"num":""}">${esc(val(k,r.x,true))}</div><div class="${r.p?cls:""} ${k==="valor"||k==="cpf"?"num":""}">${esc(val(k,r.p,false))}</div><div class="mk ${s?mk[s][1]:""}">${s?mk[s][0]:""}</div>`;
+  }
+  h+=`</div>`;
+  const ex=[];
+  if(r.x){ if(r.x.evento) ex.push("Evento "+esc(r.x.evento)); ex.push("linha "+r.x.linha+" da planilha"); }
+  if(r.p){
+    if(r.p.venc) ex.push("vencimento da guia "+esc(r.p.venc));
+    if(r.p.pagina) ex.push("página "+r.p.pagina+" do PDF"); else if(r.p.linha) ex.push("linha "+r.p.linha+" do Emprega Brasil");
+    if(r.p.compIni||r.p.compFim) ex.push("desconto de "+esc(r.p.compIni||"?")+" a "+esc(r.p.compFim||"?"));
+    if(r.p.totalParcelas) ex.push("parcelas pagas "+esc(r.p.qtdPagamentos||"0")+" de "+esc(r.p.totalParcelas));
+    if(r.p.dataFim) ex.push("fim do contrato "+esc(r.p.dataFim));
+  }
+  h+=`<div class="extra">${ex.join(" · ")}</div>`;
+  const g=orient(r); if(g.length) h+=`<div class="guide"><b>O que verificar</b><ul>${g.map(t=>`<li>${t}</li>`).join("")}</ul></div>`;
+  h+=`</div>`;
+  if(r.status!=="ok"){
+    const t=tratGet(r);
+    h+=`<div class="tbox" data-i="${r.i}"><h4>Tratamento da pendência ${tratBadge(r)}</h4>
+      <div><label for="ts${r.i}">Situação</label><select id="ts${r.i}">${TRAT_OPC.map(([v,l])=>`<option value="${v}" ${t.st===v?"selected":""}>${l}</option>`).join("")}</select></div>
+      <div><label for="to${r.i}">Observação</label><textarea id="to${r.i}" placeholder="Ex.: desconto parcial por falta de margem; portabilidade para o contrato 123…; corrigido no evento 630.">${esc(t.obs)}</textarea></div>
+      <div class="when">${t.em?"Salvo em "+esc(t.em)+" · só neste navegador":"Fica salvo só neste navegador, para a competência em conferência."}</div></div>`;
+  }
+  h+=`</div>`;
+  return h;
+}
+function orient(r){
+  const g=[];
+  if(S.passo==="1"){
+    if(r.status==="xls"){
+      g.push("O contrato está sendo descontado na folha, mas não aparece no Emprega Brasil para esta competência.");
+      g.push("Confira se o contrato foi quitado, cancelado ou portado para outra instituição (na portabilidade o número do contrato muda) e, se for o caso, retire ou corrija o desconto antes do fechamento da folha.");
+    }
+    if(r.status==="pdf"){
+      g.push("O contrato consta na planilha do Emprega Brasil da competência, mas não há desconto na folha. Se está na planilha, precisa ser descontado.");
+      g.push("Inclua o evento de consignado na folha, ou verifique se o trabalhador foi desligado, está afastado ou não tem margem/saldo de salário na competência.");
+    }
+    if(r.f.valor==="bad"){
+      const d=r.diff;
+      g.push(`Valor diferente da parcela informada no Emprega Brasil: folha ${fmtV(r.x?.valor)} × portal ${fmtV(r.p?.valor)} (${fmtV(Math.abs(d))} ${d>0?"a mais na folha":"a menos na folha"}).`);
+      g.push("Corrija o valor na folha antes do fechamento. Se o desconto for parcial por falta de margem ou de saldo, deixe o motivo registrado.");
+    }
+    if(r.alerts.some(a=>/terminou|encerrado|já pagas/.test(a))) g.push("Pelo Emprega Brasil o contrato já deveria ter parado de descontar. Confirme com a instituição antes de manter o desconto.");
+    if(r.alerts.some(a=>/só começa/.test(a))) g.push("O desconto deste contrato ainda não começou nesta competência pelo Emprega Brasil.");
+  }
+  if(S.passo==="2" && r.status==="xls"){
+    g.push("Há desconto na folha sem o contrato correspondente na guia. Sem a guia, o valor descontado do trabalhador não é repassado à instituição financeira.");
+    g.push("Confira se o contrato foi informado no eSocial (S-1200, dados do empréstimo consignado) com o número correto e se a folha foi fechada e transmitida antes da emissão da guia.");
+    g.push("Se o contrato foi encerrado ou quitado, estorne o desconto na folha.");
+  }
+  if(S.passo==="2" && r.status==="pdf"){
+    g.push("O contrato consta na guia, mas não há desconto correspondente na planilha. Se a guia for paga assim, a empresa repassa um valor que não descontou do trabalhador.");
+    g.push("Verifique se faltou lançar o evento de consignado na folha, se o trabalhador foi desligado ou afastado no mês, ou se a planilha exportada está incompleta.");
+  }
+  if(S.passo==="2" && r.f.valor==="bad"){
+    const d=r.diff;
+    g.push(`Valor diferente: folha ${fmtV(r.x?.valor)} × guia ${fmtV(r.p?.valor)} (diferença de ${fmtV(Math.abs(d))} ${d>0?"a mais na folha":"a mais na guia"}).`);
+    g.push("Causas comuns: desconto parcial por falta de margem ou de saldo de salário, parcela em atraso cobrada junto, rescisão no mês ou lançamento duplicado. Corrija a folha ou o eSocial e reemita a guia antes do vencimento.");
+  }
+  if(r.f.contrato==="bad") g.push("Número do contrato diferente para o mesmo trabalhador. Confirme o número no extrato do Crédito do Trabalhador e corrija o cadastro na folha.");
+  if(r.f.cpf==="bad") g.push("CPF diferente entre os arquivos. Corrija o cadastro antes de qualquer reenvio ao eSocial.");
+  if(r.f.mat==="bad") g.push("Matrícula eSocial diferente. O desconto pode estar vinculado a outro vínculo do trabalhador (readmissão ou transferência).");
+  if(r.f.inst==="bad") g.push("Código da instituição financeira diferente. Confirme qual instituição é a credora deste contrato (houve portabilidade?) e corrija o Cod. Inst. Fin na folha.");
+  if(r.f.inst==="falta") g.push("A planilha da folha está sem o código da instituição (Cod. Inst. Fin), então não foi possível conferir.");
+  if(r.f.comp==="bad") g.push("Competência diferente da conferida. Confira se a "+FT().arq+" e a folha são do mesmo mês.");
+  if(r.f.nome==="warn"||r.f.inst==="warn") g.push("A diferença é só na forma de escrever (abreviação, acento ou texto cortado). Normalmente não exige correção, mas vale conferir o cadastro.");
+  return g;
+}
+function grupoInst(s){
+  const STOP=new Set(["BANCO","BCO","S","A","SA","LTDA","DE","DO","DA","DOS","DAS","E"]);
+  const t=normTxt(String(s).replace(/^\s*\d+\s*[-–]\s*/,"")).split(" ").filter(w=>w&&!STOP.has(w)).join(" ");
+  return t || normTxt(s) || "(SEM INSTITUIÇÃO)";
+}
+const zeroStrip=s=>{ let t=String(s??"").trim(); if(/^\d+([.,]0+)?$/.test(t)) t=t.replace(/[.,]0+$/,""); return digits(t).replace(/^0+(?=.)/,""); };
+const codPDF=s=>{ const m=String(s||"").match(/^\s*(\d[\d.,\/\-]*?)(?=\s|$)/); return m?zeroStrip(m[1]):""; };
+const colabKey=r=>r.cpf||("N:"+normTxt(r.nome));
+/* agregados usados na tela e no Excel: por instituição e por colaborador (CPF único) */
+function agregados(){
+  const X=S.xls?.rows||[], P=OUT()?.rows||[];
+  const porCod = P.length>0 && P.filter(r=>codPDF(r.inst)).length > P.length/2;
+  const nomeCod=new Map(); X.forEach(r=>{ const c=zeroStrip(r.codInst); if(c && r.inst && !nomeCod.has(c)) nomeCod.set(c,r.inst); });
+  const inst=new Map();
+  const get=(key,cod,nome)=>{ if(!inst.has(key)) inst.set(key,{cod,nome,colab:new Set(),colabX:new Set(),colabP:new Set(),nx:0,np:0,vx:0,vp:0}); const o=inst.get(key); if(!o.nome&&nome) o.nome=nome; return o; };
+  X.forEach(r=>{ const c=zeroStrip(r.codInst); const o = porCod && c ? get("#"+c,r.codInst||c,r.inst) : get(grupoInst(r.inst),r.codInst||"",r.inst);
+    o.nx++; o.vx+=r.valor||0; o.colab.add(colabKey(r)); o.colabX.add(colabKey(r)); });
+  P.forEach(r=>{ const c=codPDF(r.inst); const o = porCod && c ? get("#"+c,c,nomeCod.get(c)||r.instDesc||"") : get(grupoInst(r.inst),c,r.inst);
+    o.np++; o.vp+=r.valor||0; o.colab.add(colabKey(r)); o.colabP.add(colabKey(r)); });
+  const L=[...inst.values()].map(o=>({...o,vx:r2(o.vx),vp:r2(o.vp),dif:r2(o.vx-o.vp)})).sort((a,b)=>(b.vx+b.vp)-(a.vx+a.vp));
+  // colaboradores
+  const col=new Map();
+  const addC=(r,lado)=>{ const k=colabKey(r); if(!col.has(k)) col.set(k,{nome:r.nome,cpf:r.cpf,re:"",mat:"",nx:0,np:0,vx:0,vp:0,inst:new Set(),status:new Set()}); const o=col.get(k);
+    if(lado==="x"){ o.nx++; o.vx+=r.valor||0; if(r.re) o.re=r.re; if(r.nome) o.nome=r.nome; } else { o.np++; o.vp+=r.valor||0; if(r.mat) o.mat=r.mat; if(!o.nome) o.nome=r.nome; }
+    const c = lado==="x" ? (r.codInst? r.codInst+" "+(r.inst||"") : r.inst) : (nomeCod.get(codPDF(r.inst)) ? codPDF(r.inst)+" "+nomeCod.get(codPDF(r.inst)) : r.inst);
+    if(c) o.inst.add(String(c).trim()); };
+  X.forEach(r=>addC(r,"x")); P.forEach(r=>addC(r,"p"));
+  S.results.forEach(r=>{ const k=colabKey(r.x||r.p); if(col.has(k)) col.get(k).status.add(r.status); });
+  const C=[...col.values()].map(o=>({...o,vx:r2(o.vx),vp:r2(o.vp),dif:r2(o.vx-o.vp)})).sort((a,b)=>a.nome.localeCompare(b.nome,"pt-BR"));
+  const uX=new Set(X.map(colabKey)), uP=new Set(P.map(colabKey));
+  return {inst:L, colab:C, uX:uX.size, uP:uP.size, uAll:col.size, porCod};
+}
+function renderInst(){
+  const A=agregados(); const L=A.inst;
+  $("#cInst").textContent=L.length||"";
+  if(!L.length){ $("#tInst").innerHTML=`<tbody><tr><td class="empty">Sem dados.</td></tr></tbody>`; return; }
+  const {tx,tp}=totais();
+  $("#tInst").innerHTML=`<thead><tr><th>Cód.</th><th>Instituição financeira</th><th class="r">Colaboradores</th><th class="r">Contratos folha</th><th class="r">Contratos ${FT().min}</th><th class="r">Total folha</th><th class="r">Total ${FT().min}</th><th class="r">Diferença</th></tr></thead><tbody>`+
+    L.map(o=>`<tr><td class="num">${esc(o.cod)}</td><td class="nm">${esc(o.nome||"(nome não informado na planilha)")}</td><td class="r num">${o.colab.size}</td><td class="r num">${o.nx}</td><td class="r num">${o.np}</td><td class="r num">${fmtV(o.vx)}</td><td class="r num">${fmtV(o.vp)}</td><td class="r num ${Math.abs(o.dif)<0.005?"diffzero":"diffpos"}">${Math.abs(o.dif)<0.005?"—":fmtV(o.dif)}</td></tr>`).join("")+
+    `<tr><td></td><td class="nm">Total</td><td class="r num"><b>${A.uAll}</b></td><td class="r num">${S.xls?.rows.length||0}</td><td class="r num">${OUT()?.rows.length||0}</td><td class="r num"><b>${fmtV(tx)}</b></td><td class="r num"><b>${fmtV(tp)}</b></td><td class="r num"><b>${fmtV(r2(tx-tp))}</b></td></tr></tbody>`+
+    `<tfoot><tr><td colspan="8" class="sub">Colaboradores contados uma vez por CPF. No total, quem tem empréstimo em mais de uma instituição conta só uma vez.</td></tr></tfoot>`;
+}
+function renderLidos(){
+  ["x","e","p","r"].forEach(k=>$("#st"+k.toUpperCase()).setAttribute("aria-pressed",S.lidos===k));
+  if(S.lidos==="e"){
+    const box=$("#lidosBox"); if(!S.eb){ box.innerHTML=`<div class="empty">Planilha do Emprega Brasil não importada.</div>`; return; }
+    box.innerHTML=`<table><thead><tr><th>Linha</th><th>Comp.</th><th>Cód. IF</th><th>Instituição</th><th>Contrato</th><th>CPF</th><th>Matrícula</th><th>Nome</th><th>Desconto de/até</th><th>Parcelas</th><th class="r">Valor parcela</th></tr></thead><tbody>`+
+      S.eb.rows.map(r=>`<tr><td class="num">${r.linha}</td><td class="num">${esc(r.comp)}</td><td class="num">${esc(r.codInst)}</td><td>${esc(r.instDesc)}</td><td class="num">${esc(r.contrato)}</td><td class="num">${esc(fmtCPF(r.cpf))}</td><td class="num">${esc(r.mat)}</td><td>${esc(r.nome)}</td><td class="num">${esc(r.compIni)} – ${esc(r.compFim)}</td><td class="num">${esc(r.qtdPagamentos)}/${esc(r.totalParcelas)}</td><td class="r num">${fmtV(r.valor)}</td></tr>`).join("")+`</tbody></table>`;
+    return;
+  }
+  const box=$("#lidosBox");
+  if(S.lidos==="r"){ box.innerHTML=S.pdf?`<pre class="raw">${esc(S.pdf.raw.join("\n"))}</pre>`:`<div class="empty">Importe o PDF para ver o texto extraído.</div>`; return; }
+  const D=S.lidos==="x"?S.xls:S.pdf;
+  if(!D){ box.innerHTML=`<div class="empty">Arquivo não importado.</div>`; return; }
+  if(S.lidos==="x"){
+    box.innerHTML=`<table><thead><tr><th>Linha</th><th>RE</th><th>Colaborador</th><th>Matrícula eSocial</th><th>CPF</th><th>Evento</th><th>Cód. inst.</th><th>Instituição</th><th>Contrato</th><th class="r">Valor descontado</th></tr></thead><tbody>`+
+      D.rows.map(r=>`<tr><td class="num">${r.linha}</td><td class="num">${esc(r.re)}</td><td>${esc(r.nome)}</td><td class="num">${esc(r.mat)}</td><td class="num">${esc(fmtCPF(r.cpf))}</td><td>${esc(r.evento)}</td><td class="num">${esc(r.codInst)}</td><td>${esc(r.inst)}</td><td class="num">${esc(r.contrato)}</td><td class="r num">${fmtV(r.valor)}</td></tr>`).join("")+`</tbody></table>`;
+  } else {
+    box.innerHTML=`<table><thead><tr><th>Pág.</th><th>Comp.</th><th>Vencimento</th><th>Nome</th><th>Matrícula</th><th>CPF</th><th>Contrato</th><th>Instituição</th><th class="r">Valor na guia</th></tr></thead><tbody>`+
+      D.rows.map(r=>`<tr><td class="num">${r.pagina}</td><td class="num">${esc(r.comp)}</td><td class="num">${esc(r.venc)}</td><td>${esc(r.nome)}</td><td class="num">${esc(r.mat)}</td><td class="num">${esc(fmtCPF(r.cpf))}</td><td class="num">${esc(r.contrato)}</td><td>${esc(r.inst)}</td><td class="r num">${fmtV(r.valor)}</td></tr>`).join("")+`</tbody></table>`;
+  }
+}
+
+/* ============ relatório para impressão ============ */
+function renderPrint(){
+  if(!S.results.length){ $("#printArea").innerHTML=""; return; }
+  const {c,tx,tp,dif}=totais(); const comp=normComp($("#comp").value)||"—"; const A=agregados(); const O=OUT();
+  const pend=S.results.filter(r=>r.status!=="ok"), feitas=pend.filter(tratado).length, ok=S.results.filter(r=>r.status==="ok");
+  const now=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
+  const pill=k=>`<span class="pp ${ST[k].c}">${ST[k].t}</span>`;
+  const divs=r=>[...Object.entries(r.f).filter(([,v])=>v==="bad").map(([k])=>FLAB[k]),
+                 ...Object.entries(r.f).filter(([,v])=>v==="warn").map(([k])=>FLAB[k]+" (escrita diferente)"),
+                 ...Object.entries(r.f).filter(([,v])=>v==="falta").map(([k])=>FLAB[k]+" em branco"),...r.alerts].join("; ");
+  const vlr=v=>v==null?"—":fmtV(v);
+  const st=(k)=>{ const rs=S.results.filter(x=>x.status===k); return `<tr><td>${pill(k)}</td><td class="r">${rs.length}</td><td class="r">${vlr(r2(rs.reduce((s,x)=>s+(x.x?.valor||0),0)))}</td><td class="r">${vlr(r2(rs.reduce((s,x)=>s+(x.p?.valor||0),0)))}</td></tr>`; };
+  const situacao = !pend.length ? `<div class="pstat ok">Todos os contratos conferem. Nenhuma pendência.</div>`
+    : feitas===pend.length ? `<div class="pstat ok">Conferência concluída: ${pend.length} pendência(s), todas com tratamento registrado.</div>`
+    : `<div class="pstat warn">${pend.length-feitas} de ${pend.length} pendência(s) ainda sem tratamento.</div>`;
+  $("#printArea").innerHTML=`
+  <div class="ph">
+    <div class="pbrand"><span class="pmk">CT</span><div><div class="pk">Relatório de conciliação do consignado · Crédito do Trabalhador</div><h2>${esc(FT().titulo)}</h2></div></div>
+    <div class="pcomp"><span>Competência</span><b>${esc(comp)}</b></div>
+  </div>
+  <div class="pmeta"><div><span>Planilha da folha</span>${esc(S.xls?.fileName||"não importada")}</div><div><span>${esc(FT().longo)}</span>${esc(O?.fileName||"não importado")}</div><div><span>Emitido em</span>${now}</div></div>
+  ${situacao}
+  <div class="pkpi">
+    <div><span>Total descontado na folha</span><b>${fmtV(tx)}</b><small>${S.xls?.rows.length||0} contrato(s)</small></div>
+    <div><span>Total ${esc(FT().min)}</span><b>${fmtV(tp)}</b><small>${O?.rows.length||0} contrato(s)</small></div>
+    <div><span>Diferença</span><b class="${Math.abs(dif)<0.005?"g":"rd"}">${fmtV(dif)}</b><small>${Math.abs(dif)<0.005?"totais fecham":"totais não fecham"}</small></div>
+    <div><span>Colaboradores</span><b>${A.uAll}</b><small>contados uma vez por CPF</small></div>
+  </div>
+  <div class="pcols">
+    <div><h3>Resultado da conferência</h3>
+      <table><thead><tr><th>Situação</th><th class="r">Contratos</th><th class="r">Folha</th><th class="r">${esc(FT().col)}</th></tr></thead><tbody>${Object.keys(ST).map(st).join("")}</tbody></table></div>
+    <div><h3>Por instituição financeira</h3>
+      <table><thead><tr><th>Cód.</th><th>Instituição</th><th class="r">Colab.</th><th class="r">Folha</th><th class="r">${esc(FT().col)}</th><th class="r">Diferença</th></tr></thead><tbody>
+      ${A.inst.map(o=>`<tr><td>${esc(o.cod)}</td><td>${esc(o.nome||"—")}</td><td class="r">${o.colab.size}</td><td class="r">${fmtV(o.vx)}</td><td class="r">${fmtV(o.vp)}</td><td class="r ${Math.abs(o.dif)<0.005?"":"rd"}">${Math.abs(o.dif)<0.005?"—":fmtV(o.dif)}</td></tr>`).join("")}</tbody></table></div>
+  </div>
+  <h3 class="sec">Pendências e tratamento (${pend.length})</h3>
+  ${pend.length?`<table class="pend"><thead><tr><th>Situação</th><th>Colaborador</th><th>Contrato</th><th>Instituição</th><th class="r">Folha</th><th class="r">${esc(FT().col)}</th><th class="r">Diferença</th><th>Divergências</th><th>Tratamento</th><th>Observação</th></tr></thead><tbody>
+    ${pend.map(r=>{ const t=tratGet(r); return `<tr><td>${pill(r.status)}</td><td><b>${esc(r.nome)}</b><br><span class="mut">${esc(fmtCPF(r.cpf))}${r.x?.re?" · RE "+esc(r.x.re):""}</span></td><td>${esc(r.contrato)}${r.x&&r.p&&r.f.contrato==="bad"?"<br><span class='mut'>"+esc(FT().min)+": "+esc(r.p.contrato)+"</span>":""}</td><td>${esc(r.x?((r.x.codInst?r.x.codInst+" – ":"")+(r.x.inst||"")):r.inst)}</td><td class="r">${r.x?fmtV(r.x.valor):"—"}</td><td class="r">${r.p?fmtV(r.p.valor):"—"}</td><td class="r ${Math.abs(r.diff)<0.005?"":"rd"}">${Math.abs(r.diff)<0.005?"—":fmtV(r.diff)}</td><td>${esc(divs(r))}</td><td><span class="tt ${t.st}">${esc(tratLabel(t.st))}</span></td><td>${esc(t.obs||"")}</td></tr>`; }).join("")}
+  </tbody></table>`:`<p class="mut">Nenhuma pendência nesta competência.</p>`}
+  <h3 class="sec">Contratos conferidos (${ok.length})</h3>
+  ${ok.length?`<table class="okt"><thead><tr><th>Colaborador</th><th>CPF</th><th>Contrato</th><th>Instituição</th><th class="r">Valor</th></tr></thead><tbody>
+    ${ok.map(r=>`<tr><td>${esc(r.nome)}</td><td>${esc(fmtCPF(r.cpf))}</td><td>${esc(r.contrato)}</td><td>${esc((r.x?.codInst?r.x.codInst+" – ":"")+(r.x?.inst||r.inst))}</td><td class="r">${fmtV(r.x?.valor)}</td></tr>`).join("")}</tbody></table>`:`<p class="mut">Nenhum contrato conferido sem pendência.</p>`}
+  <div class="psign"><div>Conferido por</div><div>Data</div><div>Aprovado por</div></div>
+  <p class="pfoot">Relatório gerado pela ferramenta de Conciliação do Consignado a partir dos arquivos indicados acima. Os dados foram processados apenas no navegador de quem emitiu o relatório.</p>`;
+}
+
+/* ============ exportação Excel (formatado) ============ */
+const XL={ink:"FF1D2129",band:"FF24282F",bronze:"FF9A6A38",bronzeSoft:"FFF4EBE0",line:"FFD9DCE1",zebra:"FFF7F7F8",white:"FFFFFFFF",grey:"FF6B717C",
+  st:{ok:["FFE3F3EA","FF1F7A4D"],att:["FFFBF0D9","FF8A5A00"],div:["FFFBE5E3","FFB4322C"],pdf:["FFE4ECF8","FF2F5FA7"],xls:["FFFBE5E3","FFB4322C"]}};
+const MOEDA='"R$" #,##0.00;[Red]-"R$" #,##0.00;"–"';
+function xlFill(c){ return {type:"pattern",pattern:"solid",fgColor:{argb:c}}; }
+const xlBorder={top:{style:"thin",color:{argb:XL.line}},bottom:{style:"thin",color:{argb:XL.line}},left:{style:"thin",color:{argb:XL.line}},right:{style:"thin",color:{argb:XL.line}}};
+function xlTitulo(ws,ncols,titulo,sub){
+  ws.mergeCells(1,1,1,ncols); ws.mergeCells(2,1,2,ncols);
+  const a=ws.getCell(1,1); a.value=titulo; a.font={name:"Calibri",size:16,bold:true,color:{argb:XL.white}}; a.fill=xlFill(XL.band); a.alignment={vertical:"middle",indent:1};
+  const b=ws.getCell(2,1); b.value=sub; b.font={name:"Calibri",size:10,color:{argb:"FFD8CFC4"}}; b.fill=xlFill(XL.band); b.alignment={vertical:"middle",indent:1};
+  for(let c=1;c<=ncols;c++){ ws.getCell(1,c).fill=xlFill(XL.band); ws.getCell(2,c).fill=xlFill(XL.band); ws.getCell(3,c).fill=xlFill(XL.bronze); }
+  ws.getRow(1).height=30; ws.getRow(2).height=18; ws.getRow(3).height=4;
+}
+function xlSecao(ws,row,ncols,txt){
+  ws.mergeCells(row,1,row,ncols); const c=ws.getCell(row,1); c.value=txt.toUpperCase();
+  c.font={name:"Calibri",size:11,bold:true,color:{argb:XL.bronze}}; c.border={bottom:{style:"medium",color:{argb:XL.bronze}}};
+  for(let i=2;i<=ncols;i++) ws.getCell(row,i).border={bottom:{style:"medium",color:{argb:XL.bronze}}};
+  ws.getRow(row).height=22;
+}
+function xlCabecalho(ws,row,heads){
+  heads.forEach((h,i)=>{ const c=ws.getCell(row,i+1); c.value=h; c.font={name:"Calibri",size:10,bold:true,color:{argb:XL.white}}; c.fill=xlFill(XL.bronze);
+    c.alignment={vertical:"middle",horizontal:"center",wrapText:true}; c.border=xlBorder; });
+  ws.getRow(row).height=30;
+}
+function xlLinha(ws,row,vals,opt={}){
+  vals.forEach((v,i)=>{ const c=ws.getCell(row,i+1); c.value=(v===""||v==null)?null:v; c.font={name:"Calibri",size:10,color:{argb:XL.ink},bold:!!opt.bold}; c.border=xlBorder;
+    c.alignment={vertical:"middle",wrapText:!!(opt.wrap&&opt.wrap.includes(i))};
+    if(opt.money&&opt.money.includes(i)) c.numFmt=MOEDA;
+    if(opt.center&&opt.center.includes(i)) c.alignment={...c.alignment,horizontal:"center"};
+    if(opt.fill) c.fill=xlFill(opt.fill); else if(row%2===0) c.fill=xlFill(XL.zebra); });
+}
+function xlStatus(cell,st){ cell.fill=xlFill(XL.st[st][0]); cell.font={name:"Calibri",size:10,bold:true,color:{argb:XL.st[st][1]}}; cell.alignment={horizontal:"center",vertical:"middle"}; }
+const SEMHTML=s=>String(s).replace(/<[^>]+>/g,"");
+
+async function exportar(){
+  if(typeof ExcelJS==="undefined"){ toast("O gerador de Excel não carregou. Verifique a internet e abra a ferramenta de novo."); return; }
+  const comp=normComp($("#comp").value)||"";
+  const A=agregados(); const {c,tx,tp,dif}=totais();
+  const wb=new ExcelJS.Workbook(); wb.creator="Conciliação do Consignado"; wb.created=new Date();
+  const emit=new Date().toLocaleString("pt-BR");
+  const sub=`Competência ${comp||"—"}  ·  ${FT().titulo}  ·  Emitido em ${emit}`;
+  const OL=FT().curto, O=OUT();
+  const N=t=>t; // marcador de texto
+
+  /* ---------- Resumo ---------- */
+  const R=wb.addWorksheet("Resumo",{views:[{showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+  R.columns=[{width:12},{width:62},{width:16},{width:16},{width:16},{width:19},{width:19},{width:19}];
+  xlTitulo(R,8,"Conciliação do Consignado – Crédito do Trabalhador",sub);
+  let r=5;
+  xlSecao(R,r++,8,"Indicadores gerais"); r++;
+  const kpis=[["Colaboradores (CPF único)",A.uX,A.uP,A.uX-A.uP,false],["Contratos",S.xls?.rows.length||0,O?.rows.length||0,(S.xls?.rows.length||0)-(O?.rows.length||0),false],["Valor total",tx,tp,dif,true]];
+  xlCabecalho(R,r,["","Indicador","Folha",FT().longo,"Diferença"]); R.getCell(r,1).fill=xlFill(XL.white); R.getCell(r,1).border={}; r++;
+  for(const k of kpis){
+    xlLinha(R,r,["",k[0],k[1],k[2],k[3]],{money:k[4]?[2,3,4]:[],center:k[4]?[]:[2,3,4],bold:true});
+    R.getCell(r,1).fill=xlFill(XL.white); R.getCell(r,1).border={};
+    const d=R.getCell(r,5); const zero=Math.abs(k[3])<0.005; d.font={name:"Calibri",size:10,bold:true,color:{argb:zero?XL.st.ok[1]:XL.st.div[1]}}; d.fill=xlFill(zero?XL.st.ok[0]:XL.st.div[0]);
+    R.getRow(r).height=20; r++;
+  }
+  R.getCell(r,2).value="Colaboradores com mais de um empréstimo são contados uma única vez (pelo CPF)."; R.getCell(r,2).font={size:9,italic:true,color:{argb:XL.grey}}; r+=2;
+
+  xlSecao(R,r++,8,"Situação da conferência"); r++;
+  xlCabecalho(R,r,["","Situação","Contratos","Colaboradores","% contratos","Valor folha","Valor "+FT().min,"Diferença"]); R.getCell(r,1).fill=xlFill(XL.white); R.getCell(r,1).border={}; r++;
+  const desc={ok:"Todos os campos batem",att:"Escrita diferente, campo em branco ou aviso",div:"Contrato, CPF, instituição, valor ou competência diferentes",pdf:S.passo==="1"?"Na planilha do Emprega Brasil sem desconto na folha":"Na guia sem desconto na folha",xls:S.passo==="1"?"Descontado na folha sem contrato no portal":"Descontado na folha sem estar na guia"};
+  const nTot=S.results.length||1;
+  for(const k of ["ok","att","div","pdf","xls"]){
+    const rs=S.results.filter(x=>x.status===k); const vx=r2(rs.reduce((s,x)=>s+(x.x?.valor||0),0)), vp=r2(rs.reduce((s,x)=>s+(x.p?.valor||0),0));
+    const u=new Set(rs.map(x=>colabKey(x.x||x.p))).size;
+    xlLinha(R,r,["",ST[k].t+"  –  "+desc[k],rs.length,u,rs.length/nTot,vx,vp,r2(vx-vp)],{money:[5,6,7],center:[2,3,4]});
+    R.getCell(r,5).numFmt="0.0%"; R.getCell(r,1).border={}; R.getCell(r,1).fill=xlFill(XL.st[k][1]);
+    R.getCell(r,2).font={name:"Calibri",size:10,bold:true,color:{argb:XL.st[k][1]}}; R.getRow(r).height=20; r++;
+  }
+  xlLinha(R,r,["","Total",S.results.length,A.uAll,1,tx,tp,dif],{money:[5,6,7],center:[2,3,4],bold:true,fill:XL.bronzeSoft}); R.getCell(r,5).numFmt="0.0%"; R.getCell(r,1).border={}; R.getCell(r,1).fill=xlFill(XL.white); r++;
+  { const pend=S.results.filter(x=>x.status!=="ok"), ft=pend.filter(tratado).length; const cc=R.getCell(r,2);
+    cc.value=pend.length?`Pendências tratadas: ${ft} de ${pend.length}`+(ft===pend.length?" – conferência concluída":""):"Nenhuma pendência na competência.";
+    cc.font={size:10,bold:true,color:{argb:(!pend.length||ft===pend.length)?XL.st.ok[1]:XL.st.att[1]}}; }
+  r+=3;
+
+  xlSecao(R,r++,8,"Valores e contratos por instituição financeira"); r++;
+  xlCabecalho(R,r,["Código","Instituição financeira","Colaboradores","Contratos folha","Contratos "+FT().min,"Valor folha","Valor "+FT().min,"Diferença"]); r++;
+  const i0=r;
+  for(const o of A.inst){
+    xlLinha(R,r,[o.cod?N(String(o.cod)):"",o.nome||"(nome não informado na planilha)",o.colab.size,o.nx,o.np,o.vx,o.vp,o.dif],{money:[5,6,7],center:[0,2,3,4]});
+    if(Math.abs(o.dif)>=0.005){ const d=R.getCell(r,8); d.font={name:"Calibri",size:10,bold:true,color:{argb:XL.st.div[1]}}; }
+    r++;
+  }
+  xlLinha(R,r,["","Total geral",A.uAll,S.xls?.rows.length||0,O?.rows.length||0,tx,tp,dif],{money:[5,6,7],center:[2,3,4],bold:true,fill:XL.bronzeSoft});
+  r++; R.getCell(r,2).value="No total geral, quem tem empréstimo em mais de uma instituição é contado uma única vez."; R.getCell(r,2).font={size:9,italic:true,color:{argb:XL.grey}};
+  r+=2; R.getCell(r,2).value="Arquivos conferidos:"; R.getCell(r,2).font={size:9,bold:true,color:{argb:XL.grey}};
+  R.getCell(r+1,2).value="Folha: "+(S.xls?.fileName||"—"); R.getCell(r+2,2).value=FT().longo+": "+(O?.fileName||"—");
+  [r+1,r+2].forEach(k=>R.getCell(k,2).font={size:9,color:{argb:XL.grey}});
+
+  /* ---------- Conferência ---------- */
+  const g_=t=>t+" ("+FT().min+")";
+  const H=["Situação","Nome (folha)",g_("Nome"),"RE","Matrícula eSocial","CPF (folha)",g_("CPF"),"Contrato (folha)",g_("Contrato"),"Cód. inst. (folha)","Instituição (folha)",g_("Instituição"),"Comp. folha",g_("Comp."),S.passo==="1"?"Desconto de/até (EB)":"Venc. guia","Evento","Valor folha",S.passo==="1"?"Parcela (EB)":"Valor guia","Diferença","Campos divergentes","Atenção","Tratamento","Observação do tratamento"];
+  const W=[14,34,34,8,22,16,16,20,20,10,28,16,10,10,12,10,15,15,15,26,30,20,40];
+  const F=wb.addWorksheet("Conferência",{views:[{state:"frozen",ySplit:4,xSplit:2,showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+  F.columns=W.map(w=>({width:w}));
+  xlTitulo(F,H.length,"Conferência por contrato",sub); xlCabecalho(F,4,H);
+  const mapF={nome:[1,2],mat:[4],cpf:[5,6],contrato:[7,8],inst:[9,11],comp:[12,13],valor:[16,17,18]};
+  S.results.forEach((x,i)=>{
+    const row=5+i;
+    xlLinha(F,row,[ST[x.status].t,x.x?.nome,x.p?.nome,x.x?.re,x.p?.mat||x.x?.mat,x.x?fmtCPF(x.x.cpf):"",x.p?fmtCPF(x.p.cpf):"",x.x?.contrato,x.p?.contrato,x.x?.codInst,x.x?.inst,x.p?.inst,
+      x.x?(x.x.comp||comp):"",x.p?.comp,S.passo==="1"?(x.p&&(x.p.compIni||x.p.compFim)?(x.p.compIni||"?")+" a "+(x.p.compFim||"?"):""):x.p?.venc,x.x?.evento,x.x?.valor??null,x.p?.valor??null,(x.x||x.p)?x.diff:null,
+      Object.entries(x.f).filter(([,v])=>v==="bad").map(([k])=>FLAB[k]).join(", "),
+      [...Object.entries(x.f).filter(([,v])=>v==="warn"||v==="falta").map(([k,v])=>FLAB[k]+(v==="falta"?" em branco":" (escrita diferente)")),...x.alerts].join(", "),
+      x.status==="ok"?"":tratLabel(tratGet(x).st), x.status==="ok"?"":tratGet(x).obs],
+      {money:[16,17,18],center:[3,9,12,13,14,15],wrap:[19,20,22]});
+    xlStatus(F.getCell(row,1),x.status);
+    for(const [k,cs] of Object.entries(mapF)){ const v=x.f[k]; if(v==="bad"||v==="warn"){ cs.forEach(ci=>{ const cell=F.getCell(row,ci+1); cell.fill=xlFill(v==="bad"?XL.st.div[0]:XL.st.att[0]); cell.font={...cell.font,color:{argb:v==="bad"?XL.st.div[1]:XL.st.att[1]},bold:true}; }); } }
+    if(x.status==="xls") [8,9,10,11,12].forEach(()=>{});
+  });
+  const fr=5+S.results.length;
+  xlLinha(F,fr,["Total","","","","","","","","","","","","","","","",tx,tp,dif,"","","",""],{money:[16,17,18],bold:true,fill:XL.bronzeSoft});
+  F.autoFilter={from:{row:4,column:1},to:{row:4+S.results.length,column:H.length}};
+
+  /* ---------- Pendências ---------- */
+  const pend=S.results.filter(x=>x.status!=="ok");
+  const PH=["Situação","Colaborador","CPF","Contrato","Instituição","Valor folha","Valor "+FT().min,"Diferença","O que verificar","Tratamento","Observação"];
+  const PW=wb.addWorksheet("Pendências",{views:[{state:"frozen",ySplit:4,showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+  PW.columns=[{width:14},{width:34},{width:16},{width:22},{width:24},{width:15},{width:15},{width:15},{width:70},{width:20},{width:40}];
+  xlTitulo(PW,PH.length,`Pendências para tratar (${pend.length})`,sub); xlCabecalho(PW,4,PH);
+  if(!pend.length){ PW.mergeCells(5,1,5,PH.length); const cc=PW.getCell(5,1); cc.value="Nenhuma pendência: todos os contratos conferem entre a folha e "+(S.passo==="1"?"o Emprega Brasil.":"a guia."); cc.font={bold:true,color:{argb:XL.st.ok[1]}}; cc.fill=xlFill(XL.st.ok[0]); }
+  pend.forEach((x,i)=>{
+    const row=5+i; const g=orient(x).map(SEMHTML);
+    const contrato = x.x&&x.p&&x.f.contrato==="bad" ? `${x.x.contrato} (folha) / ${x.p.contrato} (${FT().min})` : x.contrato;
+    const inst = x.x ? ((x.x.codInst?x.x.codInst+" – ":"")+(x.x.inst||"")) : x.inst;
+    xlLinha(PW,row,[ST[x.status].t,x.nome,fmtCPF(x.cpf),contrato,inst,x.x?.valor??null,x.p?.valor??null,x.diff,g.map(t=>"• "+t).join("\n"),tratLabel(tratGet(x).st),tratGet(x).obs],{money:[5,6,7],wrap:[1,3,4,8,10],center:[2]});
+    { const tc=PW.getCell(row,10); const st=tratGet(x).st; tc.alignment={horizontal:"center",vertical:"middle"};
+      tc.font={name:"Calibri",size:10,bold:true,color:{argb:st==="pendente"?XL.grey:(st==="justificado"?XL.st.pdf[1]:XL.st.ok[1])}}; tc.fill=xlFill(st==="pendente"?"FFF1F2F4":(st==="justificado"?XL.st.pdf[0]:XL.st.ok[0])); }
+    xlStatus(PW.getCell(row,1),x.status); PW.getRow(row).height=Math.max(20,14*g.length+(g.join("").length/110)*13);
+    PW.getCell(row,9).alignment={wrapText:true,vertical:"top"}; PW.getCell(row,11).alignment={wrapText:true,vertical:"top"};
+  });
+
+  /* ---------- Colaboradores ---------- */
+  const CH=["Colaborador","CPF","RE","Matrícula eSocial","Contratos folha","Contratos "+FT().min,"Valor folha","Valor "+FT().min,"Diferença","Instituições","Situação"];
+  const CW=wb.addWorksheet("Colaboradores",{views:[{state:"frozen",ySplit:4,showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+  CW.columns=[{width:36},{width:16},{width:8},{width:30},{width:11},{width:11},{width:15},{width:15},{width:15},{width:40},{width:16}];
+  xlTitulo(CW,CH.length,`Colaboradores com consignado (${A.uAll}) – uma linha por CPF`,sub); xlCabecalho(CW,4,CH);
+  const pior=["xls","div","pdf","att","ok"];
+  A.colab.forEach((o,i)=>{
+    const row=5+i; const st=pior.find(k=>o.status.has(k))||"ok";
+    xlLinha(CW,row,[o.nome,fmtCPF(o.cpf),o.re,o.mat,o.nx,o.np,o.vx,o.vp,o.dif,[...o.inst].join("; "),ST[st].t],{money:[6,7,8],center:[1,2,4,5],wrap:[9]});
+    xlStatus(CW.getCell(row,11),st);
+    if(o.nx>1||o.np>1){ CW.getCell(row,5).font={name:"Calibri",size:10,bold:true,color:{argb:XL.bronze}}; CW.getCell(row,6).font={name:"Calibri",size:10,bold:true,color:{argb:XL.bronze}}; }
+  });
+  const cr=5+A.colab.length;
+  xlLinha(CW,cr,[`Total: ${A.uAll} colaborador(es)`,"","","",S.xls?.rows.length||0,O?.rows.length||0,tx,tp,dif,"",""],{money:[6,7,8],center:[4,5],bold:true,fill:XL.bronzeSoft});
+  CW.autoFilter={from:{row:4,column:1},to:{row:4+A.colab.length,column:CH.length}};
+
+  /* ---------- Dados lidos ---------- */
+  const dados=(nome,titulo,heads,widths,linhas,money)=>{
+    const w=wb.addWorksheet(nome,{views:[{state:"frozen",ySplit:4,showGridLines:false}]});
+    w.columns=widths.map(x=>({width:x})); xlTitulo(w,heads.length,titulo,sub); xlCabecalho(w,4,heads);
+    linhas.forEach((l,i)=>xlLinha(w,5+i,l,{money}));
+    w.autoFilter={from:{row:4,column:1},to:{row:4+linhas.length,column:heads.length}};
+  };
+  if(S.passo==="1" && O) dados("Emprega Brasil (lido)","Dados lidos da planilha do Emprega Brasil",["Linha","Competência","Cód. IF","Instituição","Contrato","CPF","Matrícula","Nome trabalhador","Início desconto","Fim desconto","Fim contrato","Parcelas pagas","Total parcelas","Valor parcela"],[8,12,9,30,22,16,30,36,13,13,13,10,10,15],
+    O.rows.map(x=>[x.linha,x.comp,x.codInst,x.instDesc,x.contrato,fmtCPF(x.cpf),x.mat,x.nome,x.compIni,x.compFim,x.dataFim,x.qtdPagamentos,x.totalParcelas,x.valor]),[13]);
+  if(S.passo==="2" && S.pdf) dados("Guia FGTS (lida)","Dados lidos do PDF do FGTS Digital",["Página","Comp. Apuração","Vencimento","Nome Trabalhador","Matrícula","CPF","Número do Contrato","Instituição Financeira","Valor Consignado na Guia"],[8,12,12,36,30,16,22,18,16],
+    S.pdf.rows.map(x=>[x.pagina,x.comp,x.venc,x.nome,x.mat,fmtCPF(x.cpf),x.contrato,x.inst,x.valor]),[8]);
+  if(S.xls) dados("Folha (lida)","Dados lidos da planilha da folha",["Linha","RE","Colaborador","Matrícula esocial","CPF","Evento","Cod. Inst. Fin","Inst. Financeira","Nro. Contrato","Valor Descontado"],[8,8,36,22,16,10,10,28,22,16],
+    S.xls.rows.map(x=>[x.linha,x.re,x.nome,x.mat,fmtCPF(x.cpf),x.evento,x.codInst,x.inst,x.contrato,x.valor]),[9]);
+
+  const buf=await wb.xlsx.writeBuffer();
+  const blob=new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`Conciliacao_Consignado_${S.passo==="1"?"Passo1_EmpregaBrasil":"Passo2_GuiaFGTS"}_${comp.replace("/","-")||"sem-competencia"}.xlsx`;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
+  toast("Excel da conciliação gerado");
+}
+
+/* ============ PDF do FGTS Digital em Excel (sem conferência) ============ */
+async function exportarPDF(){
+  if(!S.pdf||!S.pdf.rows.length){ toast("Importe o PDF do FGTS Digital primeiro"); return; }
+  if(typeof ExcelJS==="undefined"){ toast("O gerador de Excel não carregou. Verifique a internet e abra a ferramenta de novo."); return; }
+  const rows=S.pdf.rows; const comps=[...new Set(rows.map(r=>r.comp).filter(Boolean))]; const comp=comps.join(", ")||normComp($("#comp").value)||"";
+  const total=r2(rows.reduce((t,r)=>t+(r.valor||0),0)); const colab=new Set(rows.map(r=>r.cpf||r.nome)).size;
+  const wb=new ExcelJS.Workbook(); wb.created=new Date();
+  const ws=wb.addWorksheet("Relação de Trabalhadores",{views:[{state:"frozen",ySplit:5,showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+  const H=["Comp. Apuração","Vencimento","Nome Trabalhador","Matrícula","CPF","Número do Contrato","Instituição Financeira","Valor Consignado na Guia"];
+  ws.columns=[{width:14},{width:13},{width:40},{width:32},{width:17},{width:24},{width:16},{width:20}];
+  xlTitulo(ws,H.length,"Relação de Trabalhadores – Crédito do Trabalhador (FGTS Digital)",`Competência ${comp||"—"}  ·  ${rows.length} contrato(s)  ·  ${colab} trabalhador(es)  ·  Total ${fmtV(total)}  ·  Extraído de ${S.pdf.fileName}`);
+  xlCabecalho(ws,5,H);
+  rows.forEach((r,i)=>{
+    const row=6+i;
+    xlLinha(ws,row,[r.comp,r.venc,r.nome,r.mat,fmtCPF(r.cpf),String(r.contrato||""),r.inst,r.valor],{money:[7],center:[0,1,4,6]});
+    ws.getCell(row,6).numFmt="@";
+  });
+  const tr=6+rows.length;
+  xlLinha(ws,tr,["Total","","",`${colab} trabalhador(es)`,"",`${rows.length} contrato(s)`,"",total],{money:[7],bold:true,fill:XL.bronzeSoft});
+  ws.autoFilter={from:{row:5,column:1},to:{row:5+rows.length,column:H.length}};
+  ws.getCell(4,1).value="Dados extraídos do PDF do FGTS Digital. Confira com o documento original em caso de dúvida."; ws.getCell(4,1).font={size:9,italic:true,color:{argb:XL.grey}};
+  const buf=await wb.xlsx.writeBuffer();
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  a.download=`Relacao_Trabalhadores_FGTS_${(comps[0]||comp||"sem-competencia").replace("/","-")}.xlsx`;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
+  toast("Planilha com os dados do PDF gerada");
+}
+
+/* ============ importação ============ */
+const META={X:"Clique ou arraste o Excel com os descontos de consignado",E:"Clique ou arraste a planilha de contratos baixada do portal Emprega Brasil",P:"Clique ou arraste a Relação de Trabalhadores (consignado na guia)"};
+async function importE(file){
+  $("#metaE").innerHTML=`<span class="loading"></span> Lendo ${esc(file.name)}…`;
+  try{
+    const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:false,raw:false});
+    if(!ehEmpregaBrasil(wb)){ toast("Esse arquivo parece ser a planilha da folha"); $("#metaE").textContent=META.E; return importX(file,wb); }
+    S.eb=lerEB(wb,file.name);
+    if(!$("#comp").value){ const c=S.eb.comps[0]||compFromName(file.name.replace(/(20\d{2})(0[1-9]|1[0-2])/,"$2_$1")); if(c) $("#comp").value=c; }
+    const tot=r2(S.eb.rows.reduce((s,r)=>s+(r.valor||0),0));
+    $("#metaE").innerHTML=`${esc(file.name)}<div class="meta"><b>${S.eb.rows.length}</b> contrato(s) · <b>${fmtV(tot)}</b>${S.eb.comps.length?" · comp. "+esc(S.eb.comps.join(", ")):""}</div>`;
+    $("#dropE").classList.add("loaded");
+    if(!S.eb.rows.length) toast("A planilha do Emprega Brasil está sem linhas de contrato");
+  }catch(e){ console.error(e); S.eb=null; $("#metaE").innerHTML=`<span style="color:var(--bad)">${esc(e.message||"Não foi possível ler a planilha.")}</span>`; }
+  conciliar();
+}
+async function importX(file,wbPronto){
+  $("#metaX").innerHTML=`<span class="loading"></span> Lendo ${esc(file.name)}…`;
+  try{
+    const wb=wbPronto||XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:false,raw:false});
+    if(!wbPronto && ehEmpregaBrasil(wb)){ toast("Esse arquivo é a planilha do Emprega Brasil"); $("#metaX").textContent=META.X; if(S.passo!=="1"){ S.passo="1"; aplicaPasso(); } return importE(file); }
+    S.xls=lerPlanilha(wb,file.name);
+    const cn=compFromName(file.name); if(cn && !$("#comp").value) $("#comp").value=cn;
+    const tot=r2(S.xls.rows.reduce((s,r)=>s+(r.valor||0),0));
+    $("#metaX").innerHTML=`${esc(file.name)}<div class="meta"><b>${S.xls.rows.length}</b> linha(s) · <b>${fmtV(tot)}</b></div>`;
+    $("#dropX").classList.add("loaded");
+    if(!S.xls.rows.length) toast("A planilha está sem linhas de desconto");
+  }catch(e){ console.error(e); S.xls=null; $("#metaX").innerHTML=`<span style="color:var(--bad)">${esc(e.message||"Não foi possível ler a planilha.")}</span>`; }
+  conciliar();
+}
+async function importP(file){
+  $("#metaP").innerHTML=`<span class="loading"></span> Lendo ${esc(file.name)}…`;
+  try{
+    if(typeof pdfjsLib==="undefined") throw new Error("O leitor de PDF não carregou. Verifique a conexão com a internet e abra a ferramenta de novo.");
+    const buf=await file.arrayBuffer();
+    S.pdf=await lerPDF(new Uint8Array(buf),file.name);
+    if(!$("#comp").value){ const cs=S.pdf.rows.map(r=>r.comp).filter(Boolean); if(cs.length) $("#comp").value=normComp(cs[0]); }
+    const tot=r2(S.pdf.rows.reduce((s,r)=>s+(r.valor||0),0));
+    $("#metaP").innerHTML=`${esc(file.name)}<div class="meta"><b>${S.pdf.rows.length}</b> linha(s) em ${S.pdf.paginas} pág. · <b>${fmtV(tot)}</b></div>`;
+    $("#btnPdfXls").hidden=!S.pdf.rows.length;
+    $("#dropP").classList.add("loaded");
+  }catch(e){ console.error(e); S.pdf=null; $("#btnPdfXls").hidden=true; $("#metaP").innerHTML=`<span style="color:var(--bad)">${esc(e.message||"Não foi possível ler o PDF.")}</span>`; }
+  conciliar();
+}
+function wireDrop(id,inp,fn){
+  const d=$(id), i=$(inp);
+  i.onchange=()=>{ if(i.files[0]) fn(i.files[0]); i.value=""; };
+  ["dragenter","dragover"].forEach(ev=>d.addEventListener(ev,e=>{ e.preventDefault(); d.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev=>d.addEventListener(ev,e=>{ e.preventDefault(); d.classList.remove("over"); }));
+  d.addEventListener("drop",e=>{ const f=e.dataTransfer.files[0]; if(f) fn(f); });
+}
+wireDrop("#dropX","#fileX",f=>importX(f));
+wireDrop("#dropP","#fileP",importP);
+wireDrop("#dropE","#fileE",f=>importE(f));
+
+
+/* ============ controles ============ */
+function selTab(t){
+  S.tab=t; document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  document.querySelectorAll("[data-pane]").forEach(p=>p.hidden=p.dataset.pane!==t);
+  const help=t==="ajuda";
+  $("#navHelp").setAttribute("aria-pressed",help);
+  $("#step1").setAttribute("aria-pressed",!help && S.passo==="1"); $("#step2").setAttribute("aria-pressed",!help && S.passo==="2");
+  document.querySelector(".imports").hidden=help; $(".hint").hidden=help; $("#summary").hidden=help; $("#notices").hidden=help; $("#h1sub").hidden=help;
+  $(".panel .tabs").hidden=help;
+  $("#h1").textContent=help?"Como usar":(S.passo==="1"?"Emprega Brasil × Folha":"Folha × Guia FGTS Digital");
+  $("#crumbStep").textContent=help?"Ajuda":"Passo "+S.passo;
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>selTab(b.dataset.tab));
+$("#stX").onclick=()=>{S.lidos="x";renderLidos();}; $("#stE").onclick=()=>{S.lidos="e";renderLidos();};
+$("#thLight").onclick=()=>aplicaTema("light"); $("#thDark").onclick=()=>aplicaTema("dark");
+try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>aplicaTema()); }catch(e){}
+$("#navHelp").onclick=()=>{ selTab("ajuda"); window.scrollTo(0,0); };
+$("#step1").onclick=()=>{ if(S.tab==="ajuda"){ selTab("conf"); if(S.passo==="1") return; } if(S.passo==="1") return; S.passo="1"; aplicaPasso(); conciliar(); };
+$("#step2").onclick=()=>{ if(S.tab==="ajuda"){ selTab("conf"); if(S.passo==="2") return; } if(S.passo==="2") return; S.passo="2"; aplicaPasso(); conciliar(); }; $("#stP").onclick=()=>{S.lidos="p";renderLidos();}; $("#stR").onclick=()=>{S.lidos="r";renderLidos();};
+$("#q").oninput=e=>{ S.q=e.target.value; renderConf(); };
+$("#comp").oninput=e=>{ let d=digits(e.target.value).slice(0,6); e.target.value = d.length>2 ? d.slice(0,2)+"/"+d.slice(2) : d; if(d.length===6||d.length===0) conciliar(); };
+$("#btnExport").onclick=exportar;
+$("#btnPdfXls").onclick=e=>{ e.preventDefault(); e.stopPropagation(); exportarPDF(); };
+$("#btnPrint").onclick=()=>{ renderPrint(); window.print(); };
+$("#btnClear").onclick=()=>{ if(!confirm("Limpar os arquivos importados e apagar os tratamentos registrados neste navegador?")) return; TRAT={}; try{ localStorage.removeItem(TRAT_KEY); }catch(e){} toast("Arquivos e tratamentos apagados");
+  S.xls=null;S.pdf=null;S.eb=null;$("#metaE").textContent=META.E;$("#dropE").classList.remove("loaded");S.results=[];S.open=new Set();S.filter="todos";$("#comp").value="";
+  $("#metaX").textContent="Clique ou arraste o Excel com os descontos de consignado"; $("#metaP").textContent="Clique ou arraste a Relação de Trabalhadores (consignado na guia)";
+  $("#dropX").classList.remove("loaded"); $("#dropP").classList.remove("loaded"); $("#btnPdfXls").hidden=true; render(); };
+window.addEventListener("beforeunload",e=>{ if(S.xls||S.eb||S.pdf){ e.preventDefault(); e.returnValue=""; } });
+const PRIV_KEY="consignado.aviso.v1";
+function abrePriv(){ $("#privModal").hidden=false; $("#privOk").focus(); }
+$("#btnPriv").onclick=abrePriv;
+$("#privOk").onclick=()=>{ $("#privModal").hidden=true; try{ localStorage.setItem(PRIV_KEY,"1"); }catch(e){} };
+$("#privModal").addEventListener("keydown",e=>{ if(e.key==="Escape") $("#privOk").click(); });
+try{ if(!localStorage.getItem(PRIV_KEY)) abrePriv(); }catch(e){ abrePriv(); }
+aplicaTema(); aplicaPasso();
+conciliar();
+</script>
+</body>
+</html>

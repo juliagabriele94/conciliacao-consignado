@@ -1,0 +1,5 @@
+# Nunca versionar arquivos com dados de trabalhadores
+*.xlsx
+*.xls
+*.csv
+*.pdf
