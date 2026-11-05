@@ -342,6 +342,7 @@ td.divs .tag{white-space:normal}
     <nav class="navsec" aria-label="Ajuda">
       <div class="lb">Ajuda</div>
       <button class="nav" id="navHelp" aria-pressed="false"><span class="n"><svg class="i" viewBox="0 0 24 24" style="width:14px;height:14px"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/></svg></span><span class="tx"><b>Como usar</b><small>Passo a passo e regras</small></span></button>
+      <button class="nav" id="navSeg" aria-pressed="false"><span class="n"><svg class="i" viewBox="0 0 24 24" style="width:14px;height:14px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="tx"><b>Segurança dos dados</b><small>Como seus dados são protegidos</small></span></button>
     </nav>
     <div class="grow"></div>
     <div class="navsec">
@@ -361,7 +362,7 @@ td.divs .tag{white-space:normal}
         <h1 id="h1">Emprega Brasil × Folha</h1>
       </div>
       <div class="tools">
-        <button class="seal" id="btnPriv" title="Ver aviso de privacidade"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Processamento local</button>
+        <button class="seal" id="btnPriv" title="Ver como seus dados são protegidos"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Processamento local</button>
         <div class="compbox">
           <label for="comp">Competência</label>
           <input id="comp" placeholder="MM/AAAA" maxlength="7" inputmode="numeric" autocomplete="off">
@@ -438,6 +439,42 @@ td.divs .tag{white-space:normal}
         <button class="chip" id="stR" aria-pressed="false">Texto bruto do PDF</button>
       </div>
       <div class="tablebox" id="lidosBox" style="margin-top:12px"></div>
+    </div>
+
+    <div data-pane="seg" hidden>
+      <div class="howto">
+        <div class="full">
+          <h3>Seus dados não saem do seu computador</h3>
+          <p>A ferramenta funciona inteira no seu navegador. As planilhas e o PDF são abertos e comparados no seu computador e <b>nunca são enviados</b> para este site nem para nenhum servidor.</p>
+        </div>
+        <div>
+          <h3>Por que os dados não vazam</h3>
+          <ul>
+            <li><b>Processamento local:</b> o site só entrega a tela da ferramenta. A leitura e a comparação dos arquivos acontecem no seu navegador.</li>
+            <li><b>Envio bloqueado:</b> o site tem uma configuração de segurança que proíbe a página de enviar qualquer informação pela internet. Mesmo que algo tentasse, o navegador bloquearia.</li>
+            <li><b>Sem terceiros:</b> não há contador de visitas, cookies, anúncios ou serviços externos. Os componentes que leem Excel e PDF ficam no próprio site.</li>
+            <li><b>Nada fica guardado:</b> os arquivos importados são apagados quando você fecha ou recarrega a página.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Como comprovar você mesmo</h3>
+          <ol>
+            <li>Abra a ferramenta normalmente.</li>
+            <li><b>Desligue a internet</b> (Wi-Fi ou cabo).</li>
+            <li>Importe os arquivos e faça a conferência.</li>
+          </ol>
+          <p>A ferramenta continua funcionando sem internet. Se precisasse enviar os dados para algum lugar, não funcionaria.</p>
+          <p class="sub">Para a equipe de TI: com o F12 aberto na aba <b>Rede</b> (Network), nenhuma requisição é feita ao importar os arquivos.</p>
+        </div>
+        <div>
+          <h3>Cuidados que valem para qualquer sistema</h3>
+          <ul>
+            <li><b>Extensões do navegador:</b> extensões de origem desconhecida conseguem ler o conteúdo de qualquer página aberta. Prefira um navegador sem extensões desconhecidas.</li>
+            <li><b>Arquivos exportados:</b> o Excel e o PDF gerados contêm dados pessoais. Guarde-os conforme as regras da sua empresa.</li>
+            <li><b>Computador compartilhado:</b> os tratamentos registrados ficam salvos neste navegador até você clicar em <b>Limpar</b>.</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <div data-pane="ajuda" hidden>
@@ -552,7 +589,7 @@ td.divs .tag{white-space:normal}
       <li>O Excel e o PDF exportados contêm dados pessoais: guarde-os conforme as regras da sua empresa.</li>
       <li>Esta é uma <b>ferramenta de apoio</b>. A conferência final é de responsabilidade do usuário.</li>
     </ul>
-    <button class="btn primary" id="privOk">Entendi</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" id="privOk">Entendi</button><button class="btn" id="privMais">Saiba mais</button></div>
   </div>
 </div>
 <div id="printArea"></div>
@@ -1548,20 +1585,21 @@ wireDrop("#dropE","#fileE",f=>importE(f));
 function selTab(t){
   S.tab=t; document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
   document.querySelectorAll("[data-pane]").forEach(p=>p.hidden=p.dataset.pane!==t);
-  const help=t==="ajuda";
-  $("#navHelp").setAttribute("aria-pressed",help);
+  const help=t==="ajuda"||t==="seg";
+  $("#navHelp").setAttribute("aria-pressed",t==="ajuda"); $("#navSeg").setAttribute("aria-pressed",t==="seg");
   $("#step1").setAttribute("aria-pressed",!help && S.passo==="1"); $("#step2").setAttribute("aria-pressed",!help && S.passo==="2");
   document.querySelector(".imports").hidden=help; $(".hint").hidden=help; $("#summary").hidden=help; $("#notices").hidden=help; $("#h1sub").hidden=help;
   $(".panel .tabs").hidden=help;
-  $("#h1").textContent=help?"Como usar":(S.passo==="1"?"Emprega Brasil × Folha":"Folha × Guia FGTS Digital");
+  $("#h1").textContent=help?(t==="seg"?"Segurança dos dados":"Como usar"):(S.passo==="1"?"Emprega Brasil × Folha":"Folha × Guia FGTS Digital");
   $("#crumbStep").textContent=help?"Ajuda":"Passo "+S.passo;
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>selTab(b.dataset.tab));
 $("#stX").onclick=()=>{S.lidos="x";renderLidos();}; $("#stE").onclick=()=>{S.lidos="e";renderLidos();};
 $("#thLight").onclick=()=>aplicaTema("light"); $("#thDark").onclick=()=>aplicaTema("dark");
 $("#navHelp").onclick=()=>{ selTab("ajuda"); window.scrollTo(0,0); };
-$("#step1").onclick=()=>{ if(S.tab==="ajuda"){ selTab("conf"); if(S.passo==="1") return; } if(S.passo==="1") return; S.passo="1"; aplicaPasso(); conciliar(); };
-$("#step2").onclick=()=>{ if(S.tab==="ajuda"){ selTab("conf"); if(S.passo==="2") return; } if(S.passo==="2") return; S.passo="2"; aplicaPasso(); conciliar(); }; $("#stP").onclick=()=>{S.lidos="p";renderLidos();}; $("#stR").onclick=()=>{S.lidos="r";renderLidos();};
+$("#navSeg").onclick=()=>{ selTab("seg"); window.scrollTo(0,0); };
+$("#step1").onclick=()=>{ if(S.tab==="ajuda"||S.tab==="seg"){ selTab("conf"); if(S.passo==="1") return; } if(S.passo==="1") return; S.passo="1"; aplicaPasso(); conciliar(); };
+$("#step2").onclick=()=>{ if(S.tab==="ajuda"||S.tab==="seg"){ selTab("conf"); if(S.passo==="2") return; } if(S.passo==="2") return; S.passo="2"; aplicaPasso(); conciliar(); }; $("#stP").onclick=()=>{S.lidos="p";renderLidos();}; $("#stR").onclick=()=>{S.lidos="r";renderLidos();};
 $("#q").oninput=e=>{ S.q=e.target.value; renderConf(); };
 $("#comp").oninput=e=>{ let d=digits(e.target.value).slice(0,6); e.target.value = d.length>2 ? d.slice(0,2)+"/"+d.slice(2) : d; if(d.length===6||d.length===0) conciliar(); };
 $("#btnExport").onclick=exportar;
@@ -1574,7 +1612,8 @@ $("#btnClear").onclick=()=>{ if(!confirm("Limpar os arquivos importados e apagar
 window.addEventListener("beforeunload",e=>{ if(S.xls||S.eb||S.pdf){ e.preventDefault(); e.returnValue=""; } });
 const PRIV_KEY="consignado.aviso.v1";
 function abrePriv(){ $("#privModal").hidden=false; $("#privOk").focus(); }
-$("#btnPriv").onclick=abrePriv;
+$("#btnPriv").onclick=()=>{ selTab("seg"); window.scrollTo(0,0); };
+$("#privMais").onclick=()=>{ $("#privOk").click(); selTab("seg"); window.scrollTo(0,0); };
 $("#privOk").onclick=()=>{ $("#privModal").hidden=true; try{ localStorage.setItem(PRIV_KEY,"1"); }catch(e){} };
 $("#privModal").addEventListener("keydown",e=>{ if(e.key==="Escape") $("#privOk").click(); });
 try{ if(!localStorage.getItem(PRIV_KEY)) abrePriv(); }catch(e){ abrePriv(); }

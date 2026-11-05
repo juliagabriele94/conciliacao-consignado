@@ -61,6 +61,8 @@ A ferramenta confere uma competência de cada vez e não guarda histórico. Ao t
 
 **Nenhum dado sai do computador de quem usa.** As planilhas e o PDF são lidos apenas no navegador. Nenhuma informação é enviada, armazenada ou utilizada pelo site.
 
+Para comprovar: abra a ferramenta, **desligue a internet** e faça a conferência. Ela continua funcionando, porque nada precisa sair do seu computador. Os detalhes estão no menu **Segurança dos dados**, dentro da ferramenta.
+
 Os arquivos importados são apagados ao fechar a página. Os tratamentos ficam salvos só no navegador de quem usa, até clicar em **Limpar**.
 
 ---
