@@ -2,6 +2,8 @@
 
 Ferramenta para o Departamento Pessoal conferir, todo mês, os descontos de empréstimo consignado do **Crédito do Trabalhador**, contrato a contrato.
 
+### 👉 [Acessar a ferramenta](https://conciliacao-consignado.vercel.app/)
+
 ![Tela da ferramenta com uma conferência de exemplo (dados fictícios)](docs/tela-ferramenta.png)
 
 <sub>Imagem ilustrativa com dados fictícios. Nomes, CPFs e contratos aparecem mascarados.</sub>
