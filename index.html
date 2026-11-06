@@ -507,7 +507,7 @@ td.divs .tag{white-space:normal}
           <h3>O que significa cada situação</h3>
           <ul class="legend">
             <li><span class="pill p-ok">Conferido</span><span>Todos os dados batem. Nada a fazer.</span></li>
-            <li><span class="pill p-att">Atenção</span><span>Os dados principais batem, mas há algo para olhar: nome ou nome do banco escrito de forma diferente (ex.: "ITAU SA" e "ITAÚ UNIBANCO S.A."), campo em branco ou aviso sobre o período do contrato.</span></li>
+            <li><span class="pill p-att">Atenção</span><span>Os dados principais batem, mas há algo para olhar: nome do trabalhador escrito de forma diferente, <b>nome da instituição diferente do Emprega Brasil</b> (ex.: "PAN FINANCEIRA" e "BANCO PAN S.A."), campo em branco ou aviso sobre o período do contrato.</span></li>
             <li><span class="pill p-div">Divergente</span><span>Algum dado é diferente: valor, CPF, contrato, matrícula, código da instituição ou competência. Precisa ser corrigido.</span></li>
             <li><span class="pill p-pdf">Só no Emprega Brasil</span><span><b>Passo 1.</b> O contrato está na planilha do Emprega Brasil, mas não foi descontado na folha. Precisa ser incluído.</span></li>
             <li><span class="pill p-pdf">Só na guia</span><span><b>Passo 2.</b> O valor está na guia, mas não foi descontado na folha. A empresa pagaria um valor que não descontou.</span></li>
@@ -729,7 +729,7 @@ function lerPlanilha(wb, fileName){
   const tot=totaisPlan.length?totaisPlan[totaisPlan.length-1]:null;
   if(totaisPlan.length && !totaisPlan.some(t=>Math.abs(t.v-soma)<0.01)) warnings.push(`A soma das linhas (${fmtV(soma)}) não fecha com o total escrito na planilha (${fmtV(tot.v)}). Confira se há linhas sem CPF ou valores duplicados.`);
   const semCPF=rows.filter(r=>!r.cpf).length; if(semCPF) warnings.push(`${semCPF} linha(s) da planilha sem CPF.`);
-  return {fileName, sheet:best.sn, rows, warnings, semComp, semMat:map.mat==null, totalPlanilha:tot?tot.v:null};
+  return {fileName, sheet:best.sn, rows, warnings, semComp, semInst:map.inst==null, semMat:map.mat==null, totalPlanilha:tot?tot.v:null};
 }
 
 /* ============ leitura da planilha do Emprega Brasil ============ */
@@ -913,10 +913,20 @@ function cmpInstRow(x,p){
     const cp=zeroStrip(m[1]), cx=zeroStrip(x.codInst);
     if(!cx) return "falta";            // planilha sem Cod. Inst. Fin: não dá para conferir
     if(cp!==cx) return "bad";          // conferência rígida do código da instituição
-    if(m[2] && x.inst){ const d=cmpInst(x.inst,m[2]); return d==="ok"?"ok":"warn"; } // descrição: diferença de grafia
     return "ok";
   }
   return cmpInst(x.inst,p.inst);
+}
+function normInstNome(s){
+  let t=normTxt(s);
+  for(let i=0;i<3;i++) t=t.replace(/\s+(S\s?A|LTDA|EIRELI|ME)$/,"").trim();
+  return t;
+}
+function cmpInstNome(x,p){
+  if(!p.instDesc) return null;                 // guia do FGTS não traz o nome da instituição
+  if(S.xls?.semInst) return null;              // planilha sem a coluna Inst. Financeira (opcional)
+  if(!x.inst) return "falta";
+  return normInstNome(x.inst)===normInstNome(p.instDesc) ? "ok" : "warn";
 }
 function cmpInst(a,b){
   const STOP=new Set(["BANCO","BCO","S","A","SA","LTDA","DE","DO","DA","DOS","DAS","E","CREDITO","FINANCIAMENTO","INVESTIMENTO","INVESTIMENTOS","SOCIEDADE","MULTIPLO","FINANCEIRA","CFI","SCFI","INSTITUICAO","PAGAMENTO","COOPERATIVA","BRASILEIRO"]);
@@ -969,6 +979,7 @@ function conciliar(){
       f.cpf  = x.cpf===p.cpf ? "ok" : "bad";
       f.contrato = normKey(x.contrato)===normKey(p.contrato) ? "ok" : "bad";
       f.inst = cmpInstRow(x,p);
+      { const n=cmpInstNome(x,p); if(n) f.instNome=n; }
       f.valor = x.valor==null||p.valor==null ? "bad" : (Math.abs(x.valor-p.valor)<0.005?"ok":"bad");
     }
     const rowAny=x||p;
@@ -1005,8 +1016,9 @@ const ST = {
   pdf:{t:"Só na guia",c:"p-pdf",v:"--info"}, xls:{t:"Só na folha",c:"p-xls",v:"--bad"}
 };
 Object.defineProperty(ST.pdf,"t",{get:()=>FT().so});
-const FIELDS=[["comp","Competência"],["nome","Nome do trabalhador"],["mat","Matrícula eSocial"],["cpf","CPF"],["contrato","Número do contrato"],["inst","Instituição financeira"],["valor","Valor descontado / consignado"]];
-const FLAB={comp:"Competência",nome:"Nome",mat:"Matrícula",cpf:"CPF",contrato:"Contrato",inst:"Instituição",valor:"Valor"};
+const FIELDS=[["comp","Competência"],["nome","Nome do trabalhador"],["mat","Matrícula eSocial"],["cpf","CPF"],["contrato","Número do contrato"],["inst","Código da instituição"],["instNome","Nome da instituição"],["valor","Valor descontado / consignado"]];
+const FLAB={comp:"Competência",nome:"Nome",mat:"Matrícula",cpf:"CPF",contrato:"Contrato",inst:"Cód. instituição",instNome:"Nome da instituição",valor:"Valor"};
+const WLAB=k=>k==="instNome"?"Nome da instituição diferente":FLAB[k]+" (escrita diferente)";
 /* ============ tratamento das pendências ============ */
 const TRAT_OPC=[["pendente","Pendente"],["corrigido","Corrigido na folha"],["justificado","Justificado"],["retificado","Retificado no eSocial"]];
 const TRAT_KEY="consignado.tratamentos.v1"; let TRAT={};
@@ -1124,7 +1136,7 @@ function renderConf(){
   const head=`<thead><tr><th>Situação</th><th>Tratamento</th><th>Trabalhador</th><th>Contrato</th><th>Instituição</th><th class="r">Folha</th><th class="r">${FT().col}</th><th class="r">Diferença</th><th>Divergências</th></tr></thead>`;
   const body=R.map(r=>{
     const tags=[...Object.entries(r.f).filter(([,v])=>v==="bad").map(([k])=>`<span class="tag bad">${FLAB[k]}</span>`),
-                ...Object.entries(r.f).filter(([,v])=>v==="warn").map(([k])=>`<span class="tag warn">${FLAB[k]} (escrita diferente)</span>`),
+                ...Object.entries(r.f).filter(([,v])=>v==="warn").map(([k])=>`<span class="tag warn">${WLAB(k)}</span>`),
                 ...Object.entries(r.f).filter(([,v])=>v==="falta").map(([k])=>`<span class="tag warn">${FLAB[k]} em branco</span>`),
                 ...r.alerts.map(a=>`<span class="tag warn">${esc(a)}</span>`)].join("");
     const open=S.open.has(r.i);
@@ -1158,7 +1170,8 @@ function val(k,o,isX){
   if(k==="valor") return fmtV(o.valor);
   if(k==="cpf") return fmtCPF(o.cpf);
   if(k==="comp") return isX ? (o.comp||normComp($("#comp").value)||"—") : (o.comp||"—");
-  if(k==="inst") return (isX && o.codInst ? o.codInst+" – " : "")+(o.inst||"—");
+  if(k==="inst") return isX ? (o.codInst||"—") : (o.codInst || o.inst || "—");
+  if(k==="instNome") return (isX ? o.inst : o.instDesc) || "—";
   return o[k]||"—";
 }
 function detail(r){
@@ -1230,6 +1243,8 @@ function orient(r){
   if(r.f.inst==="bad") g.push("Código da instituição financeira diferente. Confirme qual instituição é a credora deste contrato (houve portabilidade?) e corrija o Cod. Inst. Fin na folha.");
   if(r.f.inst==="falta") g.push("A planilha da folha está sem o código da instituição (Cod. Inst. Fin), então não foi possível conferir.");
   if(r.f.comp==="bad") g.push("Competência diferente da conferida. Confira se a "+FT().arq+" e a folha são do mesmo mês.");
+  if(r.f.instNome==="warn") g.push(`O código da instituição confere, mas o nome está diferente: folha "${esc(r.x?.inst||"")}" × Emprega Brasil "${esc(r.p?.instDesc||"")}". Vale ajustar o cadastro da instituição no sistema para ficar igual ao Emprega Brasil.`);
+  if(r.f.instNome==="falta") g.push("A planilha da folha está sem o nome da instituição (Inst. Financeira), então só o código foi conferido.");
   if(r.f.nome==="warn"||r.f.inst==="warn") g.push("A diferença é só na forma de escrever (abreviação, acento ou texto cortado). Normalmente não exige correção, mas vale conferir o cadastro.");
   return g;
 }
@@ -1304,7 +1319,7 @@ function renderPrint(){
   const now=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
   const pill=k=>`<span class="pp ${ST[k].c}">${ST[k].t}</span>`;
   const divs=r=>[...Object.entries(r.f).filter(([,v])=>v==="bad").map(([k])=>FLAB[k]),
-                 ...Object.entries(r.f).filter(([,v])=>v==="warn").map(([k])=>FLAB[k]+" (escrita diferente)"),
+                 ...Object.entries(r.f).filter(([,v])=>v==="warn").map(([k])=>WLAB(k)),
                  ...Object.entries(r.f).filter(([,v])=>v==="falta").map(([k])=>FLAB[k]+" em branco"),...r.alerts].join("; ");
   const vlr=v=>v==null?"—":fmtV(v);
   const st=(k)=>{ const rs=S.results.filter(x=>x.status===k); return `<tr><td>${pill(k)}</td><td class="r">${rs.length}</td><td class="r">${vlr(r2(rs.reduce((s,x)=>s+(x.x?.valor||0),0)))}</td><td class="r">${vlr(r2(rs.reduce((s,x)=>s+(x.p?.valor||0),0)))}</td></tr>`; };
@@ -1439,13 +1454,13 @@ async function exportar(){
   const F=wb.addWorksheet("Conferência",{views:[{state:"frozen",ySplit:4,xSplit:2,showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
   F.columns=W.map(w=>({width:w}));
   xlTitulo(F,H.length,"Conferência por contrato",sub); xlCabecalho(F,4,H);
-  const mapF={nome:[1,2],mat:[4],cpf:[5,6],contrato:[7,8],inst:[9,11],comp:[12,13],valor:[16,17,18]};
+  const mapF={nome:[1,2],mat:[4],cpf:[5,6],contrato:[7,8],inst:[9,11],instNome:[10,11],comp:[12,13],valor:[16,17,18]};
   S.results.forEach((x,i)=>{
     const row=5+i;
     xlLinha(F,row,[ST[x.status].t,x.x?.nome,x.p?.nome,x.x?.re,x.p?.mat||x.x?.mat,x.x?fmtCPF(x.x.cpf):"",x.p?fmtCPF(x.p.cpf):"",x.x?.contrato,x.p?.contrato,x.x?.codInst,x.x?.inst,x.p?.inst,
       x.x?(x.x.comp||comp):"",x.p?.comp,S.passo==="1"?(x.p&&(x.p.compIni||x.p.compFim)?(x.p.compIni||"?")+" a "+(x.p.compFim||"?"):""):x.p?.venc,x.x?.evento,x.x?.valor??null,x.p?.valor??null,(x.x||x.p)?x.diff:null,
       Object.entries(x.f).filter(([,v])=>v==="bad").map(([k])=>FLAB[k]).join(", "),
-      [...Object.entries(x.f).filter(([,v])=>v==="warn"||v==="falta").map(([k,v])=>FLAB[k]+(v==="falta"?" em branco":" (escrita diferente)")),...x.alerts].join(", "),
+      [...Object.entries(x.f).filter(([,v])=>v==="warn"||v==="falta").map(([k,v])=>(v==="falta"?FLAB[k]+" em branco":WLAB(k))),...x.alerts].join(", "),
       x.status==="ok"?"":tratLabel(tratGet(x).st), x.status==="ok"?"":tratGet(x).obs],
       {money:[16,17,18],center:[3,9,12,13,14,15],wrap:[19,20,22]});
     xlStatus(F.getCell(row,1),x.status);
