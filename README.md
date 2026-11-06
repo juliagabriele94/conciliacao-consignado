@@ -49,6 +49,8 @@ As instruções completas estão no menu **Como usar**, dentro da ferramenta.
 |---|---|
 | Colaborador, CPF, Cod. Inst. Fin, Nro. Contrato, Valor Descontado | RE, Matrícula esocial, Evento, Inst. Financeira |
 
+**Dica:** salve a planilha da folha com a competência no nome, por exemplo `CONSIGNADO - 09_2026.xlsx`. Assim a ferramenta confere sozinha se a folha é do mesmo mês do Emprega Brasil ou da guia, e avisa se for de outro mês. Sem o mês no nome, ela pede que você confirme a competência.
+
 **Planilha do Emprega Brasil**: o arquivo exatamente como é baixado do portal.
 
 **PDF do FGTS Digital**: a Relação de Trabalhadores do Crédito do Trabalhador, baixada do portal.

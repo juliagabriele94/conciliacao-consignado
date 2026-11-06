@@ -382,7 +382,7 @@ td.divs .tag{white-space:normal}
           <div style="min-width:0">
             <div class="t">Planilha da folha</div>
             <div class="s" id="metaX">Clique ou arraste o Excel com os descontos de consignado</div>
-            <div class="req"><b>Obrigatórias:</b> Colaborador, CPF, Cod. Inst. Fin, Nro. Contrato, Valor Descontado<br><b>Opcionais:</b> RE, Matrícula esocial, Evento, Inst. Financeira</div>
+            <div class="req"><b>Obrigatórias:</b> Colaborador, CPF, Cod. Inst. Fin, Nro. Contrato, Valor Descontado<br><b>Opcionais:</b> RE, Matrícula esocial, Evento, Inst. Financeira<br><b>Dica:</b> coloque a competência no nome do arquivo, ex.: CONSIGNADO - 09_2026.xlsx</div>
           </div>
         </div>
         <div class="drop" id="dropE">
@@ -519,6 +519,7 @@ td.divs .tag{white-space:normal}
         <div>
           <h3>Arquivos que a ferramenta aceita</h3>
           <p><b>Planilha da folha</b> (Excel exportado do sistema). Precisa ter as colunas <code>Colaborador</code>, <code>CPF</code>, <code>Cod. Inst. Fin</code>, <code>Nro. Contrato</code> e <code>Valor Descontado</code>. Também são usadas, se existirem: <code>RE</code>, <code>Matrícula esocial</code>, <code>Evento</code> e <code>Inst. Financeira</code>. A ordem das colunas não importa, e as linhas de total são ignoradas.</p>
+          <p><b>Competência no nome do arquivo:</b> salve a planilha da folha com o mês no nome, por exemplo <code>CONSIGNADO - 09_2026.xlsx</code> (também vale <code>09-2026</code>, <code>092026</code> ou <code>2026-09</code>). Assim a ferramenta confere sozinha se a folha é da mesma competência do Emprega Brasil ou da guia e avisa se for de outro mês. Sem o mês no nome (nem uma coluna <code>Competência</code>), a ferramenta pede que você confirme a competência antes de seguir.</p>
           <p><b>Planilha do Emprega Brasil</b>: use o arquivo exatamente como foi baixado do portal, sem mudar o nome das colunas.</p>
           <p><b>PDF do FGTS Digital</b>: o PDF da <b>Relação de Trabalhadores</b> do Crédito do Trabalhador, baixado do portal. Não funciona com PDF escaneado ou foto do documento. Depois de importar, o botão <b>Baixar dados do PDF em Excel</b> gera uma planilha com todas as linhas do PDF, mesmo sem fazer a conferência.</p>
           <p class="sub">Dica: deixe as colunas de CPF e de contrato no formato <b>Texto</b> no Excel. Números de contrato muito longos gravados como número perdem os últimos dígitos.</p>
@@ -632,7 +633,7 @@ function normComp(s){
   m=s.match(/^(20\d{2})(0[1-9]|1[0-2])$/); if(m) return m[2]+"/"+m[1];
   return s;
 }
-function compFromName(n){ const m=String(n).match(/(?:^|\D)(0[1-9]|1[0-2])[\s._\-\/]*(20\d{2})(?:\D|$)/); return m? m[1]+"/"+m[2] : ""; }
+function compFromName(n){ n=String(n).replace(/\.[a-z0-9]+$/i,""); let m=n.match(/(?:^|\D)(0[1-9]|1[0-2])[\s._\-\/]*(20\d{2})(?:\D|$)/); if(m) return m[1]+"/"+m[2]; m=n.match(/(?:^|\D)(20\d{2})[._\-](0[1-9]|1[0-2])(?:\D|$)/); return m? m[2]+"/"+m[1] : ""; }
 function lev(a,b){
   if(a===b) return 0; const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
   let p=Array.from({length:n+1},(_,i)=>i);
@@ -1066,10 +1067,23 @@ function renderNotices(){
   }
   const compRef=normComp($("#comp").value);
   if(S.xls && S.xls.semComp && !compRef) w.push("Informe a competência no topo: a planilha não tem coluna de competência e o nome do arquivo não indica o mês.");
+  let confirmar=false;
+  if(S.xls && compRef){
+    const cn=compFromName(S.xls.fileName); const cc=[...new Set(S.xls.rows.map(r=>r.comp).filter(Boolean))];
+    if(cn && cn!==compRef) w.push(`Folha: o nome do arquivo indica a competência ${cn}, diferente da competência conferida (${compRef}). Confira se importou a planilha do mês certo.`);
+    if(cc.some(c=>c!==compRef)) w.push(`Folha: a coluna de competência da planilha traz ${cc.join(", ")}, diferente da competência conferida (${compRef}).`);
+    if(!cn && !cc.length && S.xls.compOk!==compRef) confirmar=true;
+  }
+  if(S.passo==="2" && S.pdf && compRef){
+    const pc=[...new Set(S.pdf.rows.map(r=>normComp(r.comp)).filter(Boolean))];
+    if(pc.length && pc.some(c=>c!==compRef)) w.push(`PDF: a guia é da competência ${pc.join(", ")}, diferente da competência conferida (${compRef}). Confira se importou o PDF do mês certo.`);
+  }
+  if(confirmar) out.push(`<div class="notice warn"><div style="flex:1"><b>Confirme a competência da planilha da folha.</b> O nome do arquivo e a planilha não informam o mês. Confira se a planilha <b>${esc(S.xls.fileName)}</b> é da competência <b>${esc(compRef)}</b>.<div class="sub" style="margin-top:4px">Dica: inclua a competência no nome do arquivo (ex.: <b>CONSIGNADO - ${esc(compRef.replace("/","_"))}.xlsx</b>) para a ferramenta conferir sozinha.</div></div><button class="btn sm" id="btnCompOk">Confirmar ${esc(compRef)}</button></div>`);
   if(w.length) out.push(`<div class="notice warn"><div><b>Pontos de atenção na leitura</b><ul>${w.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div></div>`);
   if(!S.xls && !O) out.push(`<div class="notice info"><div>Para começar, confira a competência no topo e importe a <b>planilha da folha</b> e a <b>${FT().arq}</b>.</div></div>`);
   else if(!S.xls || !O) out.push(`<div class="notice info"><div>Falta importar ${!S.xls?"a <b>planilha da folha</b>":"a <b>"+FT().arq+"</b>"}. Enquanto isso, todas as linhas aparecem como sem correspondência.</div></div>`);
   $("#notices").innerHTML=out.join("");
+  const bc=$("#btnCompOk"); if(bc) bc.onclick=()=>{ S.xls.compOk=compRef; renderNotices(); toast("Competência da folha confirmada"); };
 }
 function renderSummary(){
   const {c,tx,tp,dif}=totais(); const n=S.results.length; const O=OUT();
