@@ -21,7 +21,7 @@ Cada contrato é localizado pelo **número do contrato**. Depois, a ferramenta c
 
 - Confere, contrato a contrato, se os dados do empréstimo lançados na folha estão corretos e coincidem com a planilha do Emprega Brasil (Passo 1) e com a guia do FGTS Digital (Passo 2): contrato, CPF, nome, matrícula eSocial, competência, instituição financeira e valor da parcela
 - Mostra a situação de cada contrato: **Conferido**, **Atenção**, **Divergente**, **Só no Emprega Brasil**, **Só na guia** ou **Só na folha**
-- Explica o que verificar em cada pendência
+- Explica o que verificar em cada pendência, com orientações de acordo com as regras do Crédito do Trabalhador (Portaria MTE nº 435/2025)
 - Permite registrar o tratamento de cada pendência, com observação
 - Apresenta os totais por instituição financeira e a quantidade de colaboradores
 - Gera o Excel da conferência e um relatório em PDF para arquivo
