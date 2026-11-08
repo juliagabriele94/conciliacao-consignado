@@ -175,18 +175,18 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .progress .bar i{display:block;height:100%;background:var(--ok);border-radius:4px;transition:width .3s}
 .tablebox{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:12px}
-th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;padding:9px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 td.r,th.r{text-align:right}
 td.num{white-space:nowrap}
 tr.row{cursor:pointer}
 tr.row:hover td{background:var(--surface-2)}
 tr.row.open td{background:var(--bronze-soft)}
 .nm{font-weight:500}
-td.who{min-width:170px}
-td.divs{min-width:170px}
-#tConf td:nth-child(5){min-width:140px}
-td.divs{max-width:210px}
+td.who{min-width:150px}
+td.divs{min-width:130px}
+#tConf td:nth-child(5){min-width:120px}
+td.divs{max-width:190px}
 td.divs .tag{white-space:normal}
 .detail .dgrid{max-width:calc(100vw - var(--side-w) - 84px);position:sticky;left:16px}
 .sub{font-size:11px;color:var(--ink-3)}
@@ -1145,7 +1145,7 @@ function renderConf(){
       <td>${tratBadge(r)}</td>
       <td class="who"><div class="nm">${esc(r.nome)}</div><div class="sub"><span class="num">${esc(fmtCPF(r.cpf))}</span>${r.x?.re?" · RE "+esc(r.x.re):""}${(r.x?.mat||r.p?.mat)?" · "+esc(r.x?.mat||r.p?.mat):""}</div></td>
       <td class="num">${esc(r.contrato)}</td>
-      <td>${esc(r.inst)}</td>
+      <td>${esc(r.x ? ((r.x.codInst?r.x.codInst+" – ":"")+(r.x.inst||"")) : r.inst)}</td>
       <td class="r num">${r.x?fmtV(r.x.valor):"—"}</td>
       <td class="r num">${r.p?fmtV(r.p.valor):"—"}</td>
       <td class="r num ${Math.abs(r.diff)<0.005?"":"diffpos"}">${Math.abs(r.diff)<0.005?"—":fmtV(r.diff)}</td>
@@ -1178,8 +1178,9 @@ function detail(r){
   const mk={ok:["✓","ok"],warn:["~","warn"],bad:["✗","bad"],falta:["?","warn"]};
   let h=`<div class="dgrid"><div style="min-width:0"><div class="cmp"><div class="hd">Campo</div><div class="hd">Planilha da folha</div><div class="hd">${FT().longo}</div><div class="hd"></div>`;
   for(const [k,lab] of FIELDS){
+    if(k==="instNome" && S.passo==="2") continue;
     const s=r.f[k]; const cls= s==="bad"?"bad-cell":(s==="warn"||s==="falta")?"warn-cell":"";
-    h+=`<div class="k">${lab}</div><div class="${r.x?cls:""} ${k==="valor"||k==="cpf"?"num":""}">${esc(val(k,r.x,true))}</div><div class="${r.p?cls:""} ${k==="valor"||k==="cpf"?"num":""}">${esc(val(k,r.p,false))}</div><div class="mk ${s?mk[s][1]:""}">${s?mk[s][0]:""}</div>`;
+    h+=`<div class="k">${lab}</div><div class="${r.x?cls:""} ${(k==="valor"||k==="cpf")&&r.x?"num":""}">${esc(val(k,r.x,true))}</div><div class="${r.p?cls:""} ${(k==="valor"||k==="cpf")&&r.p?"num":""}">${esc(val(k,r.p,false))}</div><div class="mk ${s?mk[s][1]:""}">${s?mk[s][0]:""}</div>`;
   }
   h+=`</div>`;
   const ex=[];
@@ -1198,54 +1199,59 @@ function detail(r){
     const t=tratGet(r);
     h+=`<div class="tbox" data-i="${r.i}"><h4>Tratamento da pendência ${tratBadge(r)}</h4>
       <div><label for="ts${r.i}">Situação</label><select id="ts${r.i}">${TRAT_OPC.map(([v,l])=>`<option value="${v}" ${t.st===v?"selected":""}>${l}</option>`).join("")}</select></div>
-      <div><label for="to${r.i}">Observação</label><textarea id="to${r.i}" placeholder="Ex.: desconto parcial por falta de margem; portabilidade para o contrato 123…; corrigido no evento 630.">${esc(t.obs)}</textarea></div>
+      <div><label for="to${r.i}">Observação</label><textarea id="to${r.i}" placeholder="Ex.: desconto parcial por margem consignável insuficiente; portabilidade para o contrato 123…; corrigido no evento 630.">${esc(t.obs)}</textarea></div>
       <div class="when">${t.em?"Salvo em "+esc(t.em)+" · só neste navegador":"Fica salvo só neste navegador, para a competência em conferência."}</div></div>`;
   }
   h+=`</div>`;
   return h;
 }
 function orient(r){
-  const g=[];
-  if(S.passo==="1"){
+  const g=[]; const P1=S.passo==="1";
+  if(P1){
     if(r.status==="xls"){
       g.push("O contrato está sendo descontado na folha, mas não aparece no Emprega Brasil para esta competência.");
-      g.push("Confira se o contrato foi quitado, cancelado ou portado para outra instituição (na portabilidade o número do contrato muda) e, se for o caso, retire ou corrija o desconto antes do fechamento da folha.");
+      g.push("Confirme os dados na planilha baixada do Emprega Brasil. Se o contrato não constar para esta competência, retire ou corrija o desconto antes do fechamento da folha.");
     }
     if(r.status==="pdf"){
       g.push("O contrato consta na planilha do Emprega Brasil da competência, mas não há desconto na folha. Se está na planilha, precisa ser descontado.");
-      g.push("Inclua o evento de consignado na folha, ou verifique se o trabalhador foi desligado, está afastado ou não tem margem/saldo de salário na competência.");
+      g.push("Inclua o desconto na folha. Se o trabalhador não tiver margem consignável suficiente (a soma das parcelas não pode passar de 35% da remuneração disponível), faça o desconto parcial ou não faça o desconto e informe ao trabalhador, que deve entrar em contato com a instituição financeira para regularizar. Se ele foi desligado, consulte no Portal Emprega Brasil a garantia das verbas rescisórias: o desconto na rescisão só pode ser feito quando a instituição tiver informado o saldo devedor e o percentual em garantia.");
     }
     if(r.f.valor==="bad"){
       const d=r.diff;
       g.push(`Valor diferente da parcela informada no Emprega Brasil: folha ${fmtV(r.x?.valor)} × portal ${fmtV(r.p?.valor)} (${fmtV(Math.abs(d))} ${d>0?"a mais na folha":"a menos na folha"}).`);
-      g.push("Corrija o valor na folha antes do fechamento. Se o desconto for parcial por falta de margem ou de saldo, deixe o motivo registrado.");
+      g.push("Corrija o valor na folha antes do fechamento. Se o desconto for parcial por margem consignável insuficiente, informe ao trabalhador e deixe o motivo registrado.");
     }
-    if(r.alerts.some(a=>/terminou|encerrado|já pagas/.test(a))) g.push("Pelo Emprega Brasil o contrato já deveria ter parado de descontar. Confirme com a instituição antes de manter o desconto.");
+    if(r.alerts.some(a=>/terminou|encerrado|já pagas/.test(a))) g.push("Pelo Emprega Brasil o contrato já deveria ter parado de descontar. Confirme no portal Emprega Brasil ou na planilha baixada.");
     if(r.alerts.some(a=>/só começa/.test(a))) g.push("O desconto deste contrato ainda não começou nesta competência pelo Emprega Brasil.");
+  } else {
+    if(r.status==="xls"){
+      g.push("Há desconto na folha sem o contrato correspondente na guia. O valor descontado do trabalhador precisa ser repassado pela guia do FGTS Digital; descontar e não repassar sujeita a empresa a penalidades, além de juros e encargos pelo atraso.");
+      g.push("Confira se o desconto foi informado no eSocial (S-1200 ou S-2299) em rubrica de natureza 9253, com o código da instituição e o número do contrato corretos.");
+      g.push("Confirme se o contrato consta na planilha do Emprega Brasil. Se não constar, estorne o desconto na folha.");
+    }
+    if(r.status==="pdf"){
+      g.push("O contrato consta na guia, mas não há desconto correspondente na planilha. Se a guia for paga assim, a empresa repassa um valor que não descontou do trabalhador.");
+      g.push("Verifique se faltou lançar o evento de consignado na folha, se o trabalhador foi desligado ou afastado no mês, ou se a planilha exportada está incompleta.");
+    }
+    if(r.f.valor==="bad"){
+      const d=r.diff;
+      g.push(`Valor diferente: folha ${fmtV(r.x?.valor)} × guia ${fmtV(r.p?.valor)} (diferença de ${fmtV(Math.abs(d))} ${d>0?"a mais na folha":"a mais na guia"}).`);
+      g.push("Causas comuns: desconto parcial por margem consignável insuficiente, rescisão no mês ou lançamento duplicado. Se for o caso, corrija a folha ou o eSocial e emita a guia antes do vencimento, que é o mesmo do FGTS. Se o vencimento já passou, o valor em aberto pode ser recolhido pelo FGTS Digital (Gestão de Guias), com correção pelo IPCA, juros de 0,033% ao dia e multa de 2%. Se a guia já foi paga com o valor errado, o acerto deve ser feito diretamente com a instituição financeira.");
+    }
   }
-  if(S.passo==="2" && r.status==="xls"){
-    g.push("Há desconto na folha sem o contrato correspondente na guia. Sem a guia, o valor descontado do trabalhador não é repassado à instituição financeira.");
-    g.push("Confira se o contrato foi informado no eSocial (S-1200, dados do empréstimo consignado) com o número correto e se a folha foi fechada e transmitida antes da emissão da guia.");
-    g.push("Se o contrato foi encerrado ou quitado, estorne o desconto na folha.");
-  }
-  if(S.passo==="2" && r.status==="pdf"){
-    g.push("O contrato consta na guia, mas não há desconto correspondente na planilha. Se a guia for paga assim, a empresa repassa um valor que não descontou do trabalhador.");
-    g.push("Verifique se faltou lançar o evento de consignado na folha, se o trabalhador foi desligado ou afastado no mês, ou se a planilha exportada está incompleta.");
-  }
-  if(S.passo==="2" && r.f.valor==="bad"){
-    const d=r.diff;
-    g.push(`Valor diferente: folha ${fmtV(r.x?.valor)} × guia ${fmtV(r.p?.valor)} (diferença de ${fmtV(Math.abs(d))} ${d>0?"a mais na folha":"a mais na guia"}).`);
-    g.push("Causas comuns: desconto parcial por falta de margem ou de saldo de salário, parcela em atraso cobrada junto, rescisão no mês ou lançamento duplicado. Corrija a folha ou o eSocial e reemita a guia antes do vencimento.");
-  }
-  if(r.f.contrato==="bad") g.push("Número do contrato diferente para o mesmo trabalhador. Confirme o número no extrato do Crédito do Trabalhador e corrija o cadastro na folha.");
+  if(r.f.contrato==="bad") g.push("Número do contrato diferente para o mesmo trabalhador. Confira o número na planilha baixada do Emprega Brasil ou no portal e corrija o cadastro na folha.");
   if(r.f.cpf==="bad") g.push("CPF diferente entre os arquivos. Corrija o cadastro antes de qualquer reenvio ao eSocial.");
   if(r.f.mat==="bad") g.push("Matrícula eSocial diferente. O desconto pode estar vinculado a outro vínculo do trabalhador (readmissão ou transferência).");
   if(r.f.inst==="bad") g.push("Código da instituição financeira diferente. Confirme qual instituição é a credora deste contrato (houve portabilidade?) e corrija o Cod. Inst. Fin na folha.");
   if(r.f.inst==="falta") g.push("A planilha da folha está sem o código da instituição (Cod. Inst. Fin), então não foi possível conferir.");
   if(r.f.comp==="bad") g.push("Competência diferente da conferida. Confira se a "+FT().arq+" e a folha são do mesmo mês.");
-  if(r.f.instNome==="warn") g.push(`O código da instituição confere, mas o nome está diferente: folha "${esc(r.x?.inst||"")}" × Emprega Brasil "${esc(r.p?.instDesc||"")}". Vale ajustar o cadastro da instituição no sistema para ficar igual ao Emprega Brasil.`);
+  if(r.f.instNome==="warn") g.push(`O código da instituição confere, mas o nome está diferente: folha "${esc(r.x?.inst||"")}" × Emprega Brasil "${esc(r.p?.instDesc||"")}". Opcional: ajustar o cadastro da instituição no sistema para ficar igual ao Emprega Brasil.`);
   if(r.f.instNome==="falta") g.push("A planilha da folha está sem o nome da instituição (Inst. Financeira), então só o código foi conferido.");
-  if(r.f.nome==="warn"||r.f.inst==="warn") g.push("A diferença é só na forma de escrever (abreviação, acento ou texto cortado). Normalmente não exige correção, mas vale conferir o cadastro.");
+  if(r.f.nome==="warn") g.push("A diferença no nome do trabalhador é só na forma de escrever (abreviação, acento ou texto cortado).");
+  if(r.f.nome==="bad") g.push("Nome diferente para o mesmo contrato. Confira se o contrato pertence a este trabalhador, comparando o CPF e a planilha do Emprega Brasil.");
+  if(r.alerts.some(a=>/CPF inválido/.test(a))) g.push("O CPF não é válido. Corrija o cadastro do trabalhador antes do envio ao eSocial.");
+  if(r.alerts.some(a=>/Contrato repetido/.test(a))) g.push("O mesmo contrato aparece mais de uma vez. Verifique se há lançamento em duplicidade.");
+  if(r.alerts.some(a=>/sem número de contrato/.test(a))) g.push("Linha sem número de contrato na folha. Inclua o número para que a conferência seja possível.");
   return g;
 }
 function grupoInst(s){
