@@ -1,6 +1,6 @@
 # Conciliação do Consignado · Crédito do Trabalhador
 
-Ferramenta para o Departamento Pessoal conferir, todo mês, os descontos de empréstimo consignado do **Crédito do Trabalhador**, contrato a contrato.
+Ferramenta para o Departamento Pessoal conferir, todo mês, os descontos de empréstimo consignado do **Crédito do Trabalhador**, contrato a contrato, e calcular o desconto do consignado na rescisão.
 
 ### 👉 [Acessar a ferramenta](https://conciliacao-consignado.vercel.app/)
 
@@ -8,14 +8,15 @@ Ferramenta para o Departamento Pessoal conferir, todo mês, os descontos de empr
 
 <sub>Imagem ilustrativa com dados fictícios. Nomes, CPFs e contratos aparecem mascarados.</sub>
 
-## Os dois passos
+## Os três passos
 
 | Passo | O que confere | Quando usar |
 |---|---|---|
 | **1 · Emprega Brasil × Folha** | Se os descontos lançados na folha batem com os contratos da planilha baixada do portal Emprega Brasil | Antes de fechar a folha |
 | **2 · Folha × Guia FGTS** | Se a guia do FGTS Digital trouxe exatamente o que foi descontado na folha | Depois do fechamento do eSocial |
+| **3 · Desconto na rescisão** | Quanto descontar de cada contrato nas verbas rescisórias e se o valor lançado na rescisão está correto | No desligamento, antes do envio do S-2299 |
 
-Cada contrato é localizado pelo **número do contrato**. Depois, a ferramenta confere os dados do empréstimo: CPF, nome, matrícula eSocial, competência, instituição financeira (código e nome) e valor da parcela.
+Nos Passos 1 e 2, cada contrato é localizado pelo **número do contrato**. Depois, a ferramenta confere os dados do empréstimo: CPF, nome, matrícula eSocial, competência, instituição financeira (código e nome) e valor da parcela.
 
 ## O que a ferramenta faz
 
@@ -26,6 +27,7 @@ Cada contrato é localizado pelo **número do contrato**. Depois, a ferramenta c
 - Apresenta os totais por instituição financeira e a quantidade de colaboradores
 - Gera o Excel da conferência e um relatório em PDF para arquivo
 - Transforma o PDF da guia do FGTS Digital em planilha Excel, mesmo sem fazer a conferência
+- Calcula o desconto na rescisão: apura a remuneração disponível, aplica o percentual de garantia de cada contrato, limita ao saldo devedor e confere com o que foi lançado na rescisão, conforme o art. 30 da Portaria MTE nº 435/2025, com a redação dada pela Portaria MTE nº 1.115/2026, e o Manual de Orientação ao Empregador (versão 2.1)
 
 ## Requisitos
 
@@ -38,6 +40,8 @@ Funciona direto no navegador (Google Chrome, Microsoft Edge ou Firefox atualizad
 3. Importe a **planilha da folha** e o segundo arquivo: a **planilha do Emprega Brasil** (Passo 1) ou o **PDF do FGTS Digital** (Passo 2).
 4. Clique em cada linha com pendência para ver o que está diferente e registrar o tratamento.
 5. Ao terminar, salve a conferência em **Excel** ou em **PDF**.
+
+No **Passo 3**, importe o Excel da rescisão e o CSV do Emprega Brasil (ou digite o percentual de garantia e o saldo devedor) para ver o desconto de cada contrato e conferir com o que foi lançado na rescisão.
 
 As instruções completas estão no menu **Como usar**, dentro da ferramenta.
 
@@ -54,6 +58,10 @@ As instruções completas estão no menu **Como usar**, dentro da ferramenta.
 **Planilha do Emprega Brasil**: o arquivo exatamente como é baixado do portal.
 
 **PDF do FGTS Digital**: a Relação de Trabalhadores do Crédito do Trabalhador, baixada do portal.
+
+**Demonstrativo da rescisão** (Passo 3): Excel exportado do sistema de folha, com as colunas de natureza da rubrica (eSocial), incidência de INSS, incidência de IRRF, proventos e descontos.
+
+**Contratos do Emprega Brasil** (Passo 3): o CSV exportado da consulta de empréstimos do trabalhador, com o percentual de garantia e o saldo devedor. Sem o arquivo, os valores podem ser digitados na ferramenta.
 
 ## Uma competência por vez
 

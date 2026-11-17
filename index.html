@@ -130,6 +130,20 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .drop .req{margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);font-size:11px;color:var(--ink-3);line-height:1.5;position:relative;z-index:1;pointer-events:none}
 .drop .req b{color:var(--ink-2);font-weight:600}
 .drop .dl{position:relative;z-index:2;margin-top:8px}
+.mbox.wide{max-width:1000px;max-height:calc(100vh - 40px);overflow:auto;padding:22px 24px 20px}
+.mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.mhead h2{margin:0}
+.ficti{display:inline-block;font-size:10.5px;font-weight:600;color:var(--info);background:var(--info-soft);border-radius:10px;padding:2px 9px;margin-bottom:10px}
+.xsheet{border:1px solid var(--line-strong);border-radius:6px;overflow:auto;margin:6px 0 12px;background:var(--surface)}
+.xsheet table{font-size:11.5px;font-family:Calibri,"Segoe UI",Arial,sans-serif;min-width:100%}
+.xsheet th{position:static;text-transform:none;letter-spacing:0;font-size:11px;color:var(--ink-2);background:var(--surface-3);border:1px solid var(--line);padding:5px 6px;white-space:normal;vertical-align:bottom;line-height:1.25}
+.xsheet th.req{background:var(--bronze);color:#fff;border-color:var(--bronze)}
+.xsheet td{border:1px solid var(--line);padding:4px 6px;white-space:nowrap}
+#exR td:nth-child(6){white-space:normal;min-width:170px}
+.xsheet td.req{background:var(--bronze-soft)}
+.xsheet .cl{background:var(--surface-3);color:var(--ink-3);text-align:center;font-size:10px;width:26px}
+.xkey{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-bottom:8px}
+.xkey i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
 .drop .meta{margin-top:4px;font-size:11.5px;color:var(--ink-2)}
 .drop .meta b{font-family:var(--f-mono);font-weight:500}
 
@@ -154,8 +168,45 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .kpi .l{white-space:normal;line-height:1.2;min-height:2.4em;display:flex;align-items:center;justify-content:center}
 .kpi.st .l{text-transform:none;letter-spacing:0;font-size:11px;color:var(--ink-2)}
 .diffpos{color:var(--bad)}.diffzero{color:var(--ok)}
+.summary.rs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.summary.rs .kpi{padding:10px 6px}
 
 /* ---------- painel e abas ---------- */
+.phead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--line)}
+.phead h3{margin:0;font-family:var(--f-display);font-size:14px}
+.rfields{gap:14px;align-items:flex-end}
+.fld{display:grid;gap:4px;min-width:0}
+.fld>span{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600}
+.fld input,.fld select{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:6px 9px;min-width:0;height:32px}
+.fld input:focus,.fld select:focus,.cin:focus{outline:none;border-color:var(--bronze)}
+.fld.grow{flex:1 1 260px}
+.cin{width:100%;min-width:90px;border:1px solid var(--line-strong);background:var(--surface);border-radius:6px;padding:4px 7px;height:28px}
+.cin.lsel{min-width:200px;max-width:260px;margin-left:auto;display:block;font-size:12px;padding:3px 6px}
+.cin.r{text-align:right;max-width:120px;margin-left:auto;display:block}
+tr.rrow td{border-bottom:0;vertical-align:middle}
+tr.rcalc td{padding-top:0;padding-bottom:10px;color:var(--ink-2);font-size:11.5px}
+tr.rcalc td:last-child{max-width:1px}
+.rmini{font-size:11px;margin-top:2px}
+.rdet{margin-top:4px;font-size:11px;color:var(--ink-2)}
+.rdet summary{cursor:pointer;color:var(--bronze-ink);font-weight:600;list-style:none;display:inline-flex;gap:5px;align-items:center;user-select:none}
+.rdet summary::-webkit-details-marker{display:none}
+.rdet summary::before{content:"";width:0;height:0;border-left:5px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s}
+.rdet[open] summary::before{transform:rotate(90deg)}
+.rdet ul{margin:4px 0 2px;padding-left:18px}.rdet li{margin-bottom:3px}
+.notice .rdet{color:inherit}.notice .rdet summary{color:inherit}
+.t-bad{color:var(--bad)}.t-warn{color:var(--warn)}.t-ok{color:var(--ok)}
+.p-neu{background:var(--surface-3);color:var(--ink-2)}
+.lnk{color:var(--bronze-ink);font-weight:600;text-decoration:none;white-space:nowrap}.lnk:hover{text-decoration:underline}
+.p-sub{background:color-mix(in srgb,var(--ink) 13%,transparent);color:var(--ink)}
+.xbtn{border:1px solid var(--line-strong);background:var(--surface);border-radius:6px;width:26px;height:26px;cursor:pointer;color:var(--ink-3);font-size:15px;line-height:1}
+.xbtn:hover{border-color:var(--bad);color:var(--bad)}
+tr.grp td{background:var(--surface-2);padding:8px 6px}
+tr.sub-tot td{font-weight:600;background:var(--surface-2)}
+tr.base-tot td{font-weight:700;background:var(--bronze-soft);color:var(--bronze-ink);font-size:13px}
+#tResc tfoot td,#tBase tfoot td{border-top:1px solid var(--line-strong);background:var(--surface-2)}
+#tResc td:first-child,#tResc th:first-child{width:128px}
+#tBase td:nth-child(2){white-space:nowrap}#tBase td:nth-child(7){min-width:260px}
+#tResc .empty,#tBase .empty{padding:28px 20px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0;box-shadow:var(--shadow);overflow:hidden}
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 10px;overflow-x:auto;background:var(--surface)}
 .tab{background:none;border:0;padding:10px 12px;cursor:pointer;color:var(--ink-2);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
@@ -229,8 +280,14 @@ td.divs .tag{white-space:normal}
 .empty{padding:40px 20px;text-align:center;color:var(--ink-3)}
 .raw{font-family:var(--f-mono);font-size:11.5px;white-space:pre;max-height:420px;overflow:auto;background:var(--surface-2);padding:12px;border-top:1px solid var(--line);margin:0}
 .subtabs{display:flex;gap:6px;padding:12px 14px 0;flex-wrap:wrap}
-.howto{padding:18px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+.howto{padding:18px 20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 32px}
+@media (max-width:1000px){.howto{grid-template-columns:1fr}}
 .howto .full{grid-column:1/-1}
+.howto .sect{grid-column:1/-1;display:flex;gap:12px;align-items:center;border-bottom:2px solid var(--bronze);padding:4px 0 8px;margin-top:8px}
+.howto .sect .n{min-width:30px;height:28px;padding:0 6px;border-radius:7px;background:var(--bronze);color:#fff;display:grid;place-items:center;font-family:var(--f-mono);font-weight:600;font-size:12px}
+.howto .sect b{display:block;font-family:var(--f-display);font-size:16px;color:var(--bronze-ink)}
+.howto .sect small{display:block;color:var(--ink-3);font-size:11.5px}
+
 .howto p{margin:6px 0}
 .howto .sub{font-size:12px}
 .howto li{margin-bottom:4px}
@@ -267,7 +324,7 @@ td.divs .tag{white-space:normal}
 @media (prefers-reduced-motion: reduce){.loading{animation:none}*{transition:none!important}}
 
 @media (max-width:1180px){.dgrid{grid-template-columns:1fr}}
-@media (max-width:860px){.summary{grid-template-columns:repeat(3,minmax(0,1fr))}.kpi{border-bottom:1px solid var(--line)}}
+@media (max-width:860px){.summary{grid-template-columns:repeat(3,minmax(0,1fr))}.summary.rs{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi{border-bottom:1px solid var(--line)}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px 16px;gap:12px}
@@ -318,7 +375,7 @@ td.divs .tag{white-space:normal}
   #printArea .g{color:#1f7a4d}
   #printArea .mut{color:#777}
   #printArea .pp{display:inline-block;padding:1px 6px;border-radius:8px;font-weight:700;font-size:7.5px;white-space:nowrap}
-  #printArea .pp.p-ok{background:#e2f2e9;color:#1f7a4d}#printArea .pp.p-att{background:#fbf0d6;color:#8a5a00}#printArea .pp.p-div,#printArea .pp.p-xls{background:#fbe4e2;color:#b4322c}#printArea .pp.p-pdf{background:#e3ebf8;color:#2f5fa7}
+  #printArea .pp.p-neu{background:#eceef2;color:#4a505c}#printArea .pp.p-ok{background:#e2f2e9;color:#1f7a4d}#printArea .pp.p-att{background:#fbf0d6;color:#8a5a00}#printArea .pp.p-div,#printArea .pp.p-xls{background:#fbe4e2;color:#b4322c}#printArea .pp.p-pdf{background:#e3ebf8;color:#2f5fa7}
   #printArea .tt{font-weight:700;white-space:nowrap}
   #printArea .tt.pendente{color:#8a5a00}#printArea .tt.corrigido,#printArea .tt.retificado{color:#1f7a4d}#printArea .tt.justificado{color:#2f5fa7}
   #printArea .okt td{padding:2.5px 5px}
@@ -336,11 +393,15 @@ td.divs .tag{white-space:normal}
       <div class="mk">CT</div>
       <div><b>Consignado</b><span>Crédito do Trabalhador</span></div>
     </div>
-    <p class="tagline">Conciliação mensal do consignado: Emprega Brasil, folha e guia FGTS.</p>
+    <p class="tagline">Conciliação mensal do consignado e cálculo do desconto na rescisão.</p>
     <nav class="navsec" aria-label="Passos da conciliação">
       <div class="lb">Conciliação</div>
       <button class="nav" id="step1" aria-pressed="true"><span class="n">1</span><span class="tx"><b>Emprega Brasil × Folha</b><small>Antes de fechar a folha</small></span></button>
       <button class="nav" id="step2" aria-pressed="false"><span class="n">2</span><span class="tx"><b>Folha × Guia FGTS</b><small>Depois do eSocial</small></span></button>
+    </nav>
+    <nav class="navsec" aria-label="Rescisão">
+      <div class="lb">Rescisão</div>
+      <button class="nav" id="step3" aria-pressed="false"><span class="n">3</span><span class="tx"><b>Desconto na rescisão</b><small>Desligamento com consignado</small></span></button>
     </nav>
     <nav class="navsec" aria-label="Ajuda">
       <div class="lb">Ajuda</div>
@@ -355,7 +416,7 @@ td.divs .tag{white-space:normal}
         <button id="thDark" aria-pressed="false"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>Escuro</button>
       </div>
     </div>
-    <div class="credit"><span class="priv"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Arquivos processados só no seu navegador</span>Desenvolvido por: Julia Gabriele P. Luis<span class="ver">Versão 1.0</span></div>
+    <div class="credit"><span class="priv"><svg class="i" viewBox="0 0 24 24" style="width:13px;height:13px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Arquivos processados só no seu navegador</span>Desenvolvido por: Julia Gabriele P. Luis<span class="ver">Versão 2.0</span></div>
   </aside>
 
   <div class="mainc">
@@ -366,7 +427,7 @@ td.divs .tag{white-space:normal}
       </div>
       <div class="tools">
         <button class="seal" id="btnPriv" title="Ver como seus dados são protegidos"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Processamento local</button>
-        <div class="compbox">
+        <div class="compbox" id="compBox">
           <label for="comp">Competência</label>
           <input id="comp" placeholder="MM/AAAA" maxlength="7" inputmode="numeric" autocomplete="off">
         </div>
@@ -414,7 +475,57 @@ td.divs .tag{white-space:normal}
 
       <section class="summary" id="summary" aria-label="Resumo da conciliação"></section>
 
-  <section class="panel">
+      <div id="rescView" hidden style="display:grid;gap:16px">
+        <p class="lead">Calcula o desconto do consignado nas verbas rescisórias de um trabalhador desligado: apura a remuneração disponível na rescisão, aplica o percentual de garantia de cada contrato, limita ao saldo devedor e confere com o que foi lançado na rescisão.</p>
+        <section class="imports">
+          <div class="drop" id="dropR">
+            <input type="file" id="fileR" accept=".xlsx,.xls,.xlsm,.csv" aria-label="Importar demonstrativo da rescisão">
+            <div class="ic x">XLS</div>
+            <div style="min-width:0">
+              <div class="t">Demonstrativo da rescisão</div>
+              <div class="s" id="metaR">Clique ou arraste o Excel da rescisão com as rubricas do eSocial</div>
+              <div class="req"><b>Obrigatórias:</b> Natureza da rubrica (eSocial), Incidência de INSS, Incidência de IRRF, Proventos e Descontos<br><b>Opcionais:</b> Evento, Descrição do evento, Código da rubrica, Descrição da natureza e Referência</div>
+              <button class="btn sm dl" data-ex="exR" title="Ver um exemplo do arquivo, com dados fictícios"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Ver exemplo do arquivo</button>
+            </div>
+          </div>
+          <div class="drop" id="dropC">
+            <input type="file" id="fileC" accept=".csv,.txt,.xlsx,.xls" aria-label="Importar contratos do Emprega Brasil">
+            <div class="ic e">EB</div>
+            <div style="min-width:0">
+              <div class="t">Contratos do Emprega Brasil</div>
+              <div class="s" id="metaC">Clique ou arraste o CSV exportado da consulta de empréstimos do trabalhador</div>
+              <div class="req">Traz o percentual de garantia e o saldo devedor de cada contrato. Sem o arquivo, clique em <b>Adicionar contrato</b> e digite os valores.</div>
+            </div>
+          </div>
+        </section>
+        <p class="hint"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg><span>Consulte o percentual de garantia e o saldo devedor no Emprega Brasil <b>no mesmo dia do envio do S-2299</b>. O eSocial confere o desconto com os dados desse dia e gera alerta se o valor declarado for diferente.</span></p>
+        <div id="rNotices" style="display:grid;gap:8px"></div>
+        <section class="summary rs" id="rSummary" aria-label="Resumo do desconto na rescisão"></section>
+
+        <section class="panel">
+          <div class="phead">
+            <h3>Desconto por contrato</h3>
+            <button class="btn sm" id="rAdd"><svg class="i" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M12 5v14M5 12h14"/></svg>Adicionar contrato</button>
+          </div>
+          <div class="toolbar rfields">
+            <label class="fld" id="rWhoBox" hidden><span>Trabalhador do arquivo</span><select id="rWho"></select></label>
+            <label class="fld grow"><span>Trabalhador</span><input id="rNome" type="text" autocomplete="off" placeholder="Nome do trabalhador (opcional)"></label>
+            <label class="fld"><span>Data da consulta ao Emprega Brasil</span><input id="rData" type="date"></label>
+          </div>
+          <div class="tablebox"><table id="tResc"></table></div>
+        </section>
+
+        <section class="panel">
+          <div class="phead">
+            <h3>Remuneração disponível na rescisão</h3>
+            <span class="sub">Art. 30, §§ 2º, 3º e 5º, da Portaria MTE nº 435/2025, com a redação da Portaria MTE nº 1.115/2026 · Manual de Orientação ao Empregador, versão 2.1, item 5.7.3 · <a class="lnk" href="https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/credito-do-trabalhador/empregador/manual-operacional-do-empregador" target="_blank" rel="noopener noreferrer">Consultar o Manual no gov.br</a></span>
+          </div>
+          <div class="tablebox"><table id="tBase"></table></div>
+        </section>
+      </div>
+
+
+  <section class="panel" id="mainPanel">
     <div class="tabs" role="tablist">
       <button class="tab" role="tab" data-tab="conf" aria-selected="true">Conferência <span class="c" id="cConf"></span></button>
       <button class="tab" role="tab" data-tab="inst" aria-selected="false">Por instituição <span class="c" id="cInst"></span></button>
@@ -469,7 +580,7 @@ td.divs .tag{white-space:normal}
           <p>A ferramenta continua funcionando sem internet. Se precisasse enviar os dados para algum lugar, não funcionaria.</p>
           <p class="sub">Para a equipe de TI: com o F12 aberto na aba <b>Rede</b> (Network), nenhuma requisição é feita ao importar os arquivos.</p>
         </div>
-        <div>
+        <div class="full">
           <h3>Cuidados que valem para qualquer sistema</h3>
           <ul>
             <li><b>Extensões do navegador:</b> extensões de origem desconhecida conseguem ler o conteúdo de qualquer página aberta. Prefira um navegador sem extensões desconhecidas.</li>
@@ -484,13 +595,16 @@ td.divs .tag{white-space:normal}
       <div class="howto">
         <div class="full">
           <h3>Para que serve</h3>
-          <p>A ferramenta confere, todo mês, os descontos de empréstimo consignado (Crédito do Trabalhador) em dois momentos. Ela compara o valor e também os dados de cada empréstimo, e aponta o que está diferente.</p>
+          <p>A ferramenta confere, todo mês, os descontos de empréstimo consignado (Crédito do Trabalhador) em dois momentos. Ela compara o valor e também os dados de cada empréstimo, e aponta o que está diferente. No desligamento, ela calcula o desconto do consignado nas verbas rescisórias.</p>
           <div class="passos">
             <div class="pc"><span class="n">1</span><div><b>Emprega Brasil × Folha</b><small>Antes de fechar a folha</small><p>Confere se os descontos lançados no sistema de folha são exatamente os contratos da planilha baixada do Emprega Brasil.</p></div></div>
             <div class="pc"><span class="n">2</span><div><b>Folha × Guia FGTS</b><small>Depois do fechamento do eSocial</small><p>Confere se a guia do FGTS Digital trouxe exatamente o que foi descontado na folha.</p></div></div>
+            <div class="pc"><span class="n">3</span><div><b>Desconto na rescisão</b><small>No desligamento, antes do envio do S-2299</small><p>Calcula quanto descontar de cada contrato nas verbas rescisórias e confere com o que foi lançado na rescisão.</p></div></div>
           </div>
-          <p>Nos dois passos são conferidos: <b>contrato</b>, <b>CPF</b>, <b>nome</b>, <b>matrícula eSocial</b>, <b>competência</b>, <b>instituição financeira</b> e <b>valor</b>.</p>
+          <p>Nos Passos 1 e 2 são conferidos: <b>contrato</b>, <b>CPF</b>, <b>nome</b>, <b>matrícula eSocial</b>, <b>competência</b>, <b>instituição financeira</b> e <b>valor</b>.</p>
         </div>
+
+        <div class="sect"><span class="n">1·2</span><div><b>Passos 1 e 2 · Conciliação mensal</b><small>Emprega Brasil × Folha e Folha × Guia FGTS</small></div></div>
 
         <div class="full">
           <h3>Passo a passo</h3>
@@ -529,17 +643,27 @@ td.divs .tag{white-space:normal}
         </div>
 
         <div>
+          <h3>Como a ferramenta encontra cada contrato</h3>
+          <ol>
+            <li>Procura o mesmo <b>número de contrato</b> nos dois arquivos. Pontos, traços e zeros à esquerda não fazem diferença.</li>
+            <li>Encontrado o contrato, compara os demais dados: CPF, nome, matrícula, instituição, competência e valor da parcela.</li>
+            <li>Se o contrato não existir no outro arquivo, a linha aparece como <b>Só na folha</b>, <b>Só no Emprega Brasil</b> ou <b>Só na guia</b>.</li>
+          </ol>
+          <p>Por isso, colaborador com mais de um empréstimo é conferido contrato a contrato, sem misturar um empréstimo com outro.</p>
+        </div>
+
+        <div>
           <h3>Como registrar o tratamento</h3>
           <ol>
             <li>Clique na linha que tem pendência.</li>
             <li>No quadro <b>Tratamento da pendência</b>, escolha a situação: <b>Corrigido na folha</b>, <b>Justificado</b> ou <b>Retificado no eSocial</b>.</li>
-            <li>Escreva uma observação. Ex.: "desconto parcial por falta de margem" ou "portabilidade, contrato novo 123…". Tudo é salvo automaticamente.</li>
+            <li>Escreva uma observação. Ex.: "desconto parcial, remuneração disponível insuficiente" ou "portabilidade, contrato novo 123…". Tudo é salvo automaticamente.</li>
           </ol>
           <p>A barra acima da tabela mostra quantas pendências já foram tratadas. O botão <b>Sem tratamento</b> mostra só o que ainda falta.</p>
           <p class="sub">O tratamento fica salvo <b>só neste navegador</b>, neste computador. Ele não aparece em outro computador, em outro navegador nem para outra pessoa da equipe.</p>
         </div>
 
-        <div class="full">
+        <div>
           <h3>Uma competência por vez</h3>
           <p>A ferramenta confere <b>uma competência de cada vez</b>. O objetivo é garantir que os descontos e os dados dos empréstimos daquele mês estejam corretos, sem misturar informações de meses diferentes. Ela não guarda o histórico dos meses anteriores.</p>
           <p>Ao registrar o primeiro tratamento de uma nova competência, os tratamentos da competência anterior são apagados deste navegador.</p>
@@ -550,15 +674,59 @@ td.divs .tag{white-space:normal}
           </ul>
         </div>
 
+        <div class="sect"><span class="n">3</span><div><b>Passo 3 · Desconto na rescisão</b><small>No desligamento, antes do envio do S-2299</small></div></div>
+
         <div>
-          <h3>Como a ferramenta encontra cada contrato</h3>
-          <ol>
-            <li>Procura o mesmo <b>número de contrato</b> nos dois arquivos. Pontos, traços e zeros à esquerda não fazem diferença.</li>
-            <li>Encontrado o contrato, compara os demais dados: CPF, nome, matrícula, instituição, competência e valor da parcela.</li>
-            <li>Se o contrato não existir no outro arquivo, a linha aparece como <b>Só na folha</b>, <b>Só no Emprega Brasil</b> ou <b>Só na guia</b>.</li>
+          <h3>Passo a passo</h3>
+          <ol class="steps-list">
+            <li>No Emprega Brasil, consulte os empréstimos do trabalhador pelo CPF e use <b>Exportar</b> para baixar o arquivo <b>CSV</b>. Faça a consulta <b>no mesmo dia do envio do S-2299</b>.</li>
+            <li>No menu lateral, clique em <b>Desconto na rescisão</b>.</li>
+            <li>Importe o <b>Excel do demonstrativo da rescisão</b>, com as colunas de <b>natureza da rubrica</b> (eSocial), <b>incidência de INSS</b>, <b>incidência de IRRF</b>, <b>proventos</b> e <b>descontos</b>. Os nomes das colunas podem variar de um sistema para outro (por exemplo, <code>Nat.Rub.</code> ou <code>Natureza da Rubrica</code>). Na dúvida, clique em <b>Ver exemplo do arquivo</b>.</li>
+            <li>Importe o <b>CSV do Emprega Brasil</b>. Sem o arquivo, clique em <b>Adicionar contrato</b> e digite a instituição, o contrato, o percentual de garantia e o saldo devedor.</li>
+            <li>Confira a <b>remuneração disponível</b> e o <b>desconto de cada contrato</b>. Clique em <b>O que verificar</b>, embaixo do contrato, para ver as orientações.</li>
+            <li>Se o lançado na rescisão estiver diferente do calculado, verifique e, se for o caso, corrija antes do envio do S-2299. Depois, salve a memória de cálculo em <b>Excel</b> ou em <b>Relatório PDF</b>.</li>
           </ol>
-          <p>Por isso, colaborador com mais de um empréstimo é conferido contrato a contrato, sem misturar um empréstimo com outro.</p>
         </div>
+
+        <div>
+          <h3>Como é feito o cálculo</h3>
+          <p>Quando um trabalhador com empréstimo do Crédito do Trabalhador é desligado, o desconto na rescisão <b>não é a parcela mensal</b>. Ele é calculado com o <b>percentual das verbas rescisórias vinculado em garantia a cada contrato</b>, informado no Emprega Brasil. Nos contratos anteriores às novas regras, esse percentual é calculado pela Dataprev. Nos contratos novos, é definido na contratação do empréstimo. A empresa apenas consulta e aplica.</p>
+          <ul>
+            <li><b>Remuneração disponível na rescisão</b> = rubricas de vencimento com incidência de INSS (códigos 11 e 12) + aviso prévio indenizado (6003), férias em dobro indenizadas (6004), férias proporcionais (6006) e férias vencidas (6007), menos: descontos com incidência de INSS (11 e 12), INSS do trabalhador (31, 32, 34 e 35), IRRF (31 e 32) e descontos obrigatórios (pensão alimentícia 9213, adiantamento do 13º 9214, retenções judiciais 9218, FIES 9260, desconto do aviso prévio 6901 e multa do art. 480 da CLT 6904).</li>
+            <li><b>Não entram:</b> vencimentos sem incidência de INSS fora da lista acima e descontos voluntários, como seguro, assistência médica ou odontológica e refeição.</li>
+            <li><b>Desconto de cada contrato</b> = o <b>menor valor</b> entre a remuneração disponível × percentual de garantia e o <b>saldo devedor</b>.</li>
+            <li><b>Contrato sem garantia</b> (0% ou "—" no Emprega Brasil): não pode ter nenhum desconto na rescisão, <b>nem mesmo a parcela mensal</b>.</li>
+            <li>O eSocial faz esse cálculo com o saldo devedor e o percentual do dia do envio do S-2299 e gera alerta se o valor declarado for diferente.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Como a ferramenta liga cada contrato ao lançamento</h3>
+          <p>Para conferir o que foi lançado na rescisão (natureza 9253), a ferramenta procura o lançamento de cada contrato nesta ordem:</p>
+          <ol>
+            <li>pelo <b>percentual</b> que aparece na coluna Referência do demonstrativo;</li>
+            <li>pelo <b>valor</b> igual ao calculado;</li>
+            <li>por <b>eliminação</b>, quando sobram um contrato e um lançamento.</li>
+          </ol>
+          <p>Se ela não encontrar, escolha o lançamento na coluna <b>Lançado</b> do contrato.</p>
+          <p class="sub">O demonstrativo não traz o número do contrato de cada lançamento. Confira no sistema de folha se cada desconto foi informado no contrato certo antes do envio do S-2299.</p>
+        </div>
+
+        <div>
+          <h3>O que significa cada situação</h3>
+          <ul class="legend">
+            <li><span class="pill p-ok">Confere</span><span>O valor lançado na rescisão (natureza 9253) é igual ao calculado.</span></li>
+            <li><span class="pill p-div">Divergente</span><span>O valor lançado é diferente do calculado. Verifique e, se for o caso, corrija antes do envio do S-2299.</span></li>
+            <li><span class="pill p-att">Não lançado</span><span>O contrato tem desconto a fazer, mas não há lançamento correspondente de natureza 9253 na rescisão.</span></li>
+            <li><span class="pill p-neu">Sem garantia</span><span>O contrato não tem garantia nas verbas rescisórias e não pode ser descontado na rescisão.</span></li>
+          </ul>
+        </div>
+
+        <div class="full">
+          <p class="sub">Base legal: art. 30, §§ 2º, 3º e 5º, da Portaria MTE nº 435/2025, com a redação da Portaria MTE nº 1.115/2026 (regras aplicadas às rescisões a partir de 23/07/2026), e item 5.7 do Manual de Orientação ao Empregador do Crédito do Trabalhador (versão 2.1, de 26/06/2026). <a class="lnk" href="https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/credito-do-trabalhador/empregador/manual-operacional-do-empregador" target="_blank" rel="noopener noreferrer">Consultar o Manual no gov.br</a>.</p>
+        </div>
+
+        <div class="sect"><span class="n">i</span><div><b>Informações gerais</b><small>Privacidade e dúvidas</small></div></div>
 
         <div class="full">
           <h3>Privacidade e responsabilidade</h3>
@@ -582,6 +750,31 @@ td.divs .tag{white-space:normal}
   </div>
 </div>
 
+<div class="modal" id="exR" hidden role="dialog" aria-modal="true" aria-labelledby="exRTit">
+  <div class="mbox wide">
+    <div class="mhead"><h2 id="exRTit">Exemplo: demonstrativo da rescisão em Excel</h2><button class="xbtn" data-close aria-label="Fechar">×</button></div>
+    <span class="ficti">Dados fictícios, só para ilustrar</span>
+    <p>Exporte do sistema de folha o demonstrativo da rescisão <b>com as rubricas do eSocial</b>, em Excel. Cada linha é uma rubrica, com a natureza da rubrica e as incidências de INSS e IRRF.</p>
+    <div class="xkey"><span><i style="background:var(--bronze)"></i>Coluna obrigatória</span><span><i style="background:var(--surface-3);border:1px solid var(--line-strong)"></i>Coluna opcional</span></div>
+    <div class="xsheet"><table>
+      <thead><tr><th class="cl"></th><th>Evento</th><th>Descrição do evento</th><th>Rubrica</th><th class="req">Natureza da rubrica</th><th>Descrição da natureza</th><th class="req">Incidência de INSS</th><th class="req">Incidência de IRRF</th><th>Referência</th><th class="req">Proventos</th><th class="req">Descontos</th></tr></thead>
+      <tbody>
+        <tr><td class="cl">1</td><td>0126</td><td>Saldo de salário</td><td>002</td><td class="req">6000</td><td>Saldo de salários na rescisão contratual</td><td class="req">11</td><td class="req">11</td><td>15,00</td><td class="req r">1.500,00</td><td class="req r">0,00</td></tr>
+        <tr><td class="cl">2</td><td>0100</td><td>Aviso prévio indenizado</td><td>033</td><td class="req">6003</td><td>Indenização compensatória do aviso prévio</td><td class="req">0</td><td class="req">74</td><td>30,00</td><td class="req r">3.000,00</td><td class="req r">0,00</td></tr>
+        <tr><td class="cl">3</td><td>0222</td><td>13º salário proporcional</td><td>444</td><td class="req">6002</td><td>13º salário proporcional na rescisão</td><td class="req">12</td><td class="req">12</td><td>10,00</td><td class="req r">2.500,00</td><td class="req r">0,00</td></tr>
+        <tr><td class="cl">4</td><td>0172</td><td>Férias proporcionais</td><td>010</td><td class="req">6006</td><td>Férias proporcionais</td><td class="req">0</td><td class="req">74</td><td>2,50</td><td class="req r">1.000,00</td><td class="req r">0,00</td></tr>
+        <tr><td class="cl">5</td><td>0366</td><td>Desconto refeição</td><td>392</td><td class="req">9243</td><td>Cesta básica ou refeição, vinculada ao PAT – Desconto</td><td class="req">0</td><td class="req">9</td><td>0,00</td><td class="req r">0,00</td><td class="req r">40,00</td></tr>
+        <tr><td class="cl">6</td><td>0302</td><td>INSS</td><td>014</td><td class="req">9201</td><td>Contribuição previdenciária</td><td class="req">31</td><td class="req">41</td><td>9,00</td><td class="req r">0,00</td><td class="req r">135,00</td></tr>
+        <tr><td class="cl">7</td><td>0630</td><td>Desconto Crédito do Trabalhador</td><td>538</td><td class="req">9253</td><td>Empréstimos eConsignado – Desconto</td><td class="req">0</td><td class="req">9</td><td>5,00</td><td class="req r">0,00</td><td class="req r">400,00</td></tr>
+      </tbody></table></div>
+    <ul>
+      <li>Os nomes das colunas podem variar de um sistema para outro, por exemplo: <b>Nat.Rub.</b> ou <b>Natureza da Rubrica</b>; <b>INSS</b> ou <b>Incidência INSS</b>. A ordem das colunas não importa.</li>
+      <li>Linhas de título, subtotais, totais e cabeçalho da empresa podem ficar no arquivo: a ferramenta lê só as linhas que têm natureza da rubrica e valor.</li>
+      <li>O desconto do consignado já lançado (natureza <b>9253</b>) é usado para conferir com o valor calculado.</li>
+    </ul>
+    <button class="btn primary" data-close>Fechar</button>
+  </div>
+</div>
 <div class="modal" id="privModal" hidden role="dialog" aria-modal="true" aria-labelledby="privTit">
   <div class="mbox">
     <div class="mic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
@@ -1067,7 +1260,7 @@ function totais(){
 }
 function render(){
   renderNotices(); renderSummary(); renderConf(); renderInst(); renderLidos(); renderPrint();
-  const has=S.results.length>0; $("#btnExport").disabled=!has; $("#btnPrint").disabled=!has;
+  const has=S.results.length>0; if(S.tab!=="resc"){ $("#btnExport").disabled=!has; $("#btnPrint").disabled=!has; }
 }
 function renderNotices(){
   if(typeof XLSX==="undefined"||typeof pdfjsLib==="undefined"||typeof ExcelJS==="undefined"){
@@ -1368,7 +1561,7 @@ function renderPrint(){
 
 /* ============ exportação Excel (formatado) ============ */
 const XL={ink:"FF1D2129",band:"FF24282F",bronze:"FF9A6A38",bronzeSoft:"FFF4EBE0",line:"FFD9DCE1",zebra:"FFF7F7F8",white:"FFFFFFFF",grey:"FF6B717C",
-  st:{ok:["FFE3F3EA","FF1F7A4D"],att:["FFFBF0D9","FF8A5A00"],div:["FFFBE5E3","FFB4322C"],pdf:["FFE4ECF8","FF2F5FA7"],xls:["FFFBE5E3","FFB4322C"]}};
+  st:{sub:["FFE2E4E8","FF1D2129"],neu:["FFF1F2F4","FF6B717C"],ok:["FFE3F3EA","FF1F7A4D"],att:["FFFBF0D9","FF8A5A00"],div:["FFFBE5E3","FFB4322C"],pdf:["FFE4ECF8","FF2F5FA7"],xls:["FFFBE5E3","FFB4322C"]}};
 const MOEDA='"R$" #,##0.00;[Red]-"R$" #,##0.00;"–"';
 function xlFill(c){ return {type:"pattern",pattern:"solid",fgColor:{argb:c}}; }
 const xlBorder={top:{style:"thin",color:{argb:XL.line}},bottom:{style:"thin",color:{argb:XL.line}},left:{style:"thin",color:{argb:XL.line}},right:{style:"thin",color:{argb:XL.line}}};
@@ -1620,6 +1813,379 @@ wireDrop("#dropP","#fileP",importP);
 wireDrop("#dropE","#fileE",f=>importE(f));
 
 
+/* ============ Passo 3 · Desconto na rescisão ============ */
+/* Regra: art. 30, §§ 2º, 3º e 5º, da Portaria MTE nº 435/2025 (redação da Portaria MTE nº 1.115/2026) e itens 5.7.2 e 5.7.3 do
+   Manual de Orientação ao Empregador do Crédito do Trabalhador (versão 2.1, 26/06/2026). */
+const RC = { resc:null, contr:[], csv:null, who:"" };
+const NAT_SOMA = {6003:"Aviso prévio indenizado",6004:"Férias em dobro indenizadas na rescisão",6006:"Férias proporcionais",6007:"Férias vencidas"};
+const NAT_SUB  = {9213:"Pensão alimentícia",9214:"Desconto do adiantamento do 13º salário",9218:"Retenções judiciais",9260:"FIES – desconto",6901:"Desconto do aviso prévio (§ 2º do art. 487 da CLT)",6904:"Multa prevista no art. 480 da CLT"};
+const NAT_FGTS = n => n===6101 || (n>=9901 && n<=9908);
+const pctFmt = v => (v==null||isNaN(v)) ? "—" : v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:4})+"%";
+function numFlex(v){
+  if(v==null) return null; if(typeof v==="number") return v;
+  let s=String(v).replace(/R\$|%|\s/g,""); if(!s||s==="—"||s==="-") return null;
+  if(s.includes(",")) s=s.replace(/\./g,"").replace(",",".");
+  const n=parseFloat(s); return isNaN(n)?null:n;
+}
+const KEYN = s => stripAcc(s).toUpperCase().replace(/[^A-Z0-9]/g,"");
+
+/* ---------- leitura do demonstrativo da rescisão ---------- */
+function lerRescisao(wb,fileName){
+  for(const sn of wb.SheetNames){
+    const A=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:false,defval:null,blankrows:false});
+    let h=-1, C=null;
+    for(let i=0;i<Math.min(A.length,80)&&h<0;i++){
+      const k=(A[i]||[]).map(c=>normTxt(c));
+      const nat=k.findIndex(x=>x.startsWith("NAT")), inss=k.findIndex(x=>x==="INSS"||(/INCID/.test(x)&&/INSS|CP|PREVID/.test(x))), irrf=k.findIndex(x=>x==="IRRF"||(/INCID/.test(x)&&/IRRF|IR\b/.test(x)));
+      const pv=k.findIndex(x=>/^(PROVENTOS?|VENCIMENTOS?)( |$)/.test(x)), dv=k.findIndex(x=>/^DESCONTOS?( |$)/.test(x));
+      if(nat>=0&&inss>=0&&irrf>=0&&pv>=0&&dv>=0){
+        h=i; C={nat,inss,irrf,pv,dv,ev:k.findIndex(x=>/^(COD(IGO)? (DO )?)?EVENTO$/.test(x)),ds:k.findIndex(x=>/^DESCRICAO( DO EVENTO)?$/.test(x)),rub:k.findIndex(x=>/^(COD(IGO)? (DA )?)?RUBRICA$/.test(x)),nd:k.findIndex(x=>x.startsWith("DESC NAT")||x.startsWith("DESCRICAO DA NAT")),ref:k.findIndex(x=>/^REF/.test(x))};
+      }
+    }
+    if(h<0) continue;
+    const rows=[]; let fora=0;
+    for(let i=h+1;i<A.length;i++){
+      const r=A[i]||[]; const nat=digits(r[C.nat]);
+      if(nat.length!==4){ continue; }
+      const pv=parseMoney(r[C.pv])||0, dv=parseMoney(r[C.dv])||0;
+      if(!pv&&!dv){ fora++; continue; }
+      const g=j=>j>=0?String(r[j]??"").trim():"";
+      rows.push({ev:g(C.ev),ds:g(C.ds),rub:g(C.rub),nat:+nat,nd:g(C.nd),inss:digits(r[C.inss]),irrf:digits(r[C.irrf]),ref:C.ref>=0?numFlex(r[C.ref]):null,pv:r2(pv),dv:r2(dv)});
+    }
+    if(!rows.length) throw new Error("Encontrei o cabeçalho, mas nenhuma rubrica com valor na planilha da rescisão.");
+    return {fileName,rows,zeradas:fora};
+  }
+  throw new Error("Não encontrei as colunas de natureza da rubrica, incidência de INSS, incidência de IRRF, proventos e descontos. Use o Excel do demonstrativo da rescisão com as rubricas do eSocial.");
+}
+/* Classificação conforme o item 5.7.3 do Manual */
+function classifica(r){
+  if(r.pv>0 && !r.dv){
+    if(NAT_FGTS(r.nat)) return {g:"fgts"};
+    if(NAT_SOMA[r.nat]) return {g:"soma",m:`Natureza ${r.nat} – ${NAT_SOMA[r.nat]} (§ 5º do art. 30)`};
+    if(r.inss==="11"||r.inss==="12") return {g:"soma",m:`Incidência de INSS ${r.inss}`};
+    return {g:"fora",m:"Vencimento sem incidência de INSS"};
+  }
+  if(r.nat===9253) return {g:"consig"};
+  if(r.inss==="11"||r.inss==="12") return {g:"sub",m:`Desconto com incidência de INSS ${r.inss}`};
+  if(["31","32","34","35"].includes(r.inss)) return {g:"sub",m:`Contribuição previdenciária (INSS ${r.inss})`};
+  if(r.irrf==="31"||r.irrf==="32") return {g:"sub",m:`Imposto de renda retido na fonte (IRRF ${r.irrf})`};
+  if(NAT_SUB[r.nat]) return {g:"sub",m:`Natureza ${r.nat} – ${NAT_SUB[r.nat]}`};
+  if(NAT_FGTS(r.nat)) return {g:"fgts"};
+  return {g:"fora",m:"Desconto voluntário (§ 3º do art. 30)"};
+}
+function apuraBase(){
+  if(!RC.resc) return null;
+  const soma=[],sub=[],fora=[],consig=[];
+  RC.resc.rows.forEach(r=>{ const c=classifica(r); const o={...r,m:c.m};
+    if(c.g==="soma") soma.push(o); else if(c.g==="sub") sub.push(o); else if(c.g==="fora") fora.push(o); else if(c.g==="consig") consig.push(o); });
+  const ts=r2(soma.reduce((t,r)=>t+r.pv,0)), td=r2(sub.reduce((t,r)=>t+r.dv,0));
+  return {soma,sub,fora,consig,ts,td,base:r2(ts-td)};
+}
+
+/* ---------- leitura dos contratos (Emprega Brasil) ---------- */
+function parseCSV(txt){
+  txt=txt.replace(/^﻿/,""); const first=txt.split(/\r?\n/)[0]||"";
+  const cnt=ch=>first.split(ch).length; const d=[ "\t",";","," ].sort((a,b)=>cnt(b)-cnt(a))[0];
+  const out=[]; let row=[],cur="",q=false;
+  for(let i=0;i<txt.length;i++){ const c=txt[i];
+    if(q){ if(c==='"'){ if(txt[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true; else if(c===d){ row.push(cur); cur=""; }
+    else if(c==="\n"||c==="\r"){ if(c==="\r"&&txt[i+1]==="\n") i++; row.push(cur); out.push(row); row=[]; cur=""; }
+    else cur+=c; }
+  if(cur!==""||row.length){ row.push(cur); out.push(row); }
+  return out.filter(r=>r.some(v=>String(v).trim()!==""));
+}
+function lerContratos(A,fileName){
+  let h=-1,C=null;
+  for(let i=0;i<Math.min(A.length,20)&&h<0;i++){
+    const k=(A[i]||[]).map(KEYN); const f=fn=>k.findIndex(fn);
+    const saldo=f(x=>x.includes("SALDODEVEDOR")), perc=f(x=>x.includes("VERBARESCISORIA")), contrato=f(x=>x==="EMPRESTIMOCONTRATO"||x==="CONTRATO"||x==="NUMEROCONTRATO"||x==="NUMERODOCONTRATO");
+    if(saldo>=0&&perc>=0&&contrato>=0){ h=i; C={saldo,perc,contrato,
+      tem:f(x=>x.includes("TEMGARANTIA")), cod:f(x=>x.includes("IFCONCESSORACODIGO")||x==="CODIGOINSTITUICAO"), nome:f(x=>x.includes("IFCONCESSORADESCRICAO")),
+      inst:f(x=>x==="INSTITUICAOFINANCEIRA"), parcela:f(x=>x.includes("VALORPARCELA")), sit:f(x=>x.includes("SITUACAOEMPRESTIMODESCRICAO")),
+      cpf:f(x=>x==="CPF"), trab:f(x=>x==="NOMETRABALHADOR"||x==="TRABALHADOR"), mat:f(x=>x==="MATRICULA") }; }
+  }
+  if(h<0) throw new Error("Não encontrei as colunas de contrato, saldo devedor e percentual da verba rescisória. Use o arquivo exportado da consulta de empréstimos do Emprega Brasil.");
+  const rows=[];
+  for(let i=h+1;i<A.length;i++){
+    const r=A[i]; const g=j=>j>=0?String(r[j]??"").trim():"";
+    if(!g(C.contrato)&&!g(C.saldo)&&!g(C.cod)&&!g(C.inst)) continue;
+    let cod=g(C.cod), nome=g(C.nome);
+    if(!cod&&C.inst>=0){ const m=g(C.inst).match(/^(\d+)\s*[-–]\s*(.+)$/); if(m){cod=m[1];nome=m[2];} else nome=g(C.inst); }
+    const temTxt=g(C.tem).toLowerCase(); let perc=numFlex(g(C.perc));
+    const tem = C.tem>=0 ? (temTxt==="true"||temTxt==="sim"||temTxt==="1") : (perc>0);
+    if(!tem) perc=0;
+    rows.push({cod:digits(cod)||cod,inst:nome,contrato:g(C.contrato),perc:perc||0,saldo:numFlex(g(C.saldo)),parcela:numFlex(g(C.parcela)),sit:g(C.sit),
+      cpf:digits(g(C.cpf)),trab:g(C.trab),mat:g(C.mat),origem:"eb"});
+  }
+  return {fileName,rows};
+}
+const whoKey = r => r.cpf || normTxt(r.trab) || "";
+function aplicaWho(){
+  const grupos=[...new Set(RC.csv.rows.map(whoKey))];
+  const sel=$("#rWho"); $("#rWhoBox").hidden=grupos.length<2;
+  if(grupos.length>1){
+    if(!grupos.includes(RC.who)) RC.who=grupos[0];
+    sel.innerHTML=grupos.map(g=>{ const r=RC.csv.rows.find(x=>whoKey(x)===g); return `<option value="${esc(g)}"${g===RC.who?" selected":""}>${esc((r.trab||"Sem nome")+(r.cpf?" · "+fmtCPF(r.cpf):""))}</option>`; }).join("");
+  } else RC.who=grupos[0]||"";
+  RC.contr=RC.csv.rows.filter(r=>whoKey(r)===RC.who).map(r=>({...r}));
+  const r0=RC.contr[0]; if(r0&&r0.trab) $("#rNome").value=r0.trab+(r0.cpf?" · CPF "+fmtCPF(r0.cpf):"");
+}
+
+/* ---------- cálculo por contrato (item 5.7.2) ---------- */
+function calcula(){
+  const B=apuraBase(); const base=B?Math.max(B.base,0):null;
+  const lst=RC.contr.map((c,i)=>{
+    const o={...c,i,calc:null,desc:null,teto:false,st:"aguarda",txt:"",lanc:null};
+    if(!(c.perc>0)){ o.st="sem"; o.desc=0; o.txt="Sem garantia nas verbas rescisórias: não desconte este contrato na rescisão, nem a parcela mensal."; return o; }
+    if(c.saldo==null){ o.st="falta"; o.txt="Informe o saldo devedor consultado no Emprega Brasil."; return o; }
+    if(base==null){ o.st="aguarda"; o.txt="Importe o demonstrativo da rescisão para calcular."; return o; }
+    o.calc=r2(base*c.perc/100);
+    if(c.saldo<=0){ o.desc=0; o.st="zerado"; o.txt="Saldo devedor zerado: não há valor a descontar."; return o; }
+    if(o.calc>c.saldo){ o.teto=true; o.desc=r2(c.saldo); o.txt=`Limitado ao saldo devedor: ${fmtV(base)} × ${pctFmt(c.perc)} = ${fmtV(o.calc)}, maior que o saldo devedor de ${fmtV(c.saldo)}. Desconto: ${fmtV(o.desc)}, que quita o contrato.`; }
+    else { o.desc=o.calc; o.txt=`${o.calc===r2(c.saldo)?"Igual ao saldo devedor":"Abaixo do saldo devedor"}: ${fmtV(base)} × ${pctFmt(c.perc)} = ${fmtV(o.desc)}.`; }
+    o.st="calc"; return o;
+  });
+  /* conferência com os lançamentos de natureza 9253 */
+  const lanc=(B?B.consig:[]).map((l,k)=>({...l,k,usado:false}));
+  if(B){
+    const liga=(o,l,man)=>{ o.lanc=l; o.man=!!man; l.usado=true; l.o=o; };
+    /* vínculo escolhido pelo usuário */
+    lst.forEach(o=>{ if(o.lancSel==null) return; if(o.lancSel===-1){ o.manNone=true; return; }
+      const l=lanc[o.lancSel]; if(!l){ return; } if(l.usado){ o.conflito=true; return; } liga(o,l,true); });
+    const alvo=lst.filter(o=>o.st==="calc"&&!o.lanc&&!o.manNone&&!o.conflito);
+    alvo.forEach(o=>{ const c=lanc.filter(l=>!l.usado&&l.ref!=null&&Math.abs(l.ref-o.perc)<0.005); if(c.length===1) liga(o,c[0]); });
+    alvo.filter(o=>!o.lanc).forEach(o=>{ const c=lanc.find(l=>!l.usado&&Math.abs(l.dv-o.desc)<=0.01); if(c) liga(o,c); });
+    const ro=alvo.filter(o=>!o.lanc), rl=lanc.filter(l=>!l.usado); if(ro.length===1&&rl.length===1) liga(ro[0],rl[0]);
+    lst.filter(o=>o.st==="calc").forEach(o=>{ if(!o.lanc){ o.st="nl"; return; } o.dif=r2(o.lanc.dv-o.desc); o.st=Math.abs(o.dif)<=0.01?"ok":"div"; });
+  }
+  return {B,base,lst,lanc,sobra:lanc.filter(l=>!l.usado)};
+}
+const RST={ok:{c:"p-ok",t:"Confere"},div:{c:"p-div",t:"Divergente"},nl:{c:"p-att",t:"Não lançado"},calc:{c:"p-pdf",t:"Calculado"},sem:{c:"p-neu",t:"Sem garantia"},zerado:{c:"p-neu",t:"Sem saldo"},falta:{c:"p-att",t:"Falta saldo"},aguarda:{c:"p-neu",t:"Aguardando rescisão"}};
+function dicasResc(o){
+  if(o.st==="div"){ const d=["Compare a remuneração disponível do sistema de folha com a da ferramenta. Se forem diferentes, revise no sistema: as incidências de INSS e IRRF das rubricas, a inclusão do aviso prévio indenizado e das férias (6003, 6004, 6006 e 6007) e a dedução dos descontos obrigatórios (9213, 9214, 9218, 9260, 6901 e 6904)."];
+    if(o.teto) d.push("O valor pelo percentual passou do saldo devedor: confira se o sistema limitou o desconto ao saldo devedor.");
+    d.push("Confira se o valor não foi lançado no evento de outro contrato.");
+    if(Math.abs(o.dif)<1) d.push("Diferença de centavos costuma ser arredondamento. Verifique e, se for o caso, ajuste.");
+    return d; }
+  if(o.st==="nl"&&!o.conflito) return ["Se não houver lançamento, inclua o desconto em rubrica de natureza 9253, com o código da instituição e o número do contrato.","Confira se o percentual de garantia e o saldo devedor deste contrato estão cadastrados no sistema de folha."];
+  if(o.st==="sem") return ["O saldo restante fica entre a instituição financeira e o trabalhador, e as parcelas podem ser redirecionadas para um novo vínculo."];
+  return [];
+}
+function orientaResc(o){
+  if(o.conflito) return "Este lançamento já está vinculado a outro contrato. Escolha outro na coluna Lançado.";
+  if(o.st==="nl"&&o.manNone) return "Marcado como não lançado na rescisão.";
+  if(o.st==="div") return `Lançado: ${fmtV(o.lanc.dv)} (evento ${esc(o.lanc.ev||"—")}${o.man?", vinculado manualmente":""}). Calculado: ${fmtV(o.desc)}. Diferença de ${fmtV(Math.abs(o.dif))} ${o.dif>0?"a mais":"a menos"}. Verifique e, se for o caso, corrija antes do envio do S-2299: o eSocial faz o cálculo e emite alerta se o valor declarado for diferente.`;
+  if(o.st==="nl") return "Lançamento de natureza 9253 deste contrato não encontrado na rescisão. Se ele existir, escolha-o na coluna Lançado.";
+  if(o.st==="ok") return `Lançado na rescisão: ${fmtV(o.lanc.dv)} (evento ${esc(o.lanc.ev||"—")}${o.man?", vinculado manualmente":""}).`;
+  return "";
+}
+/* bloco recolhido "O que verificar" */
+function blocoVerif(o){
+  const ori=orientaResc(o), d=dicasResc(o);
+  if(o.st==="ok") return ori?`<div class="t-ok rmini">${ori}</div>`:"";
+  const it=[...(ori?[`<li class="${o.st==="div"||o.conflito?"t-bad":"t-warn"}">${ori}</li>`]:[]),...d.map(x=>`<li>${esc(x)}</li>`)];
+  return it.length?`<details class="rdet"><summary>O que verificar</summary><ul>${it.join("")}</ul></details>`:"";
+}
+
+/* ---------- tela ---------- */
+function rcRender(){
+  const R=calcula(); const {B,base,lst,sobra}=R; RC.ult=R;
+  const comG=lst.filter(o=>o.perc>0), total=r2(lst.reduce((t,o)=>t+(o.desc||0),0));
+  const lancT=B?r2(B.consig.reduce((t,l)=>t+l.dv,0)):null, dif=B&&lst.length?r2(lancT-total):null;
+  /* avisos */
+  const w=[];
+  if(B&&B.base<=0) w.push(["warn","Remuneração disponível zerada ou negativa: não há valor a descontar na rescisão."]);
+  if(sobra.length&&lst.length) w.push(["bad",`${sobra.length} lançamento(s) de natureza 9253 na rescisão sem contrato vinculado: ${sobra.map(l=>`evento ${esc(l.ev||"—")} ${esc(l.ds)} ${fmtV(l.dv)}`).join("; ")}. Se for de um contrato com garantia, escolha-o na coluna <b>Lançado</b> desse contrato.<details class="rdet"><summary>O que verificar</summary><ul><li>Se for de um contrato sem garantia, retire o desconto: sem garantia não pode haver desconto na rescisão, nem da parcela mensal.</li><li>Confira se o contrato está no CSV do Emprega Brasil: a consulta pode ser de outro CPF ou de outra data.</li></ul></details>`]);
+  const dt=$("#rData").value, hoje=new Date(); const hj=`${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
+  if(lst.length&&dt&&dt!==hj) w.push(["warn",`Consulta ao Emprega Brasil feita em ${dt.split("-").reverse().join("/")}. O saldo devedor pode ter mudado: consulte de novo no dia do envio do S-2299.`]);
+  if(RC.contr.some(c=>c.sit&&!/^ativo$/i.test(c.sit))) w.push(["info","Há contrato com situação diferente de Ativo no Emprega Brasil. Confira se ele ainda deve ser descontado."]);
+  if(typeof XLSX==="undefined") w.push(["bad","O leitor de Excel não carregou. Verifique a conexão com a internet e abra a ferramenta de novo."]);
+  $("#rNotices").innerHTML=w.map(([k,t])=>`<div class="notice ${k}"><svg class="i" viewBox="0 0 24 24" style="width:16px;height:16px;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg><span>${t}</span></div>`).join("");
+  /* indicadores */
+  $("#rSummary").innerHTML=`
+    <div class="kpi"><div class="l">Remuneração disponível</div><div class="v num">${B?fmtV(B.base):"—"}</div><div class="h">${B?B.soma.length+" somam · "+B.sub.length+" subtraem":"rescisão não importada"}</div></div>
+    <div class="kpi"><div class="l">Contratos com garantia</div><div class="v num">${lst.length?comG.length+" de "+lst.length:"—"}</div><div class="h">${lst.length?"informados":"nenhum contrato"}</div></div>
+    <div class="kpi"><div class="l">Desconto na rescisão</div><div class="v num">${base!=null&&lst.length?fmtV(total):"—"}</div><div class="h">calculado pela ferramenta</div></div>
+    <div class="kpi"><div class="l">Lançado na rescisão</div><div class="v num">${B?fmtV(lancT):"—"}</div><div class="h">${B?B.consig.length+" evento(s) de natureza 9253":"rescisão não importada"}</div></div>
+    <div class="kpi"><div class="l">Diferença</div><div class="v num ${dif==null?"":Math.abs(dif)<=0.01?"diffzero":"diffpos"}">${dif==null?"—":fmtV(dif)}</div><div class="h">${dif==null?"—":Math.abs(dif)<=0.01?"lançado confere":"lançado − calculado"}</div></div>`;
+  /* contratos */
+  const VZr='<span class="vazio">—</span>';
+  $("#tResc").innerHTML = !lst.length ? `<tbody><tr><td class="empty">Importe o CSV do Emprega Brasil ou clique em <b>Adicionar contrato</b> para digitar o percentual de garantia e o saldo devedor.</td></tr></tbody>` :
+   `<thead><tr><th>Situação</th><th>Instituição financeira</th><th>Contrato</th><th class="r">Garantia (%)</th><th class="r">Saldo devedor</th><th class="r">Desconto na rescisão</th><th class="r">Lançado (9253)</th><th></th></tr></thead><tbody>${lst.map(o=>{
+     const man=o.origem==="manual"; const ori=orientaResc(o);
+     return `<tr class="rrow">
+      <td><span class="pill ${RST[o.st].c}">${RST[o.st].t}</span></td>
+      <td>${man?`<input class="cin" data-i="${o.i}" data-k="inst" value="${esc((o.cod?o.cod+" – ":"")+(o.inst||""))}" placeholder="Ex.: 373 – UP.P">`:esc((o.cod?o.cod+" – ":"")+(o.inst||""))}</td>
+      <td class="num">${man?`<input class="cin num" data-i="${o.i}" data-k="contrato" value="${esc(o.contrato)}" placeholder="Nº do contrato">`:(esc(o.contrato)||VZr)}</td>
+      <td class="r"><input class="cin num r" data-i="${o.i}" data-k="perc" inputmode="decimal" value="${o.perc>0?String(o.perc).replace(".",","):""}" placeholder="0,00"></td>
+      <td class="r"><input class="cin num r" data-i="${o.i}" data-k="saldo" inputmode="decimal" value="${o.saldo!=null?o.saldo.toFixed(2).replace(".",","):""}" placeholder="0,00"></td>
+      <td class="r num"><b>${o.desc!=null&&o.st!=="aguarda"?fmtV(o.desc):VZr}</b></td>
+      <td class="r">${selLanc(o,R.lanc,VZr)}</td>
+      <td class="r">${man?`<button class="xbtn" data-del="${o.i}" title="Remover contrato" aria-label="Remover contrato">×</button>`:""}</td>
+     </tr><tr class="rcalc"><td></td><td colspan="7">${esc(o.txt)}${blocoVerif(o)}</td></tr>`; }).join("")}</tbody>
+     <tfoot><tr><td colspan="5" class="r"><b>Total</b></td><td class="r num"><b>${base!=null?fmtV(total):"—"}</b></td><td class="r num"><b>${B?fmtV(lancT):"—"}</b></td><td></td></tr></tfoot>`;
+  /* remuneração disponível */
+  const linha=(r,v,m)=>`<tr><td>${esc(r.ev)||VZr}</td><td>${esc(r.ds)}</td><td>${r.nat}</td><td>${esc(r.inss)||VZr}</td><td>${esc(r.irrf)||VZr}</td><td class="r num">${fmtV(v)}</td><td class="sub">${m??esc(r.m)}</td></tr>`;
+  const grp=(t,c)=>`<tr class="grp"><td colspan="7"><span class="pill ${c}">${t}</span></td></tr>`;
+  $("#tBase").innerHTML = !B ? `<tbody><tr><td class="empty">Importe o demonstrativo da rescisão para apurar a remuneração disponível.</td></tr></tbody>` :
+   `<thead><tr><th>Evento</th><th>Descrição</th><th>Natureza</th><th>INSS</th><th>IRRF</th><th class="r">Valor</th><th>Motivo</th></tr></thead><tbody>
+    ${grp("Somam","p-ok")}${B.soma.map(r=>linha(r,r.pv)).join("")||`<tr><td colspan="7" class="sub">Nenhuma rubrica.</td></tr>`}
+    <tr class="sub-tot"><td colspan="5">Total que soma</td><td class="r num">${fmtV(B.ts)}</td><td></td></tr>
+    ${grp("Subtraem","p-sub")}${B.sub.map(r=>linha(r,r.dv)).join("")||`<tr><td colspan="7" class="sub">Nenhuma rubrica.</td></tr>`}
+    <tr class="sub-tot"><td colspan="5">Total que subtrai</td><td class="r num">${fmtV(-B.td)}</td><td></td></tr>
+    <tr class="base-tot"><td colspan="5">Remuneração disponível na rescisão</td><td class="r num">${fmtV(B.base)}</td><td></td></tr>
+    ${B.fora.length?grp("Não entram","p-neu")+B.fora.map(r=>linha(r,r.pv||r.dv)).join(""):""}
+    ${R.lanc.length?grp("Desconto do Crédito do Trabalhador lançado na rescisão","p-pdf")+R.lanc.map(l=>linha(l,l.dv,esc(lancMotivo(l,lst.length)))).join("")+`<tr class="sub-tot"><td colspan="5">Total lançado (natureza 9253)</td><td class="r num">${fmtV(r2(R.lanc.reduce((t,l)=>t+l.dv,0)))}</td><td></td></tr>`:""}
+   </tbody>`;
+  rcBtns();
+}
+function selLanc(o,lanc,VZr){
+  if(!lanc.length||!["ok","div","nl"].includes(o.st)&&!o.conflito) return o.lanc?`<span class="num">${fmtV(o.lanc.dv)}</span>`:VZr;
+  const lab=l=>`${l.ev||"Evento"} · ${fmtV(l.dv)}${l.ref!=null?" · ref. "+String(l.ref).replace(".",","):""}`;
+  const v=o.lancSel==null?"":String(o.lancSel);
+  return `<select class="cin lsel" data-i="${o.i}" title="Lançamento de natureza 9253 vinculado a este contrato">
+    <option value=""${v===""?" selected":""}>${o.lancSel==null&&o.lanc?lab(o.lanc)+" – automático":"Automático: não encontrado"}</option>
+    ${lanc.map(l=>`<option value="${l.k}"${v===String(l.k)?" selected":""}>${esc(lab(l))}</option>`).join("")}
+    <option value="-1"${v==="-1"?" selected":""}>Não lançado</option></select>`;
+}
+function lancMotivo(l,temContr){
+  const base="Não entra na base. ";
+  if(l.o) return base+(l.o.man?"Vinculado manualmente. ":"")+`Conferido com o contrato ${l.o.contrato||"sem número"}${l.o.inst?" – "+l.o.inst:""}: ${l.o.st==="ok"?"confere com o calculado":"diferente do calculado ("+fmtV(l.o.desc)+")"}.`;
+  return base+(temContr?"Sem contrato vinculado.":"Informe os contratos para conferir.");
+}
+function rcBtns(){ if(S.tab!=="resc") return; const has=!!(RC.resc||RC.contr.length); $("#btnExport").disabled=!has; $("#btnPrint").disabled=!has; }
+
+/* edição dos contratos */
+$("#tResc").addEventListener("change",e=>{
+  const sl=e.target.closest(".lsel"); if(sl){ RC.contr[+sl.dataset.i].lancSel = sl.value===""?null:+sl.value; rcRender(); return; }
+  const t=e.target.closest(".cin"); if(!t) return; const c=RC.contr[+t.dataset.i]; const k=t.dataset.k;
+  if(k==="perc"||k==="saldo"){ const n=numFlex(t.value); c[k]= k==="perc" ? (n>0?n:0) : (n==null?null:r2(n)); }
+  else if(k==="inst"){ const m=t.value.match(/^\s*(\d+)\s*[-–]\s*(.+)$/); c.cod=m?m[1]:""; c.inst=m?m[2].trim():t.value.trim(); }
+  else c[k]=t.value.trim();
+  setTimeout(()=>{ const a=document.activeElement, ai=a?.dataset?.i, ak=a?.dataset?.k; rcRender(); if(ak){ const n=document.querySelector(`#tResc .cin[data-i="${ai}"][data-k="${ak}"]`); if(n){ n.focus(); if(n.select) n.select(); } } },0);
+});
+$("#tResc").addEventListener("click",e=>{ const b=e.target.closest("[data-del]"); if(!b) return; RC.contr.splice(+b.dataset.del,1); rcRender(); });
+$("#rAdd").onclick=()=>{ RC.contr.push({cod:"",inst:"",contrato:"",perc:0,saldo:null,origem:"manual"}); rcRender(); const ins=document.querySelectorAll('#tResc input[data-k="inst"]'); if(ins.length) ins[ins.length-1].focus(); };
+$("#rWho").onchange=e=>{ RC.who=e.target.value; aplicaWho(); rcRender(); };
+$("#rData").onchange=rcRender;
+
+/* importação */
+const META_R="Clique ou arraste o Excel da rescisão com as rubricas do eSocial", META_C="Clique ou arraste o CSV exportado da consulta de empréstimos do trabalhador";
+async function importR(file){
+  $("#metaR").innerHTML=`<span class="loading"></span> Lendo ${esc(file.name)}…`;
+  try{
+    if(/\.pdf$/i.test(file.name)) throw new Error("Use o Excel do demonstrativo da rescisão. O PDF não é aceito.");
+    const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:false,raw:false});
+    RC.resc=lerRescisao(wb,file.name); RC.contr.forEach(c=>delete c.lancSel); const B=apuraBase();
+    $("#metaR").innerHTML=`${esc(file.name)}<div class="meta"><b>${RC.resc.rows.length}</b> rubrica(s) · remuneração disponível <b>${fmtV(B.base)}</b></div>`;
+    $("#dropR").classList.add("loaded");
+  }catch(e){ console.error(e); RC.resc=null; $("#dropR").classList.remove("loaded"); $("#metaR").innerHTML=`<span style="color:var(--bad)">${esc(e.message||"Não foi possível ler a planilha.")}</span>`; }
+  rcRender();
+}
+async function importC(file){
+  $("#metaC").innerHTML=`<span class="loading"></span> Lendo ${esc(file.name)}…`;
+  try{
+    let A;
+    if(/\.(csv|txt)$/i.test(file.name)){
+      const buf=await file.arrayBuffer(); let txt=new TextDecoder("utf-8").decode(buf); if(txt.includes("�")) txt=new TextDecoder("windows-1252").decode(buf);
+      A=parseCSV(txt);
+    } else { const wb=XLSX.read(await file.arrayBuffer(),{type:"array",raw:false}); A=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:""}); }
+    RC.csv=lerContratos(A,file.name); RC.who=""; aplicaWho();
+    const g=RC.contr.filter(c=>c.perc>0).length;
+    $("#metaC").innerHTML=`${esc(file.name)}<div class="meta"><b>${RC.contr.length}</b> contrato(s) · <b>${g}</b> com garantia nas verbas rescisórias</div>`;
+    $("#dropC").classList.add("loaded");
+    if(!$("#rData").value){ const d=new Date(); $("#rData").value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+    if(!RC.contr.length) toast("O arquivo do Emprega Brasil está sem contratos");
+  }catch(e){ console.error(e); RC.csv=null; RC.contr=RC.contr.filter(c=>c.origem==="manual"); $("#dropC").classList.remove("loaded"); $("#metaC").innerHTML=`<span style="color:var(--bad)">${esc(e.message||"Não foi possível ler o arquivo.")}</span>`; }
+  rcRender();
+}
+wireDrop("#dropR","#fileR",importR);
+wireDrop("#dropC","#fileC",importC);
+document.querySelectorAll("[data-ex]").forEach(b=>b.addEventListener("click",e=>{ e.preventDefault(); e.stopPropagation(); const m=$("#"+b.dataset.ex); m.hidden=false; m.querySelector("[data-close]").focus(); }));
+document.querySelectorAll("#exR").forEach(m=>{ m.addEventListener("click",e=>{ if(e.target===m||e.target.closest("[data-close]")) m.hidden=true; }); m.addEventListener("keydown",e=>{ if(e.key==="Escape") m.hidden=true; }); });
+function rcLimpar(){
+  if(!confirm("Limpar os arquivos e os contratos informados no cálculo da rescisão?")) return;
+  RC.resc=null; RC.csv=null; RC.contr=[]; RC.who=""; $("#rNome").value=""; $("#rData").value=""; $("#rWhoBox").hidden=true;
+  $("#metaR").textContent=META_R; $("#metaC").textContent=META_C; $("#dropR").classList.remove("loaded"); $("#dropC").classList.remove("loaded");
+  toast("Cálculo da rescisão limpo"); rcRender();
+}
+
+/* ---------- relatório PDF (memória de cálculo) ---------- */
+function renderPrintResc(){
+  const R=calcula(); const {B,base,lst,sobra}=R; const total=r2(lst.reduce((t,o)=>t+(o.desc||0),0));
+  const lancT=B?r2(B.consig.reduce((t,l)=>t+l.dv,0)):null, dif=B&&lst.length?r2(lancT-total):null;
+  const now=new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}); const dt=$("#rData").value;
+  const pp=o=>`<span class="pp ${RST[o.st].c}">${RST[o.st].t}</span>`;
+  const situ = !B||!lst.length ? `<div class="pstat warn">Cálculo incompleto: ${!B?"demonstrativo da rescisão não importado":"nenhum contrato informado"}.</div>`
+    : lst.some(o=>["div","nl","falta"].includes(o.st))||sobra.length ? `<div class="pstat warn">Há diferença entre o calculado e o lançado na rescisão. Verifique e, se for o caso, corrija antes do envio do S-2299.</div>`
+    : `<div class="pstat ok">O lançado na rescisão confere com o cálculo.</div>`;
+  const lin=(r,v)=>`<tr><td>${esc(r.ev)}</td><td>${esc(r.ds)}</td><td>${r.nat}</td><td>${esc(r.inss)}</td><td>${esc(r.irrf)}</td><td class="r">${fmtV(v)}</td><td class="mut">${esc(r.m)}</td></tr>`;
+  $("#printArea").innerHTML=`
+  <div class="ph">
+    <div class="pbrand"><span class="pmk">CT</span><div><div class="pk">Memória de cálculo · Crédito do Trabalhador</div><h2>Desconto do consignado na rescisão</h2></div></div>
+    <div class="pcomp"><span>Desconto na rescisão</span><b>${base!=null&&lst.length?fmtV(total):"—"}</b></div>
+  </div>
+  <div class="pmeta"><div><span>Trabalhador</span>${esc($("#rNome").value||"não informado")}</div><div><span>Consulta ao Emprega Brasil</span>${dt?dt.split("-").reverse().join("/"):"não informada"}</div><div><span>Demonstrativo da rescisão</span>${esc(RC.resc?.fileName||"não importado")}</div><div><span>Contratos</span>${esc(RC.csv?.fileName||(lst.length?"digitados na ferramenta":"não informados"))}</div><div><span>Emitido em</span>${now}</div></div>
+  ${situ}
+  <div class="pkpi">
+    <div><span>Remuneração disponível</span><b>${B?fmtV(B.base):"—"}</b><small>base da rescisão</small></div>
+    <div><span>Desconto calculado</span><b>${base!=null&&lst.length?fmtV(total):"—"}</b><small>${lst.filter(o=>o.perc>0).length} contrato(s) com garantia</small></div>
+    <div><span>Lançado na rescisão</span><b>${B?fmtV(lancT):"—"}</b><small>natureza 9253</small></div>
+    <div><span>Diferença</span><b class="${dif!=null&&Math.abs(dif)<=0.01?"g":"rd"}">${dif==null?"—":fmtV(dif)}</b><small>lançado − calculado</small></div>
+  </div>
+  <h3 class="sec">Desconto por contrato</h3>
+  ${lst.length?`<table><thead><tr><th>Situação</th><th>Instituição</th><th>Contrato</th><th class="r">Garantia</th><th class="r">Saldo devedor</th><th class="r">Desconto</th><th class="r">Lançado</th><th>Como foi calculado</th></tr></thead><tbody>
+   ${lst.map(o=>`<tr><td>${pp(o)}</td><td>${esc((o.cod?o.cod+" – ":"")+(o.inst||""))}</td><td>${esc(o.contrato)}</td><td class="r">${o.perc>0?pctFmt(o.perc):"—"}</td><td class="r">${o.saldo!=null?fmtV(o.saldo):"—"}</td><td class="r"><b>${o.desc!=null&&o.st!=="aguarda"?fmtV(o.desc):"—"}</b></td><td class="r">${o.lanc?fmtV(o.lanc.dv):"—"}</td><td>${esc(o.txt)}${orientaResc(o)?"<br><span class='mut'>"+orientaResc(o)+"</span>":""}${dicasResc(o).length?"<br><span class='mut'><b>O que verificar:</b> "+dicasResc(o).map(esc).join(" ")+"</span>":""}</td></tr>`).join("")}
+   </tbody></table>`:`<p class="mut">Nenhum contrato informado.</p>`}
+  ${sobra.length&&lst.length?`<p class="rd">Lançamento(s) de natureza 9253 na rescisão sem contrato vinculado: ${sobra.map(l=>`evento ${esc(l.ev||"—")} ${esc(l.ds)} ${fmtV(l.dv)}`).join("; ")}. Se for de um contrato sem garantia, retire o desconto: sem garantia não pode haver desconto na rescisão, nem da parcela mensal. Confira também se o contrato está no CSV do Emprega Brasil: a consulta pode ser de outro CPF ou de outra data.</p>`:""}
+  ${B?`<h3 class="sec">Remuneração disponível na rescisão</h3>
+  <table><thead><tr><th>Evento</th><th>Descrição</th><th>Natureza</th><th>INSS</th><th>IRRF</th><th class="r">Valor</th><th>Motivo</th></tr></thead><tbody>
+   <tr><td colspan="7"><b>Somam</b></td></tr>${B.soma.map(r=>lin(r,r.pv)).join("")}
+   <tr><td colspan="5"><b>Total que soma</b></td><td class="r"><b>${fmtV(B.ts)}</b></td><td></td></tr>
+   <tr><td colspan="7"><b>Subtraem</b></td></tr>${B.sub.map(r=>lin(r,r.dv)).join("")}
+   <tr><td colspan="5"><b>Total que subtrai</b></td><td class="r"><b>${fmtV(-B.td)}</b></td><td></td></tr>
+   <tr><td colspan="5"><b>Remuneração disponível na rescisão</b></td><td class="r"><b>${fmtV(B.base)}</b></td><td></td></tr>
+   ${R.lanc.length?`<tr><td colspan="7"><b>Desconto do Crédito do Trabalhador lançado na rescisão</b></td></tr>${R.lanc.map(l=>`<tr><td>${esc(l.ev)}</td><td>${esc(l.ds)}</td><td>${l.nat}</td><td>${esc(l.inss)}</td><td>${esc(l.irrf)}</td><td class="r">${fmtV(l.dv)}</td><td class="mut">${esc(lancMotivo(l,lst.length))}</td></tr>`).join("")}`:""}
+  </tbody></table>`:""}
+  <p class="pfoot">Cálculo conforme o art. 30, §§ 2º, 3º e 5º, da Portaria MTE nº 435/2025, com a redação da Portaria MTE nº 1.115/2026, e o item 5.7 do Manual de Orientação ao Empregador do Crédito do Trabalhador (versão 2.1, 26/06/2026): desconto igual ao menor valor entre a remuneração disponível na rescisão multiplicada pelo percentual dado em garantia e o saldo devedor informado pela instituição financeira. Os dados foram processados apenas no navegador de quem emitiu o relatório.</p>`;
+}
+
+/* ---------- Excel ---------- */
+async function exportarResc(){
+  if(typeof ExcelJS==="undefined"){ toast("O gerador de Excel não carregou. Verifique a internet e abra a ferramenta de novo."); return; }
+  const RR=calcula(); const {B,base,lst,sobra}=RR; const total=r2(lst.reduce((t,o)=>t+(o.desc||0),0)); const lancT=B?r2(B.consig.reduce((t,l)=>t+l.dv,0)):null;
+  const dt=$("#rData").value; const nome=$("#rNome").value;
+  const wb=new ExcelJS.Workbook(); wb.creator="Conciliação do Consignado"; wb.created=new Date();
+  const ws=wb.addWorksheet("Cálculo",{views:[{showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+  ws.columns=[{width:16},{width:30},{width:22},{width:13},{width:16},{width:18},{width:18},{width:16},{width:14},{width:70}];
+  xlTitulo(ws,10,"Desconto do consignado na rescisão – memória de cálculo",`${nome||"Trabalhador não informado"}  ·  Consulta ao Emprega Brasil: ${dt?dt.split("-").reverse().join("/"):"não informada"}  ·  Emitido em ${new Date().toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})}`);
+  let r=5; xlSecao(ws,r,10,"Remuneração disponível na rescisão"); r++;
+  [["Total que soma",B?B.ts:null],["Total que subtrai",B?-B.td:null],["Remuneração disponível",B?B.base:null]].forEach(([k,v],i)=>{ xlLinha(ws,r,[k,v],{money:[1],bold:i===2,fill:i===2?XL.bronzeSoft:undefined}); r++; });
+  r++; xlSecao(ws,r,10,"Desconto por contrato"); r++;
+  xlCabecalho(ws,r,["Cód. inst.","Instituição financeira","Contrato","Garantia (%)","Saldo devedor","Pelo percentual","Desconto na rescisão","Lançado (9253)","Situação","Como foi calculado"]); r++;
+  lst.forEach(o=>{ xlLinha(ws,r,[o.cod,o.inst,String(o.contrato||""),o.perc>0?o.perc/100:null,o.saldo,o.calc,o.st==="aguarda"?null:o.desc,o.lanc?o.lanc.dv:null,RST[o.st].t,SEMHTML(o.txt+(orientaResc(o)?" "+orientaResc(o):"")+(dicasResc(o).length?" O que verificar: "+dicasResc(o).join(" "):""))],{money:[4,5,6,7],center:[0,3,8],wrap:[9]});
+    ws.getCell(r,4).numFmt="0.00%"; ws.getCell(r,3).numFmt="@"; const k={ok:"ok",div:"div",nl:"att",falta:"att"}[o.st]; if(k) xlStatus(ws.getCell(r,9),k); r++; });
+  xlLinha(ws,r,["Total","","","","","",total,lancT,"",""],{money:[6,7],bold:true,fill:XL.bronzeSoft}); r+=2;
+  if(sobra.length&&lst.length){ ws.mergeCells(r,1,r,10); const c=ws.getCell(r,1); c.value="Lançamento(s) de natureza 9253 na rescisão sem contrato vinculado: "+sobra.map(l=>`evento ${l.ev||"—"} ${l.ds} ${fmtV(l.dv)}`).join("; ")+". Se for de um contrato sem garantia, retire o desconto: sem garantia não pode haver desconto na rescisão, nem da parcela mensal. Confira também se o contrato está no CSV do Emprega Brasil: a consulta pode ser de outro CPF ou de outra data."; c.font={size:10,bold:true,color:{argb:XL.st.div[1]}}; c.fill=xlFill(XL.st.div[0]); c.alignment={wrapText:true,vertical:"middle"}; ws.getRow(r).height=32; r+=2; }
+  ws.mergeCells(r,1,r,10); const f=ws.getCell(r,1); f.value="Cálculo conforme o art. 30, §§ 2º, 3º e 5º, da Portaria MTE nº 435/2025, com a redação da Portaria MTE nº 1.115/2026, e o item 5.7 do Manual de Orientação ao Empregador do Crédito do Trabalhador (versão 2.1, 26/06/2026)."; f.font={size:9,italic:true,color:{argb:XL.grey}}; f.alignment={wrapText:true}; ws.getRow(r).height=28;
+  if(B){
+    const w2=wb.addWorksheet("Rubricas",{views:[{state:"frozen",ySplit:5,showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9}});
+    w2.columns=[{width:12},{width:10},{width:30},{width:10},{width:44},{width:8},{width:8},{width:16},{width:44}];
+    xlTitulo(w2,9,"Rubricas da rescisão",`${RC.resc.fileName}  ·  Remuneração disponível ${fmtV(B.base)}`);
+    xlCabecalho(w2,5,["Grupo","Evento","Descrição","Natureza","Descrição da natureza","INSS","IRRF","Valor","Motivo"]);
+    let q=6; const put=(g,rs,neg,st)=>rs.forEach(x=>{ xlLinha(w2,q,[g,x.ev,x.ds,x.nat,x.nd,x.inss,x.irrf,neg?-(x.dv):(x.pv||x.dv),x.m],{money:[7],center:[0,1,3,5,6]}); xlStatus(w2.getCell(q,1),st); q++; });
+    put("Soma",B.soma,false,"ok"); put("Subtrai",B.sub,true,"sub"); put("Não entra",B.fora,false,"neu");
+    xlLinha(w2,q,["Remuneração disponível","","","","","","",B.base,""],{money:[7],bold:true,fill:XL.bronzeSoft}); q++;
+    RR.lanc.forEach(x=>{ xlLinha(w2,q,["Consignado",x.ev,x.ds,x.nat,x.nd,x.inss,x.irrf,x.dv,lancMotivo(x,lst.length)],{money:[7],center:[0,1,3,5,6]}); xlStatus(w2.getCell(q,1),"pdf"); q++; });
+  }
+  const buf=await wb.xlsx.writeBuffer();
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  a.download=`Desconto_Rescisao_Consignado${dt?"_"+dt.split("-").reverse().join("-"):""}.xlsx`;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500);
+  toast("Excel da memória de cálculo gerado");
+}
+
 /* ============ controles ============ */
 function selTab(t){
   S.tab=t; document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
@@ -1631,24 +2197,36 @@ function selTab(t){
   $(".panel .tabs").hidden=help;
   $("#h1").textContent=help?(t==="seg"?"Segurança dos dados":"Como usar"):(S.passo==="1"?"Emprega Brasil × Folha":"Folha × Guia FGTS Digital");
   $("#crumbStep").textContent=help?"Ajuda":"Passo "+S.passo;
+  const resc=t==="resc"; $("#step3").setAttribute("aria-pressed",resc); $("#rescView").hidden=!resc; $("#mainPanel").hidden=resc; $("#compBox").hidden=resc||help;
+  if(resc){ document.querySelector(".imports").hidden=true; $(".hint").hidden=true; $("#summary").hidden=true; $("#notices").hidden=true; $("#h1sub").hidden=true;
+    $("#step1").setAttribute("aria-pressed",false); $("#step2").setAttribute("aria-pressed",false);
+    $("#h1").textContent="Desconto na rescisão"; $("#crumbStep").textContent="Passo 3"; rcRender(); }
+  else if(!help){ const has=S.results.length>0; $("#btnExport").disabled=!has; $("#btnPrint").disabled=!has; }
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>selTab(b.dataset.tab));
 $("#stX").onclick=()=>{S.lidos="x";renderLidos();}; $("#stE").onclick=()=>{S.lidos="e";renderLidos();};
 $("#thLight").onclick=()=>aplicaTema("light"); $("#thDark").onclick=()=>aplicaTema("dark");
 $("#navHelp").onclick=()=>{ selTab("ajuda"); window.scrollTo(0,0); };
 $("#navSeg").onclick=()=>{ selTab("seg"); window.scrollTo(0,0); };
-$("#step1").onclick=()=>{ if(S.tab==="ajuda"||S.tab==="seg"){ selTab("conf"); if(S.passo==="1") return; } if(S.passo==="1") return; S.passo="1"; aplicaPasso(); conciliar(); };
-$("#step2").onclick=()=>{ if(S.tab==="ajuda"||S.tab==="seg"){ selTab("conf"); if(S.passo==="2") return; } if(S.passo==="2") return; S.passo="2"; aplicaPasso(); conciliar(); }; $("#stP").onclick=()=>{S.lidos="p";renderLidos();}; $("#stR").onclick=()=>{S.lidos="r";renderLidos();};
+$("#step3").onclick=()=>{ selTab("resc"); window.scrollTo(0,0); };
+$("#step1").onclick=()=>{ if(S.tab==="ajuda"||S.tab==="resc"||S.tab==="seg"){ selTab("conf"); if(S.passo==="1") return; } if(S.passo==="1") return; S.passo="1"; aplicaPasso(); conciliar(); };
+$("#step2").onclick=()=>{ if(S.tab==="ajuda"||S.tab==="resc"||S.tab==="seg"){ selTab("conf"); if(S.passo==="2") return; } if(S.passo==="2") return; S.passo="2"; aplicaPasso(); conciliar(); }; $("#stP").onclick=()=>{S.lidos="p";renderLidos();}; $("#stR").onclick=()=>{S.lidos="r";renderLidos();};
 $("#q").oninput=e=>{ S.q=e.target.value; renderConf(); };
 $("#comp").oninput=e=>{ let d=digits(e.target.value).slice(0,6); e.target.value = d.length>2 ? d.slice(0,2)+"/"+d.slice(2) : d; if(d.length===6||d.length===0) conciliar(); };
-$("#btnExport").onclick=exportar;
+$("#btnExport").onclick=()=>S.tab==="resc"?exportarResc():exportar();
 $("#btnPdfXls").onclick=e=>{ e.preventDefault(); e.stopPropagation(); exportarPDF(); };
-$("#btnPrint").onclick=()=>{ renderPrint(); window.print(); };
-$("#btnClear").onclick=()=>{ if(!confirm("Limpar os arquivos importados e apagar os tratamentos registrados neste navegador?")) return; TRAT={}; try{ localStorage.removeItem(TRAT_KEY); }catch(e){} toast("Arquivos e tratamentos apagados");
+$("#btnPrint").onclick=()=>{
+  const pg=document.getElementById("pgResc"); if(pg) pg.remove();
+  if(S.tab==="resc"){ renderPrintResc(); const st=document.createElement("style"); st.id="pgResc"; st.textContent="@media print{@page{size:A4 portrait;margin:12mm 11mm 14mm}#printArea .pmeta{flex-wrap:wrap;gap:8px 22px}#printArea table{font-size:8px}}"; document.head.appendChild(st); }
+  else renderPrint();
+  window.print();
+};
+window.addEventListener("afterprint",()=>{ const pg=document.getElementById("pgResc"); if(pg) pg.remove(); });
+$("#btnClear").onclick=()=>{ if(S.tab==="resc") return rcLimpar(); if(!confirm("Limpar os arquivos importados e apagar os tratamentos registrados neste navegador?")) return; TRAT={}; try{ localStorage.removeItem(TRAT_KEY); }catch(e){} toast("Arquivos e tratamentos apagados");
   S.xls=null;S.pdf=null;S.eb=null;$("#metaE").textContent=META.E;$("#dropE").classList.remove("loaded");S.results=[];S.open=new Set();S.filter="todos";$("#comp").value="";
   $("#metaX").textContent="Clique ou arraste o Excel com os descontos de consignado"; $("#metaP").textContent="Clique ou arraste a Relação de Trabalhadores (consignado na guia)";
   $("#dropX").classList.remove("loaded"); $("#dropP").classList.remove("loaded"); $("#btnPdfXls").hidden=true; render(); };
-window.addEventListener("beforeunload",e=>{ if(S.xls||S.eb||S.pdf){ e.preventDefault(); e.returnValue=""; } });
+window.addEventListener("beforeunload",e=>{ if(S.xls||S.eb||S.pdf||RC.resc||RC.contr.length){ e.preventDefault(); e.returnValue=""; } });
 const PRIV_KEY="consignado.aviso.v1";
 function abrePriv(){ $("#privModal").hidden=false; $("#privOk").focus(); }
 $("#btnPriv").onclick=()=>{ selTab("seg"); window.scrollTo(0,0); };
