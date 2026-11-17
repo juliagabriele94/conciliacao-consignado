@@ -21,13 +21,14 @@ Nos Passos 1 e 2, cada contrato é localizado pelo **número do contrato**. Depo
 ## O que a ferramenta faz
 
 - Confere, contrato a contrato, se os dados do empréstimo lançados na folha estão corretos e coincidem com a planilha do Emprega Brasil (Passo 1) e com a guia do FGTS Digital (Passo 2): contrato, CPF, nome, matrícula eSocial, competência, instituição financeira e valor da parcela
-- Mostra a situação de cada contrato: **Conferido**, **Atenção**, **Divergente**, **Só no Emprega Brasil**, **Só na guia** ou **Só na folha**
-- Explica o que verificar em cada pendência, com orientações de acordo com as regras do Crédito do Trabalhador (Portaria MTE nº 435/2025)
+- Mostra a situação de cada contrato nos Passos 1 e 2: **Conferido**, **Atenção**, **Divergente**, **Só no Emprega Brasil**, **Só na guia** ou **Só na folha**
+- Explica o que verificar em cada pendência, com orientações de acordo com as regras do Crédito do Trabalhador (Portaria MTE nº 435/2025, com a redação dada pela Portaria MTE nº 1.115/2026)
 - Permite registrar o tratamento de cada pendência, com observação
 - Apresenta os totais por instituição financeira e a quantidade de colaboradores
 - Gera o Excel da conferência e um relatório em PDF para arquivo
 - Transforma o PDF da guia do FGTS Digital em planilha Excel, mesmo sem fazer a conferência
-- Calcula o desconto na rescisão: apura a remuneração disponível, aplica o percentual de garantia de cada contrato, limita ao saldo devedor e confere com o que foi lançado na rescisão, conforme o art. 30 da Portaria MTE nº 435/2025, com a redação dada pela Portaria MTE nº 1.115/2026, e o Manual de Orientação ao Empregador (versão 2.1)
+- Calcula o desconto na rescisão (Passo 3): apura a remuneração disponível, aplica o percentual de garantia de cada contrato, limita ao saldo devedor e confere com o que foi lançado na rescisão, mostrando **Confere**, **Divergente**, **Não lançado** ou **Sem garantia**. Segue o art. 30 da Portaria MTE nº 435/2025, com a redação dada pela Portaria MTE nº 1.115/2026, e o Manual de Orientação ao Empregador (versão 2.1)
+- Gera a memória de cálculo do desconto na rescisão em Excel e em PDF
 
 ## Requisitos
 
