@@ -1963,7 +1963,7 @@ function calcula(){
 }
 const RST={ok:{c:"p-ok",t:"Confere"},div:{c:"p-div",t:"Divergente"},nl:{c:"p-att",t:"Não lançado"},calc:{c:"p-pdf",t:"Calculado"},sem:{c:"p-neu",t:"Sem garantia"},zerado:{c:"p-neu",t:"Sem saldo"},falta:{c:"p-att",t:"Falta saldo"},aguarda:{c:"p-neu",t:"Aguardando rescisão"}};
 function dicasResc(o){
-  if(o.st==="div"){ const d=["Compare a remuneração disponível do sistema de folha com a da ferramenta. Se forem diferentes, revise no sistema: as incidências de INSS e IRRF das rubricas, a inclusão do aviso prévio indenizado e das férias (6003, 6004, 6006 e 6007) e a dedução dos descontos obrigatórios (9213, 9214, 9218, 9260, 6901 e 6904)."];
+  if(o.st==="div"){ const d=["Compare a remuneração disponível do sistema de folha com a da ferramenta. Se forem diferentes, revise no cadastro das rubricas do sistema: a natureza da rubrica no eSocial e as incidências de INSS e IRRF, a inclusão do aviso prévio indenizado e das férias (naturezas 6003, 6004, 6006 e 6007) e a dedução dos descontos obrigatórios (naturezas 9213, 9214, 9218, 9260, 6901 e 6904)."];
     if(o.teto) d.push("O valor pelo percentual passou do saldo devedor: confira se o sistema limitou o desconto ao saldo devedor.");
     d.push("Confira se o valor não foi lançado no evento de outro contrato.");
     if(Math.abs(o.dif)<1) d.push("Diferença de centavos costuma ser arredondamento. Verifique e, se for o caso, ajuste.");
