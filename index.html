@@ -195,6 +195,14 @@ tr.rcalc td:last-child{max-width:1px}
 .rdet[open] summary::before{transform:rotate(90deg)}
 .rdet ul{margin:4px 0 2px;padding-left:18px}.rdet li{margin-bottom:3px}
 .notice .rdet{color:inherit}.notice .rdet summary{color:inherit}
+.impbox summary{cursor:pointer;list-style:none;display:flex;gap:8px;align-items:center;padding:11px 14px;user-select:none}
+.impbox summary::-webkit-details-marker{display:none}
+.impbox summary::before{content:"";width:0;height:0;border-left:5px solid var(--bronze-ink);border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform .15s;flex:none}
+.impbox[open] summary::before{transform:rotate(90deg)}
+.impbox summary b{font-family:var(--f-display);font-size:14px}
+.impbox summary span{font-size:12px;color:var(--ink-3)}
+.impbox[open] summary{border-bottom:1px solid var(--line)}
+.impbox th:first-child,.impbox td:first-child{padding-left:14px}.impbox th:last-child,.impbox td:last-child{padding-right:14px}.impbox tr:last-child td{border-bottom:0}
 .t-bad{color:var(--bad)}.t-warn{color:var(--warn)}.t-ok{color:var(--ok)}
 .p-neu{background:var(--surface-3);color:var(--ink-2)}
 .lnk{color:var(--bronze-ink);font-weight:600;text-decoration:none;white-space:nowrap}.lnk:hover{text-decoration:underline}
@@ -499,6 +507,7 @@ td.divs .tag{white-space:normal}
             </div>
           </div>
         </section>
+        <div id="rImp" hidden></div>
         <p class="hint"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg><span>Consulte o percentual de garantia e o saldo devedor no Emprega Brasil <b>no mesmo dia do envio do S-2299</b>. O eSocial confere o desconto com os dados desse dia e gera alerta se o valor declarado for diferente.</span></p>
         <div id="rNotices" style="display:grid;gap:8px"></div>
         <section class="summary rs" id="rSummary" aria-label="Resumo do desconto na rescisão"></section>
@@ -1995,7 +2004,14 @@ function blocoVerif(o){
 }
 
 /* ---------- tela ---------- */
+function rcImp(){
+  const ib=$("#rImp"); const aberto=!!ib.querySelector("details[open]");
+  const rw=RC.csv?RC.csv.rows.filter(r=>whoKey(r)===RC.who):[];
+  ib.hidden=!rw.length; if(!rw.length){ ib.innerHTML=""; return; }
+  ib.innerHTML=`<details class="panel impbox"${aberto?" open":""}><summary><b>Contratos importados do Emprega Brasil</b><span>${rw.length} contrato(s)${rw[0].trab?" · "+esc(rw[0].trab):""}</span></summary><div class="tablebox"><table><thead><tr><th>CPF</th><th>Trabalhador</th><th>Matrícula</th><th>Instituição financeira</th><th>Contrato</th><th class="r">% a ser descontado da verba rescisória</th><th class="r">Saldo devedor</th></tr></thead><tbody>${rw.map(r=>`<tr><td class="num">${esc(fmtCPF(r.cpf))||"—"}</td><td>${esc(r.trab)||"—"}</td><td>${esc(r.mat)||"—"}</td><td>${esc((r.cod?r.cod+" – ":"")+(r.inst||""))||"—"}</td><td class="num">${esc(r.contrato)||"—"}</td><td class="r num">${r.perc>0?pctFmt(r.perc):"—"}</td><td class="r num">${r.saldo!=null?fmtV(r.saldo):"—"}</td></tr>`).join("")}</tbody></table></div></details>`;
+}
 function rcRender(){
+  rcImp();
   const R=calcula(); const {B,base,lst,sobra}=R; RC.ult=R;
   const comG=lst.filter(o=>o.perc>0), total=r2(lst.reduce((t,o)=>t+(o.desc||0),0));
   const lancT=B?r2(B.consig.reduce((t,l)=>t+l.dv,0)):null, dif=B&&lst.length?r2(lancT-total):null;
