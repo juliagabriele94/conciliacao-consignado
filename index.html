@@ -1955,8 +1955,13 @@ function calcula(){
     lst.forEach(o=>{ if(o.lancSel==null) return; if(o.lancSel===-1){ o.manNone=true; return; }
       const l=lanc[o.lancSel]; if(!l){ return; } if(l.usado){ o.conflito=true; return; } liga(o,l,true); });
     const alvo=lst.filter(o=>o.st==="calc"&&!o.lanc&&!o.manNone&&!o.conflito);
-    alvo.forEach(o=>{ const c=lanc.filter(l=>!l.usado&&l.ref!=null&&Math.abs(l.ref-o.perc)<0.005); if(c.length===1) liga(o,c[0]); });
-    alvo.filter(o=>!o.lanc).forEach(o=>{ const c=lanc.find(l=>!l.usado&&Math.abs(l.dv-o.desc)<=0.01); if(c) liga(o,c); });
+    const mesmoPct=(a,b)=>Math.abs(a-b)<0.005, perto=(a,b)=>Math.round(Math.abs(a-b)*100)<=1;
+    /* pelo percentual; se mais de um contrato tiver o mesmo percentual e houver a mesma quantidade de lançamentos com ele, liga pelo valor mais próximo */
+    alvo.forEach(o=>{ if(o.lanc) return; const c=lanc.filter(l=>!l.usado&&l.ref!=null&&mesmoPct(l.ref,o.perc)); if(!c.length) return;
+      const par=alvo.filter(x=>!x.lanc&&mesmoPct(x.perc,o.perc));
+      if(c.length===1&&par.length===1) liga(o,c[0]);
+      else if(c.length===par.length){ par.forEach(x=>{ const l=c.filter(l=>!l.usado).sort((a,b)=>Math.abs(a.dv-x.desc)-Math.abs(b.dv-x.desc))[0]; if(l) liga(x,l); }); } });
+    alvo.filter(o=>!o.lanc).forEach(o=>{ const c=lanc.find(l=>!l.usado&&perto(l.dv,o.desc)); if(c) liga(o,c); });
     const ro=alvo.filter(o=>!o.lanc), rl=lanc.filter(l=>!l.usado); if(ro.length===1&&rl.length===1) liga(ro[0],rl[0]);
     lst.filter(o=>o.st==="calc").forEach(o=>{ if(!o.lanc){ o.st="nl"; return; } o.dif=r2(o.lanc.dv-o.desc); o.st=Math.abs(o.dif)<=0.01?"ok":"div"; });
   }
